@@ -1,1 +1,1 @@
-### tribarb [![Build Status](https://travis-ci.org/anith-manu/tribarb.svg?branch=main)](https://travis-ci.org/anith-manu/tribarb)
+### tribarb [![Build Status](https://travis-ci.org/anith-manu/tribarb.svg?branch=main)](https://travis-ci.org/anith-manu/tribarb) [![codecov](https://codecov.io/gh/anith-manu/tribarb/branch/main/graph/badge.svg?token=9H8S38K8PC)](undefined)
