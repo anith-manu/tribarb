@@ -1,61 +1,29 @@
-{% extends 'base.html'%}
+{% extends 'base-auth.html'%}
 {% load static %}
 
-
-
 {% block content%}
+    
+<div class="card-body">
+    <p class="card-title text-muted">Provide the email you registered with to receive password reset instructions.</p>
 
-<div class="row">
-    <div class="col-md-3"></div>
-    <div class="col-md-6">
+    {% include 'partials/_flash_messsages.html' %}
 
-        <div class="row">
-            <div class="col-md-2">
+    <form style="padding-bottom:20px;" action="{% url 'request-reset-email' %}" method="post">
 
+        {% csrf_token %}
 
-            </div>
-            <div class="col-md-8">
-                    <div class="card mt-5">
-                        <h2 class="text-center">tribarb desktop</h2>
-                            <div class="card-body">
-                              <h5 class="card-title text-muted">Provide your email to recieve reset instructions</h5>
-
-                              {% include 'partials/_flash_messsages.html' %}
-
-                            <form action="{% url 'request-reset-email' %}" method="post">
-
-                                {% csrf_token %}
-
-                        <div class="form-group">
-                            <input class="form-control form-control-sm" type="email" name="email" value="{{data.email}}" placeholder="Email">
-                        </div>
-                        <input type="submit" value="Submit" class="btn btn-sm btn-block btn-primary"/>
-                                    </form>
-
-                                    </div>
-                                </div>
-
-
-<div class="card mt-4">
-    <div class="card-body">
-        <p>
-            Already have an account?<a href="{%url 'login'%}">Login</a>
-            Dont have an account?<a href="{%url 'register'%}">Register</a>
-        </p>
-    </div>
-</div>
-            </div>
-            <div class="col-md-2"></div>
+        <div class="form-group">
+            <input class="form-control" type="email" name="email" value="{{data.email}}" placeholder="Email">
         </div>
+        
+        <input type="submit" value="Submit" class="font-weight-bold btn btn-md btn-block btn-dark"/>
 
+    </form>
 
-
-
-
-
+    <div class="card-footer bg-transparent text-center" style="padding-top: 15px; padding-bottom: 0px;">
+        Have an account?<a href="{% url 'login' %}"> Log In</a>
     </div>
-    <div class="col-md-3"></div>
 </div>
 
-
+       
 {% endblock %}
