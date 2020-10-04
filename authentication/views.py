@@ -50,11 +50,11 @@ class RegistrationView(View):
             context['has_error']=True
 
         if len(password)<6:
-            messages.add_message(request, messages.ERROR, 'Password should be atleast 6 characters long.')
+            messages.add_message(request, messages.ERROR, 'Password should be at least 6 characters long.')
             context['has_error']=True
 
         if password!=password2:
-            messages.add_message(request, messages.ERROR, 'Passwords dont match.')
+            messages.add_message(request, messages.ERROR, 'Passwords don\'t match.')
             context['has_error']=True
         
         try:
@@ -102,7 +102,7 @@ class RegistrationView(View):
         )
 
         EmailThread(email_message).start()
-        messages.add_message(request, messages.SUCCESS, 'Account created successfully. Please check your email for verification link.')
+        messages.add_message(request, messages.SUCCESS, 'Account created successfully! Please check your email for a verification link.')
 
         return redirect('login')
 
@@ -173,10 +173,6 @@ class LogoutView(View):
 
 
 
-
-
-        
-
 class RequestResetEmailView(View):
     def get(self, request):
         return render(request, 'auth/request-reset-email.html')
@@ -185,7 +181,7 @@ class RequestResetEmailView(View):
         email = request.POST['email']
 
         if not validate_email(email):
-            messages.error(request, 'Please enter a valid email')
+            messages.error(request, 'Please enter a valid email.')
             return render(request, 'auth/request-reset-email.html')
 
         user = User.objects.filter(email=email)
@@ -210,7 +206,7 @@ class RequestResetEmailView(View):
 
             EmailThread(email_message).start()
 
-        messages.success(request, 'We have sent you an email with instructions on how to reset your password')
+        messages.success(request, 'Thanks! Please check your email for a link to reset your password.')
         return render(request, 'auth/request-reset-email.html') 
 
 
@@ -227,11 +223,11 @@ class SetNewPasswordView(View):
             user = User.objects.get(pk=user_id)
 
             if not PasswordResetTokenGenerator().check_token(user, token):
-                messages.info(request, 'Password reset link, is invalid, please request a new one')
+                messages.error(request, 'Password reset link is invalid. Please request a new one.')
                 return render(request, 'auth/request-reset-email.html')
 
         except DjangoUnicodeDecodeError:
-            messages.success(request, 'Invalid link')
+            messages.success(request, 'Invalid link.')
             return render(request, 'auth/request-reset-email.html')
 
         return render(request, 'auth/set-new-password.html', context)
@@ -247,10 +243,10 @@ class SetNewPasswordView(View):
         password = request.POST.get('password')
         password2 = request.POST.get('password2')
         if len(password) < 6:
-            messages.add_message(request, messages.ERROR, 'passwords should be at least 6 characters long')
+            messages.add_message(request, messages.ERROR, 'Password should be at least 6 characters long.')
             context['has_error'] = True
         if password != password2:
-            messages.add_message(request, messages.ERROR, 'passwords don`t match')
+            messages.add_message(request, messages.ERROR, 'Passwords don\'t match.')
             context['has_error'] = True
 
         if context['has_error'] == True:
@@ -262,7 +258,7 @@ class SetNewPasswordView(View):
             user.set_password(password)
             user.save()
 
-            messages.success(request, 'Password reset success, you can login with new password')
+            messages.success(request, 'Password has been reset. You can now login with your new password.')
 
             return redirect('login')
 
