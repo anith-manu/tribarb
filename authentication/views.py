@@ -137,7 +137,7 @@ class LoginView(View):
             return render(request, 'auth/login.html', status=401, context=context)
         
         login(request,user)
-        return redirect('home')
+        return redirect('bookings')
 
 
 
@@ -156,12 +156,6 @@ class ActivateAccountView(View):
             return redirect('login')
         
         return render(request, 'auth/activate_failed.html', status=401)
-
-
-
-class HomeView(View):
-    def get(self, request):
-        return render(request, 'home.html')
 
 
 

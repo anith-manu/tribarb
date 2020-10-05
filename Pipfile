@@ -11,6 +11,10 @@ django = "*"
 validate-email = "*"
 six = "*"
 codecov = "*"
+pillow = "*"
+psycopg2 = "==2.7.7"
+django-heroku = "*"
+gunicorn = "*"
 
 [requires]
 python_version = "3.7"
