@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 
+import django_heroku
 from pathlib import Path
 import os
 from django.contrib import messages
@@ -143,3 +144,5 @@ LOGIN_URL='login'
 LOGIN_REDIRECT_URL='home'
 LOGOUT_URL='logout'
 LOGOUT_REDIRECT_URL='login'
+
+django_heroku.settings(locals())
