@@ -128,11 +128,17 @@ STATICFILES_DIRS = [
 ]
 
 
-EMAIL_HOST = os.environ.get('EMAIL_HOST')
-EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
-EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS')
-EMAIL_PORT = os.environ.get('EMAIL_PORT')
+#EMAIL_HOST = os.environ.get('EMAIL_HOST')
+#EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
+#EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
+#EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS')
+#EMAIL_PORT = os.environ.get('EMAIL_PORT')
+
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'aooufll1@gmail.com'
+EMAIL_HOST_PASSWORD = 'Appu1234'
+EMAIL_USE_TLS = True
+EMAIL_PORT = 587
 
 
 MESSAGE_TAGS={
