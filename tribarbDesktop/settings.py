@@ -131,6 +131,10 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR,'static')
 ]
 
+if '/app' in os.environ['HOME']:
+    import django_heroku
+    django_heroku.settings(locals())
+
 
 EMAIL_HOST = os.environ.get('EMAIL_HOST')
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
