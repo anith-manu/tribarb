@@ -13,12 +13,9 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 import django_heroku
 from pathlib import Path
 import os
+import django_heroku
 from django.contrib import messages
 
-
-if '/app' in os.environ['HOME']:
-    import django_heroku
-    django_heroku.settings(locals())
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -153,4 +150,5 @@ LOGIN_REDIRECT_URL='home'
 LOGOUT_URL='logout'
 LOGOUT_REDIRECT_URL='login'
 
-django_heroku.settings(locals())
+if '/app' in os.environ['HOME']:
+    django_heroku.settings(locals())
