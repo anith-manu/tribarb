@@ -8,7 +8,7 @@
 
     {% include 'partials/_flash_messsages.html' %}
 
-    <form action="{% url 'register' %}" method="post">
+    <form action="{% url 'register' %}" method="post" enctype="multipart/form-data">
 
         {% csrf_token %}
         <div class="form-group">
@@ -35,6 +35,10 @@
             <input class="form-control" type="password" name="password2" value="" placeholder="Confirm Password">
         </div>
 
+        <h5 class="card-title text-left" style="font-family:American Typewriter;">Shop Info</h5>
+        <div class="card-title text-left" >Logo</div>
+        {{ shop_form }}
+        
         <input type="submit" value="Register" class="text-white font-weight-bold btn btn-lg btn-block btn-warning"/>
     </form>
 

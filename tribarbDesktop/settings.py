@@ -43,7 +43,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'authentication.apps.AuthenticationConfig'
+    'authentication.apps.AuthenticationConfig',
+    'dashboard.apps.DashboardConfig',
+    'oauth2_provider',
+    'social_django',
+    'rest_framework_social_oauth2',
 ]
 
 MIDDLEWARE = [
@@ -69,6 +73,9 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'django.template.context_processors.media',
+                'social_django.context_processors.backends',
+                'social_django.context_processors.login_redirect',
             ],
         },
     },
@@ -106,6 +113,22 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+AUTHENTICATION_BACKENDS = (
+    'social_core.backends.facebook.FacebookOAuth2',
+    'rest_framework_social_oauth2.backends.DjangoOAuth2',
+    'django.contrib.auth.backends.ModelBackend',
+)
+
+# Facebook configuration
+SOCIAL_AUTH_FACEBOOK_KEY = os.environ.get('SOCIAL_AUTH_FACEBOOK_KEY')
+SOCIAL_AUTH_FACEBOOK_SECRET = os.environ.get('SOCIAL_AUTH_FACEBOOK_SECRET')
+
+# Define SOCIAL_AUTH_FACEBOOK_SCOPE to get extra permissions from Facebook.
+# Email is not sent by default, to get it, you must request the email permission.
+SOCIAL_AUTH_FACEBOOK_SCOPE = ['email']
+SOCIAL_AUTH_FACEBOOK_PROFILE_EXTRA_PARAMS = {
+    'fields': 'id, name, email'
+}
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
@@ -144,11 +167,13 @@ MESSAGE_TAGS={
     messages.ERROR:'danger'
 }
 
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'
 
 LOGIN_URL='login'
-LOGIN_REDIRECT_URL='home'
+LOGIN_REDIRECT_URL='bookings'
 LOGOUT_URL='logout'
 LOGOUT_REDIRECT_URL='login'
 
-if '/app' in os.environ['HOME']:
+if '/app' in os.environ['HOME']: ## remove line for heroku deployment
     django_heroku.settings(locals())
