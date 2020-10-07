@@ -11,6 +11,8 @@ from django.core.mail import EmailMessage
 from django.conf import settings
 from django.contrib.auth import authenticate, login, logout
 
+from authentication.forms import ShopForm
+
 
 from django.contrib.sites.shortcuts import get_current_site
 from django.template.loader import render_to_string
@@ -29,8 +31,13 @@ class EmailThread(threading.Thread):
 
 
 class RegistrationView(View):
+    shop_form = ShopForm()
+
     def get(self, request):
-        return render(request, 'auth/register.html')
+        shop_form = ShopForm()
+        return render(request, 'auth/register.html', {
+		"shop_form": shop_form 
+		})
 
     def post(self, request):
         context={
@@ -82,6 +89,17 @@ class RegistrationView(View):
         user.is_active=False
 
         user.save()
+
+        #####
+        shop_form = ShopForm(request.POST, request.FILES)
+
+        if shop_form.is_valid():
+            new_shop = shop_form.save(commit=False)
+            new_shop.user = user
+            new_shop.save()
+        else:
+            return render(request, 'auth/register.html', context, status=400)
+        #####
 
         current_site = get_current_site(request)
         email_subject = 'Activate Your Tribarb Account'
@@ -137,7 +155,7 @@ class LoginView(View):
             return render(request, 'auth/login.html', status=401, context=context)
         
         login(request,user)
-        return redirect('home')
+        return redirect('shop-bookings')
 
 
 
@@ -156,12 +174,6 @@ class ActivateAccountView(View):
             return redirect('login')
         
         return render(request, 'auth/activate_failed.html', status=401)
-
-
-
-class HomeView(View):
-    def get(self, request):
-        return render(request, 'home.html')
 
 
 
