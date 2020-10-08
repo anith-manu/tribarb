@@ -1,0 +1,36 @@
+{% extends 'db/sidebar.html' %}
+{% load bootstrap3 %}
+
+{% block title %}Tribarb | Account{% endblock %}
+
+{% block page %}
+
+<div class="db-items">
+
+
+<div class="card">
+    <div class="card-heading db-card-headings">
+        <h4 class="card-title text-center db-card-titles">
+            Account
+        </h4>
+        
+    </div>
+    <div class="card-body">
+        <div class="shop-id" style="padding-bottom: 30px;">
+            <div class="text-left font-italic text-uppercase">* All employees must know the Shop ID to login to the Tribarb mobile app. </div>
+            <div class="text-left font-weight-bold">Shop ID : {{ request.user.shop.id }} </div>
+        </div>
+        
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            {% bootstrap_form user_form %}
+            {% bootstrap_form barber_form %}
+            <div class="text-center">
+            <button type="submit" class="btn btn-md btn-warning ">Update</button>
+        </div>
+        </form>
+    </div>
+</div>
+</div>
+
+{% endblock %}

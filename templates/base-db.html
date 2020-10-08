@@ -1,11 +1,34 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <link rel="stylesheet" href="{% static 'css/bootstrap.css' %}">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+    <title>{% block title %} {% endblock %}</title>
 </head>
+
+
 <body>
-    
+   
+	<div class="container-fluid">
+
+		<div class="row">
+
+			<div class="col-lg-2 col-md-2 col-sd-2 sidebar">
+				{% block sidebar %}{% endblock %}
+			</div>
+			
+
+			<div class="col-lg-10 offset-lg-2 col-md-10 col-md-offset-2 col-sm-10 col-sm-offset-2 content">
+				{% block page %}{% endblock %}	
+			</div>
+		</div>
+		
+	</div>
+
 </body>
 </html>

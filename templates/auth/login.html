@@ -1,6 +1,8 @@
 {% extends 'base-auth.html' %}
 {% load static %}
 
+{% block title %}Tribarb | Log In{% endblock %}
+
 {% block content %}
 
 <div class="card-body">     
@@ -19,15 +21,15 @@
         </div>
             
         
-        <input type="submit" value="Log In" class="text-white font-weight-bold btn btn-lg btn-block btn-warning"/>
+        <input type="submit" value="Log In" style="color: #333;" class="font-weight-bold btn btn-lg btn-block btn-warning"/>
     </form>
 
     <div class="text-center" style="padding-top: 10px; padding-bottom: 10px;">
         <a href="{% url 'request-reset-email' %}">Forgot Password? </a>
     </div>
 
-    <div class="card-footer bg-transparent" style="padding-top: 27px;">
-        <a href="{% url 'register' %}" style="color:black"><button class="font-weight-bold btn btn-md btn-block btn-dark">Register</button></a>
+    <div class="card-footer bg-transparent" style="padding-top: 25px; border-color: whitesmoke;">
+        <a href="{% url 'register' %}" style="color:#f9f9f9"><button class="font-weight-bold btn btn-md btn-block btn-light">Register Shop</button></a>
     </div>  
 </div>
 
