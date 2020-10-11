@@ -16,21 +16,59 @@
         
     </div>
     <div class="card-body">
-        <div class="shop-id" style="padding-bottom: 30px;">
-            <div class="text-left font-italic text-uppercase">* All employees must know the Shop ID to login to the Tribarb mobile app. </div>
-            <div class="text-left font-weight-bold">Shop ID : {{ request.user.shop.id }} </div>
+        <h5 class="card-title text-left">Shop Info</h5>
+        <button id="generateToken">Generate New Token</button> 
+        <div class="shop-id">
+            <div class="text-left font-italic text-uppercase">* All {{ request.user.shop.name }} employees must know the Token to login to the Tribarb mobile app. </div>
         </div>
         
-        <form method="POST" enctype="multipart/form-data">
+        <form method="POST" enctype="multipart/form-data"> 
             {% csrf_token %}
-            {% bootstrap_form user_form %}
+            <label>Token </label>
+            <input type="text" name="token" id="showToken" class="form-control" value="{{ token }}">
+            
+
             {% bootstrap_form barber_form %}
+            <h5 style="padding-top: 25px;" class="card-title text-left">User Info</h5>
+            {% bootstrap_form user_form %}
             <div class="text-center">
-            <button type="submit" class="btn btn-md btn-warning ">Update</button>
+            <button type="submit" class="btn btn-md btn-primary ">Update</button>
         </div>
         </form>
     </div>
 </div>
+
+
+
+
+
+<script>
+$( document ).ready(function() {
+
+	// set the length of the string
+	var stringLength = 15;
+
+	// list containing characters for the random string
+	var stringArray = ['0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','!','?'];
+
+	$("#generateToken").click(function (){
+
+		var rndString = "";
+	
+		// build a string with random characters
+		for (var i = 1; i < stringLength; i++) { 
+			var rndNum = Math.ceil(Math.random() * stringArray.length) - 1;
+			rndString = rndString + stringArray[rndNum];
+		};
+		
+		$("#showToken").val(rndString);
+
+	});
+
+});
+</script>
 </div>
+
+
 
 {% endblock %}

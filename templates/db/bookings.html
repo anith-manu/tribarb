@@ -2,12 +2,7 @@
 
 {% block title %}Tribarb | Bookings{% endblock %}
 
-{% block content %}
-{{user.username}}
+{% block page %}
 
-<form action="{% url 'logout' %}" method="POST">
-    {% csrf_token %}
-    <input type="submit" value="Logout" class="btn btn-info">
-</form>
 
 {% endblock %}
