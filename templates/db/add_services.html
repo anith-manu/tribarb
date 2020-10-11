@@ -1,0 +1,98 @@
+{% extends 'db/sidebar.html' %}
+{% load bootstrap3 %}
+
+{% block title %}Tribarb | Add Service{% endblock %}
+
+{% block page %}
+<div class="db-items">
+
+
+<div class="card">
+    <div class="card-heading db-card-headings">
+        <h4 class="card-title text-center db-card-titles">
+            Add Service
+        </h4>
+        
+    </div>
+    <div class="card-body">
+
+        <input type="file" multiple>
+        <label>Service Name</label>
+        <input type="text" id="service_name" class="form-control">
+        <label>Description</label>
+        <textarea id="short_description" class="form-control"></textarea>
+        <label>Price</label>
+        <input type="number" id="price" class="form-control">
+        <div class="text-center">
+            <button type="button" id="saveBtn" class="btn btn-primary mt-4">Add</button>
+        </div>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                var files = []
+                FilePond.registerPlugin(FilePondPluginFileValidateSize);
+                FilePond.registerPlugin(FilePondPluginFileValidateType);
+                FilePond.setOptions({
+                    allowMultiple:true,
+                    maxFiles:4,
+                    maxFileSize: '3MB'
+                })
+                const inputElement = document.querySelector('input[type="file"]');
+                const pond = FilePond.create( inputElement, {
+                    acceptedFileTypes:['image/png', 'image/jpeg'],
+                    onaddfile: (err, fileItem) => {
+                        if (!err) {
+                        files.push(fileItem.file)
+                        }
+                        console.log(files)
+                    },
+                    onremovefile: (err, fileItem) => {
+                        const index = files.indexOf(fileItem.file)
+                        if (index > -1) {
+                            files.splice(index, 1)
+                        }
+                        console.log(files)
+                    }
+                } );
+
+                var formData = new FormData();
+                $(document).on('click', '#saveBtn', function(e) {
+
+                    formData.append('length', files.length)
+                    formData.append('service_name', $('#service_name').val())
+                    formData.append('short_description', $('#short_description').val())
+                    formData.append('price', $('#price').val())
+                    for (var i = 0; i < files.length; i++) {
+                        formData.append('images' + i, files[i])
+                    }
+                    formData.append('csrfmiddlewaretoken', '{{ csrf_token }}')
+
+                    $.ajax({
+                        type: 'POST',
+                        url: '{% url "shop-add-services" %}',
+                        data: formData,
+                        cache: false,
+                        processData: false,
+                        contentType: false,
+                        enctype: 'multipart/form-data',
+                        success: function (){
+
+                            window.location.href = "{% url 'shop-services' %}";
+                        },
+                        error: function(xhr, errmsg, err) {
+                            console.log(xhr.status + ":" + xhr.responseText)
+                        }
+                    })
+                })
+            })
+        </script>
+
+
+
+
+
+    </div>
+</div>
+</div>
+
+{% endblock %}

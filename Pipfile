@@ -16,6 +16,7 @@ django-heroku = "*"
 gunicorn = "*"
 pillow = "*"
 django-rest-framework-social-oauth2 = "*"
+django-bootstrap3 = "*"
 
 [requires]
 python_version = "3.7"

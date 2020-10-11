@@ -1,11 +1,8 @@
-{% extends 'base-auth.html' %}
+{% extends 'db/sidebar.html' %}
 
-{% block content %}
-{{user.username}}
+{% block title %}Tribarb | Bookings{% endblock %}
 
-<form action="{% url 'logout' %}" method="POST">
-    {% csrf_token %}
-    <input type="submit" value="Logout" class="btn btn-info">
-</form>
+{% block page %}
+
 
 {% endblock %}

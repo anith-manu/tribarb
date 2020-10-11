@@ -1,56 +1,88 @@
-{% extends 'base-auth.html' %}
 {% load static %}
+{% load bootstrap3 %}
 
-{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'css/bootstrap.css' %}">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <title>Tribarb | Register</title>
+</head>
 
-<div class="card-body">
-    <h5 class="text-center card-title text-muted">User Registration</h5>
 
-    {% include 'partials/_flash_messsages.html' %}
+<body class="auth-bg vignette-register">
+    <div class="row" style="padding-bottom: 30px;">
+        <div class="col-md-3"></div>
+        <div class="col-md-6">
+            <div class="row">
+                <div class="col-md-2"></div>
+                <div class="col-md-8">
 
-    <form action="{% url 'register' %}" method="post" enctype="multipart/form-data">
+                    <div class="card mt-5 auth-card" style="border: none;">
+                        
+                        <h1 class="card-title text-center " style="font-family:American Typewriter; font-size:500%; color:whitesmoke; ">tribarb</h1>
+                        
 
-        {% csrf_token %}
-        <div class="form-group">
-            <input class="form-control" type="email" name="email" value="{{data.email}}" placeholder="Email">
+                        <div class="card-body">
+                            <h2 class="text-center card-title" style="color: whitesmoke;">Registration</h2>
+                        
+                            {% include 'partials/_flash_messsages.html' %}
+                            <h5 class="card-title text-left text-muted">User Info</h5>
+                            <form action="{% url 'register' %}" method="post" enctype="multipart/form-data">
+                        
+                                {% csrf_token %}
+                                <div class="form-group">
+                                    <input class="form-control" type="email" name="email" value="{{data.email}}" placeholder="Email">
+                                </div>
+                        
+                                <div class="form-group">
+                                    <input class="form-control" type="text" name="first_name" value="{{data.first_name}}" placeholder="First Name">
+                                </div>
+                        
+                                <div class="form-group">
+                                    <input class="form-control" type="text" name="last_name" value="{{data.last_name}}" placeholder="Last Name">
+                                </div>
+                        
+                                <div class="form-group">
+                                    <input class="form-control" type="text" name="username" value="{{data.username}}" placeholder="Username">
+                                </div>
+                        
+                                <div class="form-group">
+                                    <input class="form-control" type="password" name="password" value="" placeholder="Password">
+                                </div>
+                        
+                                <div class="form-group">
+                                    <input class="form-control" type="password" name="password2" value="" placeholder="Confirm Password">
+                                </div>
+                        
+                                <h5 class="card-title text-left text-muted" style="padding-top: 25px; ">Shop Info</h5>
+                                <div class="card-title text-left" style="color: whitesmoke;">Logo</div>
+                                {% bootstrap_form shop_form layout='inline' %}
+                                
+                                <input type="submit" value="Register" style="color: #333;" class="font-weight-bold btn btn-lg btn-block btn-warning"/>
+                            </form>
+                        
+                            <div style="padding-top: 15px; padding-bottom: 15px;">
+                                <small class="py-3" style="color: whitesmoke;">
+                                    By signing up, you agree to our <b>Terms</b>, <b>Data Policy</b> and <b>Cookies Policy</b>.
+                                </small>
+                            </div>
+                        
+                            <div class="card-footer bg-transparent text-center" style="padding-top: 15px; padding-bottom: 0px; border-color: whitesmoke;" >
+                                <p style="color: whitesmoke;">Have an account?<a href="{% url 'login' %}"> Log In</a></p>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+                 <div class="col-md-2"></div>
+            </div>
         </div>
-
-        <div class="form-group">
-            <input class="form-control" type="text" name="first_name" value="{{data.first_name}}" placeholder="First Name">
-        </div>
-
-        <div class="form-group">
-            <input class="form-control" type="text" name="last_name" value="{{data.last_name}}" placeholder="Last Name">
-        </div>
-
-        <div class="form-group">
-            <input class="form-control" type="text" name="username" value="{{data.username}}" placeholder="Username">
-        </div>
-
-        <div class="form-group">
-            <input class="form-control" type="password" name="password" value="" placeholder="Password">
-        </div>
-
-        <div class="form-group">
-            <input class="form-control" type="password" name="password2" value="" placeholder="Confirm Password">
-        </div>
-
-        <h5 class="card-title text-left" style="font-family:American Typewriter;">Shop Info</h5>
-        <div class="card-title text-left" >Logo</div>
-        {{ shop_form }}
-        
-        <input type="submit" value="Register" class="text-white font-weight-bold btn btn-lg btn-block btn-warning"/>
-    </form>
-
-    <div style="padding-top: 15px; padding-bottom: 15px;">
-        <small class="py-3">
-            By signing up, you agree to our <b>Terms</b>, <b>Data Policy</b> and <b>Cookies Policy</b>.
-        </small>
+        <div class="col-md-3"></div>
     </div>
+</body>
 
-    <div class="card-footer bg-transparent text-center" style="padding-top: 15px; padding-bottom: 0px;">
-        Have an account?<a href="{% url 'login' %}"> Log In</a>
-    </div>
-</div>
-
-{% endblock %}
+</html>

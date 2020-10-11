@@ -6,21 +6,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{% static 'css/bootstrap.css' %}">
-    <title>tribarb desktop</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <title>{% block title %} {% endblock %}</title>
 </head>
 
 
-<body>
-    <div class="row">
+<body class="auth-bg vignette">
+    <div class="row" style="padding-bottom: 30px;">
         <div class="col-md-3"></div>
         <div class="col-md-6">
             <div class="row">
                 <div class="col-md-2"></div>
                 <div class="col-md-8">
 
-                    <div class="card mt-5">
+                    <div class="card mt-5 auth-card " style="border: none;">
                         
-                        <h1 class="card-title text-center" style="font-family:American Typewriter; font-size:500%;">tribarb</h1>
+                        <h1 class="card-title text-center " style="font-family:American Typewriter; font-size:500%; color:whitesmoke; ">tribarb</h1>
                         
 
                         {% block content %}
@@ -37,4 +38,5 @@
         <div class="col-md-3"></div>
     </div>
 </body>
+
 </html>

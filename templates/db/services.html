@@ -1,0 +1,46 @@
+{% extends 'db/sidebar.html' %}
+{% load bootstrap3 %}
+
+{% block title %}Tribarb | Services{% endblock %}
+
+{% block page %}
+
+<div class="db-items">
+<div class="card">
+    <div class="card-heading db-card-headings">
+        <h4 class="card-title text-center db-card-titles">
+            Services
+        </h4>
+        
+    </div>
+    <div class="card-body">
+        <table class="table table-bordered table-hover table-striped text-center">
+            <thead>
+                <tr class="db-card-headings db-card-titles">
+                <th>Service Name</th>
+                <th>Short Description</th>
+                <th>Price</th>
+                <th>Album</th>
+              </tr>
+            </thead>
+            <tbody>
+                {% for service in services %}
+
+                    <tr>
+                    <td><a href="{% url 'shop-edit-services' service.id %}">{{ service.service_name }}</a></td>
+                      <td>{{ service.short_description }}</td>
+                      <td>{{ service.price }}</td>
+                      <td><a href="{% url 'shop-service-album' service.id %}">View {{ service.service_name }} Album</a></td>
+                  
+                    </tr>
+
+                {% endfor %}
+            </tbody>
+        </table>
+        <div class="text-center">
+            <a href="{% url 'shop-add-services' %}" class="btn btn-primary">Add Service </a>
+        </div>
+    </div>
+</div>
+</div>
+{% endblock %}
