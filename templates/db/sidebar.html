@@ -25,19 +25,19 @@
     <span class="text-uppercase " style="color:whitesmoke">Dashboard</span>
     
     <a href="{% url 'shop-bookings' %}" class="rounded-pill list-group-item {% if request.path == barber_booking_url %} active {% endif %}">
-        <img src="{{ MEDIA_URL }}db_icons/booking.png" width="20" height="20"/> Bookings</a>
+        Bookings</a>
 
     <a href="{% url 'shop-services' %}" class="rounded-pill list-group-item {% if request.path == barber_service_url %} active {% endif %}">
-        <img src="{{ MEDIA_URL}}db_icons/scissors.png" width="20" height="20"/> Services</a>
+        Services</a>
 
     <a href="{% url 'shop-employees' %}" class="rounded-pill list-group-item {% if request.path == barber_employees_url %} active {% endif %}">
-        <img src="{{ MEDIA_URL}}/db_icons/barber.png" width="20" height="20"/> Employees</a>
+        Employees</a>
 
     <a href="{% url 'shop-reports' %}" class="rounded-pill list-group-item {% if request.path == barber_report_url %} active {% endif %}">
-        <img src="media/db_icons/report.png" width="20" height="20"/> Reports</a>
+       Reports</a>
 
     <a href="{% url 'shop-account' %}" class="rounded-pill list-group-item {% if request.path == barber_account_url %} active {% endif %}">
-        <img src="media/db_icons/account.png" width="20" height="20"/> Account</a>
+       Account</a>
 </div>
 
 
