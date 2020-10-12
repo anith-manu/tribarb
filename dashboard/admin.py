@@ -1,10 +1,12 @@
 from django.contrib import admin
 
 # Register your models here.
-from dashboard.models import Customer, Employee, Service, ServiceImage
+from dashboard.models import Customer, Employee, Service, ServiceImage, Booking, BookingDetail
 
 admin.site.register(Customer)
 admin.site.register(Employee)
+admin.site.register(Booking)
+admin.site.register(BookingDetail)
 #admin.site.register(Service)
 #admin.site.register(ServiceImage)
 

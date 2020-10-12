@@ -3,15 +3,30 @@ from django.views.generic import View
 from django.contrib.auth.decorators import login_required
 from authentication.forms import ShopForm
 from dashboard.forms import EditUserForm, ServiceForm, ShopEditForm
-from dashboard.models import Service, ServiceImage
+from dashboard.models import Service, ServiceImage, Booking
 
 
 def home(request):
     return redirect(shop_bookings)
 
+
 @login_required(login_url='login')
 def shop_bookings(request):
-    return render(request, 'db/bookings.html')
+    if request.method == "POST":
+        booking = Booking.objects.get(id=request.POST["id"], shop = request.user.shop)
+
+    
+        if 'accept' in request.POST:
+            print("ACCEPT")
+            booking.status = Booking.ACCEPTED
+            booking.save()
+        
+        if 'decline' in request.POST:
+            booking.status = Booking.DECLINED
+            booking.save()
+    
+    booking = Booking.objects.filter(shop = request.user.shop).order_by("-id")
+    return render(request, 'db/bookings.html', { "booking":booking })
 
 
 @login_required(login_url='login')

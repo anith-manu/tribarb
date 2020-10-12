@@ -88,9 +88,7 @@ body {
   .sidebar .list-group .list-group-item:focus {
     background-color: #333;
     color: whitesmoke;
-    border: 0;
-    padding-left: 60px;
-    padding-right: 30px;
+    border: 0; 
   }
   
   .sidebar .list-group .list-group-item.active,

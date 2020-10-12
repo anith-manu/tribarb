@@ -1,5 +1,5 @@
 from django.urls import path
-from . import views
+from . import views, apis
 from django.contrib.auth.decorators import login_required
 
 urlpatterns = [
@@ -14,5 +14,8 @@ urlpatterns = [
 
         path('reports', views.shop_reports, name='shop-reports'),
         path('employees', views.shop_employees, name='shop-employees'),
+
+
+        path('api/customer/shops/', apis.customer_get_shops),
 
 ]
