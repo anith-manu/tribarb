@@ -13,7 +13,7 @@
                     if (data['notification'] === 0) {
                         $('.badge').text('');
                     } else {
-                        var myAudio = new Audio('https://tribarb-media.s3.us-east-2.amazonaws.com/knock.mp3');
+                        var myAudio = new Audio('https://tribarb.s3.us-east-2.amazonaws.com/knock.mp3');
                         myAudio.play();
                         $('.badge').text('NEW BOOKING');
 
@@ -71,7 +71,7 @@
        Reports</a>
 
     <a href="{% url 'shop-account' %}" class="rounded-pill list-group-item {% if request.path == barber_account_url %} active {% endif %}">
-        <img class="rounded-circle" src="https://tribarb-media.s3.us-east-2.amazonaws.com/barber-pole.png" width="30" height="30"/> Account</a>
+       Account</a>
 </div>
 
 
