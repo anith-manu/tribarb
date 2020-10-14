@@ -13,7 +13,7 @@
                     if (data['notification'] === 0) {
                         $('.badge').text('');
                     } else {
-                        var myAudio = new Audio('http://s3.amazonaws.com/tribarb-media/knock.mp3');
+                        var myAudio = new Audio('https://tribarb-media.s3.us-east-2.amazonaws.com/knock.mp3');
                         myAudio.play();
                         $('.badge').text('NEW BOOKING');
 
