@@ -18,7 +18,7 @@ def shop_bookings(request):
     
         if 'accept' in request.POST:
             print("ACCEPT")
-            booking.status = Booking.ACCEPTED
+            booking.status = Booking.COMPLETED
             booking.save()
         
         if 'decline' in request.POST:
@@ -27,6 +27,12 @@ def shop_bookings(request):
     
     booking = Booking.objects.filter(shop = request.user.shop).order_by("-id")
     return render(request, 'db/bookings.html', { "booking":booking })
+
+
+@login_required(login_url='login')
+def shop_bookings_completed(request):
+    booking = Booking.objects.filter(shop = request.user.shop).order_by("-id")
+    return render(request, 'db/bookings_completed.html', { "booking":booking })
 
 
 @login_required(login_url='login')
@@ -45,7 +51,8 @@ def shop_account(request):
         if user_form.is_valid() and barber_form1.is_valid():
             user_form.save()
             barber_form1.save()
-    
+        
+    ## Bug here with barber form. Changes do not get updated immediately in template. 
     return render(request, 'db/account.html', {
 		"user_form": user_form,
 		"barber_form": barber_form,

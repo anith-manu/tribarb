@@ -8,7 +8,7 @@
     <div class="card">
         <div class="card-heading db-card-headings">
             <h4 class="card-title text-center db-card-titles">
-                Current Bookings
+                Completed Bookings
             </h4>
             
         </div>
@@ -27,12 +27,11 @@
                     <th>Additional Requests</th>
                     <th>Total</th>
                     <th>Status</th>
-                    <th>Action</th>
                   </tr>
 				</thead>
 				<tbody>
                     {% for booking in booking %}
-                    {% if booking.status != 4 %}
+                    {% if booking.status == 4 %}
                         <tr>
                             <td>{{ booking.id }}</td>
                             <td>{{ booking.customer }}</td>
@@ -49,28 +48,13 @@
                             </td>
                             <td>{{ booking.requests }}</td>
                             <td>{{ booking.total }}</td>
-                            <td class="font-weight-bold">{{ booking.get_status_display }}</td>
-                            <td>
-                                {% if booking.status != 6 %}
-                                    <form method="POST">
-                                      {% csrf_token %}
-                                      <input name="id" value="{{ booking.id }}" hidden>
-                                      <button name="accept" class="btn {% if booking.status == 2 %} btn-success {% endif %} btn-outline-success text-dark">Accept</button>
-                                      <button name="decline" class="btn {% if booking.status == 5 %} btn-danger {% endif %}  btn-outline-danger text-dark mt-2 ">Decline</button>
-                                    </form>
-                                {% endif %}
-                                
-                            </td>
-                            
+                            <td class="font-weight-bold">{{ booking.get_status_display }}</td>  
                         </tr>
                     {% endif %}
                     {% endfor %}
 
                 </tbody>
             </table>
-            <div class="text-center">
-                <a href="{% url 'shop-bookings-completed' %}" class="btn btn-primary">View Completed Bookings</a>
-            </div>
         </div>
     </div>
     </div>

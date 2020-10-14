@@ -33,7 +33,7 @@ class Service(models.Model):
 	price = models.IntegerField(default=0)
 
 	def __str__(self):
-		return self.service_name
+		return str(self.id) + " " + self.service_name
 
 
 class ServiceImage(models.Model):
@@ -73,12 +73,14 @@ class Booking(models.Model):
 	booking_type = models.IntegerField(choices = BOOKING_CHOICES, default = SHOP_BOOKING)
 	customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
 	shop = models.ForeignKey(Shop, on_delete=models.CASCADE)
-	employee = models.ForeignKey(Employee, blank = True, on_delete=models.CASCADE)
+	employee = models.ForeignKey(Employee, blank = True, null = True, on_delete=models.CASCADE)
 	address = models.CharField(max_length=500, blank = True, null = True)
 	total = models.FloatField()
 	status = models.IntegerField(choices = STATUS_CHOICES)
 	created_at = models.DateTimeField(default = timezone.now)
+	#requested_time = models.TimeField(blank = True, null = True)
 	requested_time = models.DateTimeField(blank = True, null = True)
+	requests = models.CharField(max_length=500, blank = True, null = True)
 	accepted_at = models.DateTimeField(blank = True, null = True)
 
 	def __str__(self):
