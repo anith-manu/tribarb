@@ -82,6 +82,7 @@ class Booking(models.Model):
 	requested_time = models.DateTimeField(blank = True, null = True)
 	requests = models.CharField(max_length=500, blank = True, null = True)
 	accepted_at = models.DateTimeField(blank = True, null = True)
+	
 
 	def __str__(self):
 	    return str(self.id)
