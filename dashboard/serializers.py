@@ -15,7 +15,7 @@ class ShopSerializerCustomer(serializers.ModelSerializer):
 
 	class Meta:
 	    model = Shop
-	    fields = ("id", "token", "name", "phone", "address", "logo")
+	    fields = ("id", "name", "phone", "address", "logo")
 
 
 

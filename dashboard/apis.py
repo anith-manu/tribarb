@@ -22,6 +22,7 @@ def customer_get_shops(request):
 
     return JsonResponse({"shops": shops})
 
+
 def customer_get_services(request, shop_id):
     services = ServiceSerializer(
         Service.objects.filter(shop_id = shop_id).order_by("-id"),
@@ -149,14 +150,15 @@ def customer_employee_location(request):
 
 
 ###### EMPLOYEES ######
-def employee_get_shops(request):
-    shops = ShopSerializerEmployee(
-        Shop.objects.all().order_by("-id"),
+def employee_get_shop(request, shop_id):
+
+    shop = ShopSerializerEmployee(
+        Shop.objects.filter(id = shop_id),
         many = True,
         context = {"request": request}
     ).data
-
-    return JsonResponse({"shops": shops})
+    
+    return JsonResponse({"shop": shop})
 
 
 def employee_get_placed_bookings(request, shop_id):

@@ -30,6 +30,7 @@ urlpatterns = [
 
 
         ##EMPLOYEE API'S
+        path('api/employee/shop/<int:shop_id>/', apis.employee_get_shop),
         path('api/employee/bookings/placed/<int:shop_id>/', apis.employee_get_placed_bookings),
         path('api/employee/booking/accept/', apis.employee_accept_booking),
         path('api/employee/booking/decline/', apis.employee_decline_booking),
