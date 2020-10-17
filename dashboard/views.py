@@ -2,16 +2,37 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import View
 from django.contrib.auth.decorators import login_required
 from authentication.forms import ShopForm
-from dashboard.forms import EditUserForm, ServiceForm, ShopEditForm
-from dashboard.models import Service, ServiceImage
+from dashboard.forms import EditUserForm, ServiceForm
+from dashboard.models import Service, ServiceImage, Booking, Employee
 
+from django.db.models import Sum, Count, Case, When
 
 def home(request):
     return redirect(shop_bookings)
 
+
 @login_required(login_url='login')
 def shop_bookings(request):
-    return render(request, 'db/bookings.html')
+    if request.method == "POST":
+        booking = Booking.objects.get(id=request.POST["id"], shop = request.user.shop)
+
+    
+        if 'accept' in request.POST:
+            booking.status = Booking.ACCEPTED
+            booking.save()
+        
+        if 'decline' in request.POST:
+            booking.status = Booking.DECLINED
+            booking.save()
+    
+    booking = Booking.objects.filter(shop = request.user.shop).order_by("-id")
+    return render(request, 'db/bookings.html', { "booking":booking })
+
+
+@login_required(login_url='login')
+def shop_bookings_completed(request):
+    booking = Booking.objects.filter(shop = request.user.shop).order_by("-id")
+    return render(request, 'db/bookings_completed.html', { "booking":booking })
 
 
 @login_required(login_url='login')
@@ -22,15 +43,15 @@ def shop_account(request):
   
     if request.method == "POST":
         user_form = EditUserForm(request.POST, instance=request.user)
-        barber_form1 = ShopEditForm(request.POST, request.FILES, instance=request.user.shop)
+        barber_form = ShopForm(request.POST, request.FILES, instance=request.user.shop)
         token = request.POST.get('token')
-        barber_form1.token = token
+        request.user.shop.token = token
         
-
-        if user_form.is_valid() and barber_form1.is_valid():
+        if user_form.is_valid() and barber_form.is_valid():
             user_form.save()
-            barber_form1.save()
-    
+            barber_form.save()
+        
+    ## Bug here with barber form. Changes do not get updated immediately in template. 
     return render(request, 'db/account.html', {
 		"user_form": user_form,
 		"barber_form": barber_form,
@@ -81,11 +102,8 @@ def shop_edit_services(request, service_id):
         service = Service.objects.get(id=service_id)
 
         delete =  request.POST.get('delete')
-        print("DELETE")
-        print(delete)
 
         if delete=="true":
-            print("CALL")
             service.delete()
         else:
             service.service_name = request.POST.get('service_name')
@@ -130,10 +148,62 @@ def shop_service_album(request, service_id):
 
 @login_required(login_url='login')
 def shop_reports(request):
-    return render(request, 'db/reports.html')
+    # Calculate revenue and number of order by current week
+    from datetime import datetime, timedelta
+
+    revenue = []
+    bookings = []
+
+    # Calculate weekdays
+    today = datetime.now()
+    current_weekdays = [today + timedelta(days = i) for i in range(0 - today.weekday(), 7 - today.weekday())]
+
+    for day in current_weekdays:
+        completed_bookings = Booking.objects.filter(
+            shop = request.user.shop,
+            status = Booking.COMPLETED,
+            created_at__year = day.year,
+            created_at__month = day.month,
+            created_at__day = day.day
+        )
+        revenue.append(sum(booking.total for booking in completed_bookings))
+        bookings.append(completed_bookings.count())
+
+    # Top 3 Meals
+    top_services = Service.objects.filter(shop = request.user.shop)\
+                     .annotate(total_booking = Sum('bookingdetail__sub_total'))\
+                     .order_by("-total_booking")
+
+    service = {
+        "labels": [service.service_name for service in top_services],
+        "data": [service.total_booking or 0 for service in top_services]
+    }
+
+    # Top 3 Drivers
+    top_employees = Employee.objects.annotate(
+        total_booking = Count(
+            Case (
+                When(booking__shop = request.user.shop, then = 1)
+            )
+        )
+    ).order_by("-total_booking")
+
+    employee = {
+        "labels": [employee.first_name for employee in top_employees],
+        "data": [employee.total_booking for employee in top_employees]
+    }
+
+    return render(request, 'db/reports.html', {
+    "revenue": revenue,
+    "bookings": bookings,
+    "service": service,
+    "employee": employee
+})
+
 
 
 @login_required(login_url='login')
 def shop_employees(request):
-    return render(request, 'db/employees.html')
+    employees = Employee.objects.filter(shop = request.user.shop).order_by("id")
+    return render(request, 'db/employees.html', {"employees":employees})
 

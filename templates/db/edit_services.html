@@ -44,8 +44,8 @@
                     FilePond.registerPlugin(FilePondPluginFileValidateType);
                     FilePond.setOptions({
                         allowMultiple:true,
-                        maxFiles:4,
-                        maxFileSize: '3MB'
+                        maxFiles:30,
+                        maxFileSize: '30MB'
                     })
                     const inputElement = document.querySelector('input[type="file"]');
                     const pond = FilePond.create( inputElement, {

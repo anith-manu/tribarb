@@ -13,4 +13,4 @@ class Shop(models.Model):
 	logo = models.ImageField(upload_to='shop_logo/', blank=False)
 
 	def __str__(self):
-		return self.name
+		return str(self.id) + " " + self.name

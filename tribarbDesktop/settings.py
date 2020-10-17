@@ -124,6 +124,10 @@ AUTHENTICATION_BACKENDS = (
 SOCIAL_AUTH_FACEBOOK_KEY = os.environ.get('SOCIAL_AUTH_FACEBOOK_KEY')
 SOCIAL_AUTH_FACEBOOK_SECRET = os.environ.get('SOCIAL_AUTH_FACEBOOK_SECRET')
 
+AWS_ACCESS_KEY_ID = "AKIAIMIOOFYRKUUL3WDQ"
+AWS_SECRET_ACCESS_KEY = "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"
+S3_BUCKET_NAME = "tribarb-media"
+
 # Define SOCIAL_AUTH_FACEBOOK_SCOPE to get extra permissions from Facebook.
 # Email is not sent by default, to get it, you must request the email permission.
 SOCIAL_AUTH_FACEBOOK_SCOPE = ['email']
@@ -144,6 +148,11 @@ SOCIAL_AUTH_PIPELINE = (
     'social_core.pipeline.user.user_details',
 )
 
+
+OAUTH2_PROVIDER = {
+        'ACCESS_TOKEN_EXPIRE_SECONDS': 60 * 525600 * 2,
+ }
+
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
 
@@ -162,6 +171,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR,'static')
@@ -191,3 +201,7 @@ LOGOUT_REDIRECT_URL='login'
 
 if '/app' in os.environ['HOME']: ## remove line for heroku deployment
     django_heroku.settings(locals())
+
+
+
+STRIPE_API_KEY = 'sk_test_51GwZcgJGRtokdLfWIr9Pe7qRZLgzjefZGftRbDAtjlwCtk9PQTbpgs4rH3CxAOFSL8gzrHnQwQzBiEAMTnPFOWT400Iv0NmVZe'

@@ -1,6 +1,52 @@
 {% extends 'base-db.html' %}
 
+{% block script %}
+
+<script>
+
+
+    $(document).ready(function() {
+        var now = new Date();
+        setInterval(function() {
+            $.ajax({
+                url: '/api/booking/notification/' + now.toISOString() + '/',
+                success: function(data) {
+                    if (data['notification'] != 0) {
+                        var myAudio = new Audio('https://tribarb.s3.us-east-2.amazonaws.com/knock.mp3');
+                        //myAudio.play();
+                        $('.badge').text('NEW BOOKING');
+                        
+                        
+                     } /*else {
+                        
+                        $('.badge').text('NEW BOOKING');
+
+                        setTimeout(function() {
+                            location.reload();
+                        }, 9000);
+
+                        
+    
+                    } */
+                }
+            })
+        }, 3000)
+        
+    })
+</script>
+
+{% endblock %}
+
 {% block sidebar %}
+
+{% url 'shop-bookings' as barber_booking_url %}
+{% url 'shop-services' as barber_service_url %}
+{% url 'shop-reports' as barber_report_url %}
+{% url 'shop-employees' as barber_employees_url %}
+{% url 'shop-account' as barber_account_url %}
+
+
+
 <div class="text-center">
     <h1 class="card-title text-center" style="font-family:American Typewriter; color: white;">tribarb</h1>
     
@@ -16,16 +62,23 @@
     
 <div class="list-group">
     <span class="text-uppercase " style="color:whitesmoke">Dashboard</span>
+    
+    <a href="{% url 'shop-bookings' %}" class="rounded-pill list-group-item {% if request.path == barber_booking_url %} active {% endif %}">
+        <img src="https://tribarb.s3.us-east-2.amazonaws.com/bookings.png" width="25" height="25"/> Bookings
+        <span class="badge"></span>	
+    </a>
 
-    <a href="{% url 'shop-bookings' %}" class="list-group-item">Bookings</a>
+    <a href="{% url 'shop-services' %}" class="rounded-pill list-group-item {% if request.path == barber_service_url %} active {% endif %}">
+        <img src="https://tribarb.s3.us-east-2.amazonaws.com/services.png" width="25" height="25"/> Services</a>
 
-    <a href="{% url 'shop-services' %}" class="list-group-item">Services</a>
+    <a href="{% url 'shop-employees' %}" class="rounded-pill list-group-item {% if request.path == barber_employees_url %} active {% endif %}">
+        <img src="https://tribarb.s3.us-east-2.amazonaws.com/barber.png" width="25" height="25"/> Employees</a>
 
-    <a href="{% url 'shop-employees' %}" class="list-group-item">Employees</a>
+    <a href="{% url 'shop-reports' %}" class="rounded-pill list-group-item {% if request.path == barber_report_url %} active {% endif %}">
+        <img src="https://tribarb.s3.us-east-2.amazonaws.com/report.png" width="25" height="25"/> Reports</a>
 
-    <a href="{% url 'shop-reports' %}" class="list-group-item">Reports</a>
-
-    <a href="{% url 'shop-account' %}" class="list-group-item">Account</a>
+    <a href="{% url 'shop-account' %}" class="rounded-pill list-group-item {% if request.path == barber_account_url %} active {% endif %}">
+        <img src="https://tribarb.s3.us-east-2.amazonaws.com/account.png" width="25" height="25"/> Account</a>
 </div>
 
 
