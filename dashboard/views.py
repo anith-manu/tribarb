@@ -18,7 +18,7 @@ def shop_bookings(request):
 
     
         if 'accept' in request.POST:
-            booking.status = Booking.COMPLETED
+            booking.status = Booking.ACCEPTED
             booking.save()
         
         if 'decline' in request.POST:
