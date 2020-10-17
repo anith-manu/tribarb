@@ -11,6 +11,12 @@ from dashboard.models import Service, ServiceImage, Customer, Employee, Booking,
 
 from dashboard.serializers import ShopSerializerCustomer, ShopSerializerEmployee, ServiceSerializer, ServiceImageSerializer, BookingSerializer
 
+import stripe
+from tribarbDesktop.settings import STRIPE_API_KEY
+
+stripe.api_key = STRIPE_API_KEY
+
+
 
 ###### CUSTOMERS ######
 def customer_get_shops(request):
@@ -71,8 +77,8 @@ def customer_add_booking(request):
         customer = access_token.user.customer
 
         # Get Stripe token
-        #stripe_token = request.POST.get("stripe_token")
-
+        global stripe_token
+        stripe_token = request.POST.get("stripe_token")
 
         # Check whether customer has any booking that is not completed
         if Booking.objects.filter(customer = customer).exclude(status__in = [Booking.COMPLETED, Booking.DECLINED]):
@@ -93,7 +99,7 @@ def customer_add_booking(request):
 
 
         if len(booking_details) > 0:
- 
+
             booking = Booking.objects.create(
                     customer = customer,
                     shop_id = request.POST["shop_id"],
@@ -255,10 +261,29 @@ def employee_complete_booking(request):
     employee = access_token.user.employee
 
     booking = Booking.objects.get(id = request.POST["booking_id"], employee = employee)
-    booking.status = Booking.COMPLETED
-    booking.save()
+    booking_total = booking.total
+    print("TOTAL")
+    print(booking_total)
 
-    return JsonResponse({"status": "success"})
+    if booking.payment_mode == 1:
+        charge = stripe.Charge.create(
+                amount = int(booking_total * 100),
+                currency = "gbp",
+                source = stripe_token,
+                description = "Tribarb Booking"
+            )
+
+        if charge.status != "failed":
+            booking.status = Booking.COMPLETED 
+            booking.save()
+            return JsonResponse({"status": "success"})
+        else:
+            return JsonResponse({"status": "failed", "error": "Failed to connect to Stripe."})
+    else:
+        booking.status = Booking.COMPLETED 
+        booking.save()
+        return JsonResponse({"status": "success"})
+
     
 
 

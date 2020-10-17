@@ -201,3 +201,7 @@ LOGOUT_REDIRECT_URL='login'
 
 if '/app' in os.environ['HOME']: ## remove line for heroku deployment
     django_heroku.settings(locals())
+
+
+
+STRIPE_API_KEY = 'sk_test_51GwZcgJGRtokdLfWIr9Pe7qRZLgzjefZGftRbDAtjlwCtk9PQTbpgs4rH3CxAOFSL8gzrHnQwQzBiEAMTnPFOWT400Iv0NmVZe'

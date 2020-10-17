@@ -32,7 +32,7 @@ class Service(models.Model):
 	shop = models.ForeignKey(Shop, on_delete=models.CASCADE)
 	service_name = models.CharField(max_length=500)
 	short_description = models.CharField(max_length=500, blank=True)
-	price = models.IntegerField(default=0)
+	price = models.FloatField(default=0)
 
 	def __str__(self):
 		return str(self.id) + " " + self.service_name
