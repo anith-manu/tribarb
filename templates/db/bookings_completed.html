@@ -48,7 +48,7 @@
                                 {% endfor %}
                             </td>
                             <td>{{ booking.requests }}</td>
-                            <td>{{ booking.total }}</td>
+                            <td>{{ booking.total|floatformat:2 }}</td>
                             <td>{{ booking.get_payment_mode_display }}</td>
                             <td class="font-weight-bold">{{ booking.get_status_display }}</td>  
                         </tr>
