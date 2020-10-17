@@ -9,12 +9,12 @@ from oauth2_provider.models import AccessToken
 from authentication.models import Shop
 from dashboard.models import Service, ServiceImage, Customer, Employee, Booking, BookingDetail	
 
-from dashboard.serializers import ShopSerializer, ServiceSerializer, ServiceImageSerializer, BookingSerializer
+from dashboard.serializers import ShopSerializerCustomer, ShopSerializerEmployee, ServiceSerializer, ServiceImageSerializer, BookingSerializer
 
 
 ###### CUSTOMERS ######
 def customer_get_shops(request):
-    shops = ShopSerializer(
+    shops = ShopSerializerCustomer(
         Shop.objects.all().order_by("-id"),
         many = True,
         context = {"request": request}
@@ -149,6 +149,16 @@ def customer_employee_location(request):
 
 
 ###### EMPLOYEES ######
+def employee_get_shops(request):
+    shops = ShopSerializerEmployee(
+        Shop.objects.all().order_by("-id"),
+        many = True,
+        context = {"request": request}
+    ).data
+
+    return JsonResponse({"shops": shops})
+
+
 def employee_get_placed_bookings(request, shop_id):
     bookings = BookingSerializer(
         Booking.objects.filter(shop_id = shop_id, status = Booking.PLACED, employee = None).order_by("-id"),

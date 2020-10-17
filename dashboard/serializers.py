@@ -5,7 +5,21 @@ from dashboard.models import Service, ServiceImage, Customer, Employee, Booking,
 
 
 
-class ShopSerializer(serializers.ModelSerializer):
+class ShopSerializerCustomer(serializers.ModelSerializer):
+	logo = serializers.SerializerMethodField()
+
+	def get_logo(self, barber):
+	    request = self.context.get('request')
+	    logo_url = barber.logo.url
+	    return request.build_absolute_uri(logo_url)
+
+	class Meta:
+	    model = Shop
+	    fields = ("id", "token", "name", "phone", "address", "logo")
+
+
+
+class ShopSerializerEmployee(serializers.ModelSerializer):
 	logo = serializers.SerializerMethodField()
 
 	def get_logo(self, barber):
