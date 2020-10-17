@@ -21,6 +21,8 @@ class Employee(models.Model):
 	last_name = models.CharField(max_length=500, blank=True)
 	avatar = models.CharField(max_length=500)
 	phone = models.CharField(max_length=500, blank=True)
+	address = models.CharField(max_length=500, blank=True)
+	location = models.CharField(max_length=500, blank=True)
 
 	def __str__(self):
 		return self.user.get_full_name() 
@@ -56,6 +58,9 @@ class Booking(models.Model):
 	HOME_BOOKING = 1
 	SHOP_BOOKING = 2
 
+	CARD = 1
+	CASH = 2
+
 	STATUS_CHOICES = (
 		(PLACED, "Placed"),
         (ACCEPTED, "Accepted"),
@@ -70,7 +75,15 @@ class Booking(models.Model):
         (SHOP_BOOKING, "Shop"),
     )
 
+
+	PAYMENT_MODE = (
+		(CARD, "Card"),
+        (CASH, "Cash"),
+    )
+
+
 	booking_type = models.IntegerField(choices = BOOKING_CHOICES, default = SHOP_BOOKING)
+	payment_mode = models.IntegerField(choices = PAYMENT_MODE, default = CASH)
 	customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
 	shop = models.ForeignKey(Shop, on_delete=models.CASCADE)
 	employee = models.ForeignKey(Employee, blank = True, null = True, on_delete=models.CASCADE)

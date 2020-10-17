@@ -1,5 +1,5 @@
 import json
-
+from django.shortcuts import render
 from django.utils import timezone
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -12,6 +12,7 @@ from dashboard.models import Service, ServiceImage, Customer, Employee, Booking,
 from dashboard.serializers import ShopSerializer, ServiceSerializer, ServiceImageSerializer, BookingSerializer
 
 
+###### CUSTOMERS ######
 def customer_get_shops(request):
     shops = ShopSerializer(
         Shop.objects.all().order_by("-id"),
@@ -73,7 +74,7 @@ def customer_add_booking(request):
 
 
         # Check whether customer has any booking that is not completed
-        if Booking.objects.filter(customer = customer).exclude(status = Booking.COMPLETED):
+        if Booking.objects.filter(customer = customer).exclude(status__in = [Booking.COMPLETED, Booking.DECLINED]):
             return JsonResponse({"status": "failed", "error": "Your last booking must be completed."})
 
         # Check Address	
@@ -96,6 +97,7 @@ def customer_add_booking(request):
                     customer = customer,
                     shop_id = request.POST["shop_id"],
                     booking_type = request.POST["booking_type"],
+                    payment_mode = request.POST["payment_mode"],
                     requests = request.POST["requests"],
                     requested_time = request.POST["requested_time"],
                     total = booking_total,
@@ -126,10 +128,216 @@ def customer_get_latest_booking(request):
 	booking = BookingSerializer(Booking.objects.filter(customer = customer).last()).data
 
 	return JsonResponse({"booking": booking})
+
+
+
+def customer_employee_location(request):
+
+    access_token = AccessToken.objects.get(token = request.GET.get("access_token"),
+        expires__gt = timezone.now())
+
+    customer = access_token.user.customer
+
+    # Get driver's location related to this customer's current order.
+    current_booking = Booking.objects.filter(customer = customer, status = Booking.ONTHEWAY).last()
+    location = current_booking.employee.location
+
+    return JsonResponse({"location": location})
+
+
+
+
+
+###### EMPLOYEES ######
+def employee_get_placed_bookings(request, shop_id):
+    bookings = BookingSerializer(
+        Booking.objects.filter(shop_id = shop_id, status = Booking.PLACED, employee = None).order_by("-id"),
+        many = True
+    ).data
+
+    return JsonResponse({"bookings": bookings})
+
+
+
+
+@csrf_exempt
+def employee_accept_booking(request):
+    if request.method == "POST":
+        access_token = AccessToken.objects.get(token = request.POST.get("access_token"),
+		expires__gt = timezone.now())
+
+
+        employee = access_token.user.employee
+      
+        # Check if employee can only accept one booking at the same time
+        if Booking.objects.filter(employee = employee).exclude(status__in = [Booking.COMPLETED, Booking.DECLINED]):
+            return JsonResponse({"status": "failed", "error": "You can accept one booking at the same time."})
+
+        try:
+            booking = Booking.objects.get(
+                id = request.POST["booking_id"],
+                employee = None,
+                status = Booking.PLACED
+            )
+            booking.employee = employee
+            booking.status = Booking.ACCEPTED
+            booking.accepted_at = timezone.now()
+            booking.save()
+
+            return JsonResponse({"status": "success"})
+
+        except Booking.DoesNotExist:
+            return JsonResponse({"status": "failed", "error": "This booking has been accept by another barber."})
     
 
+
+@csrf_exempt
+def employee_decline_booking(request):
+    if request.method == "POST":
+        access_token = AccessToken.objects.get(token = request.POST.get("access_token"),
+		expires__gt = timezone.now())
+
+
+        employee = access_token.user.employee
+      
+        # Check if employee can only accept one booking at the same time
+        #if Booking.objects.filter(employee = employee).exclude(status = Booking.COMPLETED):
+         #   return JsonResponse({"status": "failed", "error": "You can accept one booking at the same time."})
+
+        try:
+            booking = Booking.objects.get(
+                id = request.POST["booking_id"],
+                employee = None,
+                status = Booking.PLACED
+            )
+            booking.employee = employee
+            booking.status = Booking.DECLINED
+            booking.save()
+
+            return JsonResponse({"status": "success"})
+
+        except Booking.DoesNotExist:
+            return JsonResponse({"status": "failed", "error": "This booking has been accept by another barber."})
+
+
+
+
+@csrf_exempt
+def employee_enroute(request):
+    if request.method == "POST":
+        access_token = AccessToken.objects.get(token = request.POST.get("access_token"),
+		expires__gt = timezone.now())
+
+
+        employee = access_token.user.employee
+
+
+        # Check if employee can only accept one booking at the same time
+        #if Booking.objects.filter(employee = employee).exclude(status__in = [Booking.COMPLETED, Booking.DECLINED]):
+         #   return JsonResponse({"status": "failed", "error": "You can accept one booking at the same time."})
+
+        try:
+            booking = Booking.objects.get(
+                id = request.POST["booking_id"],
+                status = Booking.ACCEPTED
+            )
+            booking.employee = employee
+            booking.status = Booking.ONTHEWAY
+            booking.save()
+
+            return JsonResponse({"status": "success"})
+
+        except Booking.DoesNotExist:
+            return JsonResponse({"status": "failed", "error": "This booking has been accept by another barber."})
+    
+
+
+
+@csrf_exempt
+def employee_complete_booking(request):
+    # Get token
+    
+    access_token = AccessToken.objects.get(token = request.POST.get("access_token"),
+        expires__gt = timezone.now())
+
+    employee = access_token.user.employee
+
+    booking = Booking.objects.get(id = request.POST["booking_id"], employee = employee)
+    booking.status = Booking.COMPLETED
+    booking.save()
+
+    return JsonResponse({"status": "success"})
+    
+
+
+
+# GET params: access_token
+def employee_get_latest_booking(request):
+    # Get token
+    access_token = AccessToken.objects.get(token = request.GET.get("access_token"),
+    	expires__gt = timezone.now())
+
+    employee = access_token.user.employee
+
+    booking = BookingSerializer(
+        Booking.objects.filter(employee = employee).order_by("accepted_at").last()
+    ).data
+
+    return JsonResponse({"booking": booking})
+
+
+
+
+def employee_get_revenue(request):
+    access_token = AccessToken.objects.get(token = request.GET.get("access_token"),
+        expires__gt = timezone.now())
+
+    employee = access_token.user.employee
+
+    from datetime import timedelta
+
+    revenue = {}
+    today = timezone.now()
+    current_weekdays = [today + timedelta(days = i) for i in range(0 - today.weekday(), 7 - today.weekday())]
+
+    for day in current_weekdays:
+        bookings = Booking.objects.filter(
+            employee = employee,
+            status = Booking.COMPLETED,
+            created_at__year = day.year,
+            created_at__month = day.month,
+            created_at__day = day.day
+        )
+
+        revenue[day.strftime("%a")] = sum(booking.total for booking in bookings)
+
+    return JsonResponse({"revenue": revenue})
+
+
+
+@csrf_exempt
+def employee_update_location(request):
+    if request.method == "POST":
+        access_token = AccessToken.objects.get(token = request.POST.get("access_token"),
+            expires__gt = timezone.now())
+
+        employee = access_token.user.employee
+
+        # Set location string => database
+        employee.location = request.POST["location"]
+        employee.save()
+
+        return JsonResponse({"status": "success"})
+
+
+
+
+###### NOTIFICATION ######
 def shop_booking_notification(request, last_request_time):
-    notification = Booking.objects.filter(shop = request.user.shop,
-        created_at__gt = last_request_time).count()
+    #notification = Booking.objects.filter(shop = request.user.shop,
+     #   created_at__gt = last_request_time).count()
+    
+    notification = Booking.objects.filter(shop = request.user.shop, status=1).count()
+
 
     return JsonResponse({"notification": notification})

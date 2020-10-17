@@ -26,6 +26,17 @@ urlpatterns = [
         path('api/customer/service/album/<int:service_id>/', apis.customer_get_service_album),
         path('api/customer/booking/add/', apis.customer_add_booking),
         path('api/customer/booking/latest/', apis.customer_get_latest_booking),
-        #path('api/customer/employee/location/', apis.customer_employee_location),
+        path('api/customer/employee/location/', apis.customer_employee_location),
+
+
+        ##EMPLOYEE API'S
+        path('api/employee/bookings/placed/<int:shop_id>/', apis.employee_get_placed_bookings),
+        path('api/employee/booking/accept/', apis.employee_accept_booking),
+        path('api/employee/booking/decline/', apis.employee_decline_booking),
+        path('api/employee/booking/enroute/', apis.employee_enroute),
+        path('api/employee/booking/latest/', apis.employee_get_latest_booking),
+        path('api/employee/booking/complete/', apis.employee_complete_booking),
+        path('api/employee/revenue/', apis.employee_get_revenue),
+        path('api/employee/location/update/', apis.employee_update_location),
 
 ]

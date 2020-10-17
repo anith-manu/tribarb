@@ -148,6 +148,11 @@ SOCIAL_AUTH_PIPELINE = (
     'social_core.pipeline.user.user_details',
 )
 
+
+OAUTH2_PROVIDER = {
+        'ACCESS_TOKEN_EXPIRE_SECONDS': 60 * 525600 * 2,
+ }
+
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
 

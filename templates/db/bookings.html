@@ -26,13 +26,14 @@
                     <th>Requested Services</th>
                     <th>Additional Requests</th>
                     <th>Total</th>
+                    <th>Payment Mode</th>
                     <th>Status</th>
                     <th>Action</th>
                   </tr>
 				</thead>
 				<tbody>
                     {% for booking in booking %}
-                    {% if booking.status != 4 %}
+                    {% if booking.status != 4 and booking.status != 5 %}
                         <tr>
                             <td>{{ booking.id }}</td>
                             <td>{{ booking.customer }}</td>
@@ -42,13 +43,14 @@
                             <td>{{ booking.requested_time }}</td>
                             <td>
                                 {% for bd in booking.booking_details.all %}
-                                    {{ bd.service }} - 
+                                    {{ bd.service.service_name }} - 
                                      {{ bd.sub_total }} <br/>
   
                                 {% endfor %}
                             </td>
                             <td>{{ booking.requests }}</td>
                             <td>{{ booking.total }}</td>
+                            <td>{{ booking.get_payment_mode_display }}</td>
                             <td class="font-weight-bold">{{ booking.get_status_display }}</td>
                             <td>
                                 {% if booking.status != 6 %}
@@ -69,7 +71,7 @@
                 </tbody>
             </table>
             <div class="text-center">
-                <a href="{% url 'shop-bookings-completed' %}" class="btn btn-primary">View Completed Bookings</a>
+                <a href="{% url 'shop-bookings-completed' %}" class="btn btn-primary">View Past Bookings</a>
             </div>
         </div>
     </div>

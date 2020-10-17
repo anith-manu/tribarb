@@ -26,12 +26,13 @@
                     <th>Requested Services</th>
                     <th>Additional Requests</th>
                     <th>Total</th>
+                    <th>Payment Mode</th>
                     <th>Status</th>
                   </tr>
 				</thead>
 				<tbody>
                     {% for booking in booking %}
-                    {% if booking.status == 4 %}
+                    {% if booking.status == 4 or booking.status == 5 or booking.status == 6 %}
                         <tr>
                             <td>{{ booking.id }}</td>
                             <td>{{ booking.customer }}</td>
@@ -48,6 +49,7 @@
                             </td>
                             <td>{{ booking.requests }}</td>
                             <td>{{ booking.total }}</td>
+                            <td>{{ booking.get_payment_mode_display }}</td>
                             <td class="font-weight-bold">{{ booking.get_status_display }}</td>  
                         </tr>
                     {% endif %}

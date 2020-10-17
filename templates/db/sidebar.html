@@ -11,21 +11,27 @@
             $.ajax({
                 url: '/api/booking/notification/' + now.toISOString() + '/',
                 success: function(data) {
-                    if (data['notification'] === 0) {
-                        $('.badge').text('');
-                    } else {
+                    if (data['notification'] != 0) {
                         var myAudio = new Audio('https://tribarb.s3.us-east-2.amazonaws.com/knock.mp3');
-                        myAudio.play();
+                        //myAudio.play();
+                        $('.badge').text('NEW BOOKING');
+                        
+                        
+                     } /*else {
+                        
                         $('.badge').text('NEW BOOKING');
 
                         setTimeout(function() {
                             location.reload();
                         }, 9000);
+
+                        
     
-                    }
+                    } */
                 }
             })
         }, 3000)
+        
     })
 </script>
 

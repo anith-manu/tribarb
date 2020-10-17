@@ -18,11 +18,8 @@ class ServiceForm(forms.ModelForm):
 		exclude = ("shop",)
 
 
-class ShopEditForm(forms.ModelForm):
-	name = forms.CharField(label='Shop name')
 
-	class Meta:
-		model = Shop
-		fields = ("token", "name", "phone", "address", "logo")
+
+
 
 
