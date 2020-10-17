@@ -273,7 +273,7 @@ def employee_get_latest_booking(request):
     employee = access_token.user.employee
 
     booking = BookingSerializer(
-        Booking.objects.filter(employee = employee).order_by("accepted_at").last()
+        Booking.objects.filter(employee = employee).order_by("requested_time").last()
     ).data
 
     return JsonResponse({"booking": booking})
