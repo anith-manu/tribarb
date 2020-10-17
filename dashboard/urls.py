@@ -35,7 +35,7 @@ urlpatterns = [
         path('api/employee/booking/accept/', apis.employee_accept_booking),
         path('api/employee/booking/decline/', apis.employee_decline_booking),
         path('api/employee/booking/enroute/', apis.employee_enroute),
-        path('api/employee/booking/latest/', apis.employee_get_latest_booking),
+        path('api/employee/booking/info/<int:booking_id>/', apis.employee_get_booking_info),
         path('api/employee/booking/complete/', apis.employee_complete_booking),
         path('api/employee/revenue/', apis.employee_get_revenue),
         path('api/employee/location/update/', apis.employee_update_location),

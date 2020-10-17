@@ -151,7 +151,6 @@ def customer_employee_location(request):
 
 ###### EMPLOYEES ######
 def employee_get_shop(request, shop_id):
-
     shop = ShopSerializerEmployee(
         Shop.objects.filter(id = shop_id),
         many = True,
@@ -217,7 +216,7 @@ def employee_decline_booking(request):
             return JsonResponse({"status": "success"})
 
         except Booking.DoesNotExist:
-            return JsonResponse({"status": "failed", "error": "This booking has been accept by another barber."})
+            return JsonResponse({"status": "failed", "error": "This booking has already been declined."})
 
 
 
@@ -236,14 +235,14 @@ def employee_enroute(request):
                 status = Booking.ACCEPTED,
                 booking_type = 1,
             )
-            booking.employee = employee
+
             booking.status = Booking.ONTHEWAY
             booking.save()
 
             return JsonResponse({"status": "success"})
 
         except Booking.DoesNotExist:
-            return JsonResponse({"status": "failed", "error": "This booking has been accept by another barber."})
+            return JsonResponse({"status": "failed", "error": "This booking has been accepted by another barber."})
     
 
 
@@ -264,16 +263,11 @@ def employee_complete_booking(request):
 
 
 
-# GET params: access_token
-def employee_get_latest_booking(request):
-    # Get token
-    access_token = AccessToken.objects.get(token = request.GET.get("access_token"),
-    	expires__gt = timezone.now())
-
-    employee = access_token.user.employee
-
+def employee_get_booking_info(request, booking_id):
     booking = BookingSerializer(
-        Booking.objects.filter(employee = employee).order_by("requested_time").last()
+        Booking.objects.filter(id = booking_id),
+        many = True,
+        context = {"request": request}
     ).data
 
     return JsonResponse({"booking": booking})
