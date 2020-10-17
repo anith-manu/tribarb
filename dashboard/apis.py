@@ -209,7 +209,6 @@ def employee_decline_booking(request):
         try:
             booking = Booking.objects.get(
                 id = request.POST["booking_id"],
-                employee = None,
             )
             booking.employee = employee
             booking.status = Booking.DECLINED
