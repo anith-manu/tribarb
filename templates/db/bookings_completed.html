@@ -42,7 +42,7 @@
                             <td>{{ booking.requested_time }}</td>
                             <td>
                                 {% for bd in booking.booking_details.all %}
-                                    {{ bd.service }} - 
+                                    {{ bd.service.service_name }} - 
                                      {{ bd.sub_total }} <br/>
   
                                 {% endfor %}
