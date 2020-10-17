@@ -178,13 +178,8 @@ def employee_accept_booking(request):
         access_token = AccessToken.objects.get(token = request.POST.get("access_token"),
 		expires__gt = timezone.now())
 
-
         employee = access_token.user.employee
       
-        # Check if employee can only accept one booking at the same time
-        if Booking.objects.filter(employee = employee).exclude(status__in = [Booking.COMPLETED, Booking.DECLINED]):
-            return JsonResponse({"status": "failed", "error": "You can accept one booking at the same time."})
-
         try:
             booking = Booking.objects.get(
                 id = request.POST["booking_id"],
@@ -199,7 +194,7 @@ def employee_accept_booking(request):
             return JsonResponse({"status": "success"})
 
         except Booking.DoesNotExist:
-            return JsonResponse({"status": "failed", "error": "This booking has been accept by another barber."})
+            return JsonResponse({"status": "failed", "error": "This booking has already been accepted."})
     
 
 
@@ -209,18 +204,12 @@ def employee_decline_booking(request):
         access_token = AccessToken.objects.get(token = request.POST.get("access_token"),
 		expires__gt = timezone.now())
 
-
-        employee = access_token.user.employee
-      
-        # Check if employee can only accept one booking at the same time
-        #if Booking.objects.filter(employee = employee).exclude(status = Booking.COMPLETED):
-         #   return JsonResponse({"status": "failed", "error": "You can accept one booking at the same time."})
+        employee = access_token.user.employee 
 
         try:
             booking = Booking.objects.get(
                 id = request.POST["booking_id"],
                 employee = None,
-                status = Booking.PLACED
             )
             booking.employee = employee
             booking.status = Booking.DECLINED
@@ -240,18 +229,13 @@ def employee_enroute(request):
         access_token = AccessToken.objects.get(token = request.POST.get("access_token"),
 		expires__gt = timezone.now())
 
-
         employee = access_token.user.employee
-
-
-        # Check if employee can only accept one booking at the same time
-        #if Booking.objects.filter(employee = employee).exclude(status__in = [Booking.COMPLETED, Booking.DECLINED]):
-         #   return JsonResponse({"status": "failed", "error": "You can accept one booking at the same time."})
 
         try:
             booking = Booking.objects.get(
                 id = request.POST["booking_id"],
-                status = Booking.ACCEPTED
+                status = Booking.ACCEPTED,
+                booking_type = 1,
             )
             booking.employee = employee
             booking.status = Booking.ONTHEWAY
@@ -267,8 +251,6 @@ def employee_enroute(request):
 
 @csrf_exempt
 def employee_complete_booking(request):
-    # Get token
-    
     access_token = AccessToken.objects.get(token = request.POST.get("access_token"),
         expires__gt = timezone.now())
 
