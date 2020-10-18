@@ -30,6 +30,13 @@
             {% csrf_token %}
             <input type="text" name="token" id="showToken" class="form-control mb-5" value="{{ token }}">
             {% bootstrap_form barber_form %}
+            <label class="mt-1">Instagram ID </label>
+            <input type="text" name="instagram" class="form-control" value="{{ instagram }}" placeholder="Instagram ID">
+
+            <label class="mt-4">Facebook @ </label>
+            <input type="text" name="facebook" class="form-control mb-5" value="{{ facebook }}" placeholder="Facebook @">
+
+
             <h5 style="padding-top: 25px;" class="card-title text-left">User Info</h5>
             {% bootstrap_form user_form %}
             <div class="text-center">
