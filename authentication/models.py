@@ -10,6 +10,7 @@ class Shop(models.Model):
 	name = models.CharField(max_length=500, blank=False)
 	phone = models.CharField(max_length=500, blank=False)
 	address = models.CharField(max_length=500, blank=False)
+	instagram = models.CharField(max_length=500, blank=True)
 	logo = models.ImageField(upload_to='shop_logo/', blank=False)
 
 	def __str__(self):

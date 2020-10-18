@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import View
 from django.contrib.auth.decorators import login_required
-from authentication.forms import ShopForm
+from authentication.forms import ShopForm, EditShopForm
 from dashboard.forms import EditUserForm, ServiceForm
 from dashboard.models import Service, ServiceImage, Booking, Employee
 
@@ -38,12 +38,12 @@ def shop_bookings_completed(request):
 @login_required(login_url='login')
 def shop_account(request):
     user_form = EditUserForm(instance = request.user)
-    barber_form = ShopForm(instance = request.user.shop)
+    barber_form = EditShopForm(instance = request.user.shop)
     token = request.user.shop.token
   
     if request.method == "POST":
         user_form = EditUserForm(request.POST, instance=request.user)
-        barber_form = ShopForm(request.POST, request.FILES, instance=request.user.shop)
+        barber_form = EditShopForm(request.POST, request.FILES, instance=request.user.shop)
         token = request.POST.get('token')
         request.user.shop.token = token
         

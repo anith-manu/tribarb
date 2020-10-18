@@ -9,3 +9,11 @@ class ShopForm(forms.ModelForm):
 	class Meta:
 		model = Shop
 		fields = ("logo", "name", "phone", "address")
+
+
+class EditShopForm(forms.ModelForm):
+	name = forms.CharField(label='Shop name')
+
+	class Meta:
+		model = Shop
+		fields = ("logo", "name", "phone", "address", "instagram")
