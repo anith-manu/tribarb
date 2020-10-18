@@ -17,3 +17,4 @@ class EditShopForm(forms.ModelForm):
 	class Meta:
 		model = Shop
 		fields = ("logo", "name", "phone", "address", "instagram")
+		
