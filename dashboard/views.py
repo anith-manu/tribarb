@@ -40,12 +40,19 @@ def shop_account(request):
     user_form = EditUserForm(instance = request.user)
     barber_form = ShopForm(instance = request.user.shop)
     token = request.user.shop.token
+    instagram = request.user.shop.instagram
+    facebook = request.user.shop.facebook
   
     if request.method == "POST":
         user_form = EditUserForm(request.POST, instance=request.user)
         barber_form = ShopForm(request.POST, request.FILES, instance=request.user.shop)
         token = request.POST.get('token')
+        instagram = request.POST.get('instagram')
+        facebook = request.POST.get('facebook')
+
         request.user.shop.token = token
+        request.user.shop.instagram = instagram
+        request.user.shop.facebook = facebook
         
         if user_form.is_valid() and barber_form.is_valid():
             user_form.save()
@@ -55,7 +62,9 @@ def shop_account(request):
     return render(request, 'db/account.html', {
 		"user_form": user_form,
 		"barber_form": barber_form,
-        "token": token
+        "token": token,
+        "instagram": instagram,
+        "facebook": facebook,
 		})
 
 

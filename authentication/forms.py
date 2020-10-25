@@ -9,3 +9,5 @@ class ShopForm(forms.ModelForm):
 	class Meta:
 		model = Shop
 		fields = ("logo", "name", "phone", "address")
+
+
