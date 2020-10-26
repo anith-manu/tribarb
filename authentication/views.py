@@ -31,7 +31,7 @@ class EmailThread(threading.Thread):
 
 
 class RegistrationView(View):
-    shop_form = ShopForm()
+    
 
     def get(self, request):
         shop_form = ShopForm()
@@ -40,9 +40,11 @@ class RegistrationView(View):
 		})
 
     def post(self, request):
+        shop_form = ShopForm(request.POST, request.FILES)
         context={
             'data':request.POST,
-            'has_error':False
+            'has_error':False,
+            'shop_form':shop_form
         }
 
         email=request.POST.get('email')
@@ -82,23 +84,29 @@ class RegistrationView(View):
         if context['has_error']:
             return render(request, 'auth/register.html', context, status=400)
 
-        user = User.objects.create(username=username,email=email)
-        user.set_password(password)
-        user.first_name=fName
-        user.last_name=lName
-        user.is_active=False
+        
 
-        user.save()
 
         #####
-        shop_form = ShopForm(request.POST, request.FILES)
 
         if shop_form.is_valid():
+            # Create User
+            user = User.objects.create(username=username,email=email)
+            user.set_password(password)
+            user.first_name=fName
+            user.last_name=lName
+            user.is_active=False
+            user.save()
+
+            # Create Shop
             new_shop = shop_form.save(commit=False)
             new_shop.user = user
             new_shop.save()
         else:
             return render(request, 'auth/register.html', context, status=400)
+        
+      
+
         #####
 
         current_site = get_current_site(request)

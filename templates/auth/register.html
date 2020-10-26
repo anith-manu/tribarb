@@ -1,5 +1,7 @@
 {% load static %}
 {% load bootstrap3 %}
+{% load widget_tweaks %}
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -29,7 +31,7 @@
                             <h2 class="text-center card-title" style="color: whitesmoke;">Registration</h2>
                         
                             {% include 'partials/_flash_messsages.html' %}
-                            <h5 class="card-title text-left text-muted">User Info</h5>
+                            <h5 class="card-title text-left text-warning">User Info</h5>
                             <form action="{% url 'register' %}" method="post" enctype="multipart/form-data">
                         
                                 {% csrf_token %}
@@ -57,10 +59,36 @@
                                     <input class="form-control" type="password" name="password2" value="" placeholder="Confirm Password">
                                 </div>
                         
-                                <h5 class="card-title text-left text-muted" style="padding-top: 25px; ">Shop Info</h5>
-                                <div class="card-title text-left" style="color: whitesmoke;">Logo</div>
-                                {% bootstrap_form shop_form layout='inline' %}
                                 
+
+                             
+                                <h5 class="card-title text-left text-warning" style="padding-top: 25px; ">Shop Info</h5>
+                                
+
+                                
+                                <div class="form-group">
+                                    {% render_field shop_form.name class="form-control" placeholder="Shop Name"%}
+                                </div>
+
+                                <div class="form-group">
+                                    {% render_field shop_form.phone class="form-control" placeholder="Phone No."%}
+                                </div>
+
+                                <div class="form-group">
+                                    {% render_field shop_form.address class="form-control" placeholder="Shop Address"%}
+                                </div>
+
+                                <div class="card-title text-left text-muted">Shop Logo</div>
+                                <div class="form-group">
+                                    {% render_field shop_form.logo %}
+                                </div>
+
+                                <div class="card-title text-left text-muted">Accepted Booking Types</div>
+                                <div class="form-group">
+                                    {% render_field shop_form.shop_bookings %} <label style="color: whitesmoke;"> Shop Bookings</label> </br>
+                                    {% render_field shop_form.home_bookings %} <label style="color: whitesmoke;"> Home Bookings</label>
+                                </div>
+                          
                                 <input type="submit" value="Register" style="color: #333;" class="font-weight-bold btn btn-lg btn-block btn-warning"/>
                             </form>
                         

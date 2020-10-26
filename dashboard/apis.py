@@ -19,9 +19,21 @@ stripe.api_key = STRIPE_API_KEY
 
 
 ###### CUSTOMERS ######
-def customer_get_shops(request):
+def customer_get_shop_booking_shops(request):
+    shop_booking_shops = Shop.objects.filter(shop_bookings=True)
     shops = ShopSerializerCustomer(
-        Shop.objects.all().order_by("-id"),
+        shop_booking_shops.order_by("-id"),
+        many = True,
+        context = {"request": request}
+    ).data
+
+    return JsonResponse({"shops": shops})
+
+
+def customer_get_home_booking_shops(request):
+    shop_booking_shops = Shop.objects.filter(home_bookings=True)
+    shops = ShopSerializerCustomer(
+        shop_booking_shops.order_by("-id"),
         many = True,
         context = {"request": request}
     ).data

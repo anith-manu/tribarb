@@ -21,7 +21,8 @@ urlpatterns = [
         url(r'^api/booking/notification/(?P<last_request_time>.+)/$', apis.shop_booking_notification),
 
         #CUSTOMER API'S
-        path('api/customer/shops/', apis.customer_get_shops),
+        path('api/customer/shops/shop-booking/', apis.customer_get_shop_booking_shops),
+        path('api/customer/shops/home-booking/', apis.customer_get_home_booking_shops),
         path('api/customer/services/<int:shop_id>/', apis.customer_get_services),
         path('api/customer/service/album/<int:service_id>/', apis.customer_get_service_album),
         path('api/customer/booking/add/', apis.customer_add_booking),

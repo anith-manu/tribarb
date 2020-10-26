@@ -13,6 +13,8 @@ class Shop(models.Model):
 	instagram = models.CharField(max_length=500, blank = True, null = True, default="")
 	facebook = models.CharField(max_length=500, blank = True, null = True, default="")
 	logo = models.ImageField(upload_to='shop_logo/', blank=False)
+	shop_bookings = models.BooleanField(default=False)
+	home_bookings = models.BooleanField(default=False)
 
 	def __str__(self):
 		return str(self.id) + " " + self.name

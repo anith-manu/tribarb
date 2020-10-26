@@ -8,6 +8,6 @@ class ShopForm(forms.ModelForm):
 
 	class Meta:
 		model = Shop
-		fields = ("logo", "name", "phone", "address")
+		fields = ("logo", "name", "phone", "address", "shop_bookings", "home_bookings")
 
 
