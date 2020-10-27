@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'rest_framework_social_oauth2',
     'bootstrap3',
     'widget_tweaks',
+    'storages',
 ]
 
 MIDDLEWARE = [
@@ -97,6 +98,7 @@ DATABASES = {
 }
 
 
+
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
 
@@ -127,9 +129,14 @@ SOCIAL_AUTH_FACEBOOK_SECRET = os.environ.get('SOCIAL_AUTH_FACEBOOK_SECRET')
 
 
 
-AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')
-AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY')
-S3_BUCKET_NAME = os.environ.get('S3_BUCKET_NAME')
+AWS_ACCESS_KEY_ID = 'AKIAQZJNVSERUSDB3VXR'
+AWS_SECRET_ACCESS_KEY = '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'
+AWS_STORAGE_BUCKET_NAME = 'tribarb-media-bucket'
+
+AWS_S3_FILE_OVERWRITE = False
+AWS_DEFAULT_ACL = None
+DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 
 # Define SOCIAL_AUTH_FACEBOOK_SCOPE to get extra permissions from Facebook.
 # Email is not sent by default, to get it, you must request the email permission.

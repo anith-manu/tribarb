@@ -20,6 +20,9 @@ django-bootstrap3 = "*"
 djangorestframework = "*"
 stripe = "==1.37.0"
 django-widget-tweaks = "*"
+django-storages = "*"
+boto3 = "*"
+dj-database-url = "*"
 
 [requires]
 python_version = "3.7"

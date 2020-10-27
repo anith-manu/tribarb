@@ -40,7 +40,7 @@ class Service(models.Model):
 
 class ServiceImage(models.Model):
 	service = models.ForeignKey(Service, on_delete=models.CASCADE, default=None)
-	image = models.ImageField(upload_to='haircut_images/', blank=True)
+	image = models.ImageField(upload_to='service_images/', blank=True)
 
 	def __str__(self):
 		return self.service.service_name

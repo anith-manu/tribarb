@@ -53,7 +53,7 @@
 </div>
 
 <div class="text-center">
-    <img class="rounded-circle" src="{{ MEDIA_URL}}{{ request.user.shop.logo }}" width="70" height="70"/>
+    <img class="rounded-circle" src="{{ request.user.shop.logo.url }}" width="100" height="100"/>
     <br/>
     <br/>
     <h5 style="color:grey"> {{ request.user.shop.name }}</h5>
@@ -64,21 +64,21 @@
     <span class="text-uppercase " style="color:whitesmoke">Dashboard</span>
     
     <a href="{% url 'shop-bookings' %}" class="rounded-pill list-group-item {% if request.path == barber_booking_url %} active {% endif %}">
-        <img src="https://tribarb.s3.us-east-2.amazonaws.com/bookings.png" width="25" height="25"/> Bookings
+        <img src="https://tribarb-media-bucket.s3-ap-southeast-1.amazonaws.com/db_icons/booking.png" width="25" height="25"/> Bookings
         <span class="badge"></span>	
     </a>
 
     <a href="{% url 'shop-services' %}" class="rounded-pill list-group-item {% if request.path == barber_service_url %} active {% endif %}">
-        <img src="https://tribarb.s3.us-east-2.amazonaws.com/services.png" width="25" height="25"/> Services</a>
+        <img src="https://tribarb-media-bucket.s3-ap-southeast-1.amazonaws.com/db_icons/scissors.png" width="25" height="25"/> Services</a>
 
     <a href="{% url 'shop-employees' %}" class="rounded-pill list-group-item {% if request.path == barber_employees_url %} active {% endif %}">
-        <img src="https://tribarb.s3.us-east-2.amazonaws.com/barber.png" width="25" height="25"/> Employees</a>
+        <img src="https://tribarb-media-bucket.s3-ap-southeast-1.amazonaws.com/db_icons/barber.png" width="25" height="25"/> Employees</a>
 
     <a href="{% url 'shop-reports' %}" class="rounded-pill list-group-item {% if request.path == barber_report_url %} active {% endif %}">
-        <img src="https://tribarb.s3.us-east-2.amazonaws.com/report.png" width="25" height="25"/> Reports</a>
+        <img src="https://tribarb-media-bucket.s3-ap-southeast-1.amazonaws.com/db_icons/report.png" width="25" height="25"/> Reports</a>
 
     <a href="{% url 'shop-account' %}" class="rounded-pill list-group-item {% if request.path == barber_account_url %} active {% endif %}">
-        <img src="https://tribarb.s3.us-east-2.amazonaws.com/account.png" width="25" height="25"/> Account</a>
+        <img src="https://tribarb-media-bucket.s3-ap-southeast-1.amazonaws.com/db_icons/account.png" width="25" height="25"/> Account</a>
 </div>
 
 
