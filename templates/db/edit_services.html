@@ -30,9 +30,33 @@
             <input type="text" id="short_description" class="form-control" value="{{ service.short_description }}">
             <label>Price</label>
             <input type="number" id="price" class="form-control"  value="{{ service.price }}">
+        </br>
+            <p>What kind of service is this? (Tick one or both)</p>
+
+            {% if service.shop_service %}
+            <input type="checkbox" id="shopService" value="shop" checked>
+                <label>Shop Service</label><br>
+            {% endif %}
+
+            {% if not service.shop_service %}
+            <input type="checkbox" id="shopService" value="shop">
+                <label>Shop Service</label><br>
+            {% endif %}
+
+            {% if service.home_service %}
+            <input type="checkbox" id="homeService" value="home" checked>
+                <label>Home Service</label><br>
+            {% endif %} 
+            
+            {% if not service.home_service %}
+            <input type="checkbox" id="homeService" value="home">
+                <label>Home Service</label><br>
+            {% endif %} 
+
             <div class="text-center">
                 <button type="button" id="saveBtn" class="btn btn-primary mt-4">Update Service</button>
             </div>
+            
             <div class="text-center">
                 <button type="button" id="delBtn" class="btn btn-sm btn-danger mt-4">Delete Service</button>
             </div>
@@ -73,6 +97,19 @@
                         } else {
                             formData.append('albumUpdate', null)
                         }
+
+                        if(document.getElementById('shopService').checked) {
+                            formData.append('shopService', $('#shopService').val())
+                        } else {
+                            formData.append('shopService', null)
+                        }
+
+                        if(document.getElementById('homeService').checked) {
+                            formData.append('homeService', $('#homeService').val())
+                        } else {
+                            formData.append('homeService', null)
+                        }
+                        
                         formData.append('delete', false)
                         formData.append('length', files.length)
                         formData.append('service_name', $('#service_name').val())

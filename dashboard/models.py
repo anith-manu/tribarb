@@ -33,6 +33,8 @@ class Service(models.Model):
 	service_name = models.CharField(max_length=500)
 	short_description = models.CharField(max_length=500, blank=True)
 	price = models.FloatField(default=0)
+	shop_service = models.BooleanField(default=False)
+	home_service = models.BooleanField(default=False)
 
 	def __str__(self):
 		return str(self.id) + " " + self.service_name

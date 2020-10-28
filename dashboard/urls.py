@@ -23,7 +23,8 @@ urlpatterns = [
         #CUSTOMER API'S
         path('api/customer/shops/shop-booking/', apis.customer_get_shop_booking_shops),
         path('api/customer/shops/home-booking/', apis.customer_get_home_booking_shops),
-        path('api/customer/services/<int:shop_id>/', apis.customer_get_services),
+        path('api/customer/shop-services/<int:shop_id>/', apis.customer_get_shop_services),
+        path('api/customer/home-services/<int:shop_id>/', apis.customer_get_home_services),
         path('api/customer/service/album/<int:service_id>/', apis.customer_get_service_album),
         path('api/customer/booking/add/', apis.customer_add_booking),
         path('api/customer/booking/latest/', apis.customer_get_latest_booking),

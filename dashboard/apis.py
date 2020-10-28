@@ -41,9 +41,19 @@ def customer_get_home_booking_shops(request):
     return JsonResponse({"shops": shops})
 
 
-def customer_get_services(request, shop_id):
+def customer_get_shop_services(request, shop_id):
     services = ServiceSerializer(
-        Service.objects.filter(shop_id = shop_id).order_by("-id"),
+        Service.objects.filter(shop_id = shop_id, shop_service=True).order_by("-id"),
+        many = True,
+        context = {"request": request}
+    ).data
+
+    return JsonResponse({"services": services})
+    
+
+def customer_get_home_services(request, shop_id):
+    services = ServiceSerializer(
+        Service.objects.filter(shop_id = shop_id, home_service=True).order_by("-id"),
         many = True,
         context = {"request": request}
     ).data

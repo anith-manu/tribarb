@@ -82,12 +82,24 @@ def shop_add_services(request):
         title = request.POST.get('service_name')
         description = request.POST.get('short_description')
         price = request.POST.get('price')
+        shopService = request.POST.get('shopService')
+        homeService = request.POST.get('homeService')
+        shop = False
+        home = False
+
+        if shopService == "shop":
+            shop = True
+        
+        if homeService == "home":
+            home = True
 
         post = Service.objects.create(
             shop = request.user.shop,
             service_name=title,
             short_description=description,
-            price=price
+            price=price,
+            shop_service=shop,
+            home_service=home
         )
         
         for file_num in range(0, int(length)):
@@ -119,6 +131,19 @@ def shop_edit_services(request, service_id):
             service.short_description = request.POST.get('short_description')
             service.price = request.POST.get('price')
             albumUpdate = request.POST.get('albumUpdate')
+            shopService = request.POST.get('shopService')
+            homeService = request.POST.get('homeService')
+            shop = False
+            home = False
+
+            if shopService == "shop":
+                shop = True
+        
+            if homeService == "home":
+                home = True
+            
+            service.shop_service = shop
+            service.home_service = home
 
             if albumUpdate == "create":
                 ServiceImage.objects.filter(service=service).delete()
