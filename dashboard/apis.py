@@ -16,9 +16,29 @@ from tribarbDesktop.settings import STRIPE_API_KEY
 
 stripe.api_key = STRIPE_API_KEY
 
-
+STRIPE_CUSTOMER = ""
 
 ###### CUSTOMERS ######
+@csrf_exempt
+def stripe_ephemeral_key(request):
+    """Returns ephemeral key
+    """
+    # Get token
+    access_token = AccessToken.objects.get(token = request.GET.get("access_token"),
+		expires__gt = timezone.now())
+
+    # Get profile
+    customer = access_token.user.customer
+
+    customer_stripe_id = customer.stripe_id
+    api_version = request.GET.get("api_version")
+
+    data = stripe.EphemeralKey.create(customer=customer_stripe_id, stripe_version=api_version)
+
+    return JsonResponse(data)
+
+
+
 def customer_get_shop_booking_shops(request):
     shop_booking_shops = Shop.objects.filter(shop_bookings=True)
     shops = ShopSerializerCustomer(
@@ -49,7 +69,7 @@ def customer_get_shop_services(request, shop_id):
     ).data
 
     return JsonResponse({"services": services})
-    
+
 
 def customer_get_home_services(request, shop_id):
     services = ServiceSerializer(
@@ -99,8 +119,11 @@ def customer_add_booking(request):
         customer = access_token.user.customer
 
         # Get Stripe token
-        global stripe_token
         stripe_token = request.POST.get("stripe_token")
+
+
+        
+
 
         # Check whether customer has any booking that is not completed
         if Booking.objects.filter(customer = customer).exclude(status__in = [Booking.COMPLETED, Booking.DECLINED]):
@@ -122,6 +145,19 @@ def customer_add_booking(request):
 
         if len(booking_details) > 0:
 
+            if request.POST["payment_mode"] == "1":
+                charge = stripe.Charge.create(
+                    customer = STRIPE_CUSTOMER,
+                    amount = int(booking_total * 100),
+                    currency = "gbp",
+                    source = stripe_token,
+                    description = "Tribarb Booking"
+                )
+                print("CHARGE STATUS")
+                print(charge.status)
+                if charge.status != "success":
+                    return JsonResponse({"status": "failed", "error": "Failed to connect to Stripe."})
+
             booking = Booking.objects.create(
                     customer = customer,
                     shop_id = request.POST["shop_id"],
@@ -133,15 +169,16 @@ def customer_add_booking(request):
                     status = Booking.PLACED,
                     address = request.POST["address"],
                 )
-
-
-            # Step 3 - Create Order details 
+            
+            
             for service in booking_details:
                 BookingDetail.objects.create(
                         booking = booking,
                         service_id = service["service_id"],
                         sub_total = Service.objects.get(id = service["service_id"]).price
                     )
+            
+                    
 
             return JsonResponse({"status": "success"})
 
@@ -283,28 +320,10 @@ def employee_complete_booking(request):
     employee = access_token.user.employee
 
     booking = Booking.objects.get(id = request.POST["booking_id"], employee = employee)
-    booking_total = booking.total
-    print("TOTAL")
-    print(booking_total)
 
-    if booking.payment_mode == 1:
-        charge = stripe.Charge.create(
-                amount = int(booking_total * 100),
-                currency = "gbp",
-                source = stripe_token,
-                description = "Tribarb Booking"
-            )
-
-        if charge.status != "failed":
-            booking.status = Booking.COMPLETED 
-            booking.save()
-            return JsonResponse({"status": "success"})
-        else:
-            return JsonResponse({"status": "failed", "error": "Failed to connect to Stripe."})
-    else:
-        booking.status = Booking.COMPLETED 
-        booking.save()
-        return JsonResponse({"status": "success"})
+    booking.status = Booking.COMPLETED 
+    booking.save()
+    return JsonResponse({"status": "success"})
 
     
 

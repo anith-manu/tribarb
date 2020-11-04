@@ -7,6 +7,8 @@ from django.utils import timezone
 class Customer(models.Model):
 	user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='customer')
 	avatar = models.CharField(max_length=500)
+	email = models.CharField(max_length=500, default="")
+	stripe_id = models.CharField(max_length=500, default="")
 	phone = models.CharField(max_length=500, blank=True)
 	address = models.CharField(max_length=500, blank=True)
 
@@ -17,6 +19,7 @@ class Customer(models.Model):
 class Employee(models.Model):
 	shop = models.ForeignKey(Shop, on_delete=models.CASCADE, null=True)
 	user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='employee')
+	email = models.CharField(max_length=500, default="")
 	first_name = models.CharField(max_length=500, blank=True)
 	last_name = models.CharField(max_length=500, blank=True)
 	avatar = models.CharField(max_length=500)

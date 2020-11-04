@@ -18,11 +18,11 @@ pillow = "*"
 django-rest-framework-social-oauth2 = "*"
 django-bootstrap3 = "*"
 djangorestframework = "*"
-stripe = "==1.37.0"
 django-widget-tweaks = "*"
 django-storages = "*"
 boto3 = "*"
 dj-database-url = "*"
+stripe = "*"
 
 [requires]
 python_version = "3.7"
