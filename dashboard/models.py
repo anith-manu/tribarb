@@ -60,11 +60,12 @@ class Booking(models.Model):
 	DECLINED = 5
 	CANCELLED = 6
 
+	SHOP_BOOKING = 0
 	HOME_BOOKING = 1
-	SHOP_BOOKING = 2
-
+	
+	CASH = 0
 	CARD = 1
-	CASH = 2
+	
 
 	STATUS_CHOICES = (
 		(PLACED, "Placed"),

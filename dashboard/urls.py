@@ -22,6 +22,7 @@ urlpatterns = [
 
         #CUSTOMER API'S
         path('api/customer/stripe/', apis.stripe_ephemeral_key),
+        path('api/customer/stripe/secret/', apis.get_stripe_client_secret),
         path('api/customer/shops/shop-booking/', apis.customer_get_shop_booking_shops),
         path('api/customer/shops/home-booking/', apis.customer_get_home_booking_shops),
         path('api/customer/shop-services/<int:shop_id>/', apis.customer_get_shop_services),
