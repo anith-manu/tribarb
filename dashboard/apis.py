@@ -9,7 +9,7 @@ from oauth2_provider.models import AccessToken
 from authentication.models import Shop
 from dashboard.models import Service, ServiceImage, Customer, Employee, Booking, BookingDetail	
 
-from dashboard.serializers import ShopSerializerCustomer, ShopSerializerEmployee, ServiceSerializer, ServiceImageSerializer, BookingSerializer
+from dashboard.serializers import ShopSerializerCustomer, ShopSerializerEmployee, ServiceSerializer, ServiceImageSerializer, BookingSerializer, CustomerSerializer
 
 import stripe
 from tribarbDesktop.settings import STRIPE_API_KEY
@@ -191,6 +191,46 @@ def customer_get_latest_booking(request):
 
 
 
+def customer_get_upcoming_bookings(request):
+	access_token = AccessToken.objects.get(token = request.GET.get("access_token"),
+		expires__gt = timezone.now())
+
+	customer = access_token.user.customer
+	booking = BookingSerializer(
+        Booking.objects.filter(customer = customer, status__in=[1, 2, 3]).order_by("-id"),
+        many = True
+        ).data
+
+	return JsonResponse({"bookings": booking})
+
+
+def customer_get_past_bookings(request):
+	access_token = AccessToken.objects.get(token = request.GET.get("access_token"),
+		expires__gt = timezone.now())
+
+	customer = access_token.user.customer
+	booking = BookingSerializer(
+        Booking.objects.filter(customer = customer, status__in=[4, 5, 6]).order_by("-id"),
+        many = True
+        ).data
+
+	return JsonResponse({"bookings": booking})
+
+
+
+def customer_get_booking(request, booking_id):
+	access_token = AccessToken.objects.get(token = request.GET.get("access_token"),
+		expires__gt = timezone.now())
+
+	customer = access_token.user.customer
+
+	booking = BookingSerializer(
+        Booking.objects.get(id=booking_id, customer = customer)
+        ).data
+
+	return JsonResponse({"booking": booking})
+
+
 def customer_employee_location(request):
 
     access_token = AccessToken.objects.get(token = request.GET.get("access_token"),
@@ -205,6 +245,54 @@ def customer_employee_location(request):
     return JsonResponse({"location": location})
 
 
+@csrf_exempt
+def customer_cancel_booking(request, booking_id):
+
+    if request.method == "POST":
+        access_token = AccessToken.objects.get(token = request.POST.get("access_token"),
+            expires__gt = timezone.now())
+            
+        customer = access_token.user.customer
+        
+        booking = Booking.objects.get(id=booking_id, customer = customer)
+
+        if booking.status == booking.PLACED:
+            booking.status = booking.CANCELLED
+            booking.save()
+            return JsonResponse({"status": "success"})
+        else :
+            return JsonResponse({"status": "failed. The booking has already been accepted."})
+
+    
+
+@csrf_exempt
+def customer_update_details(request):
+
+    if request.method == "POST":
+        access_token = AccessToken.objects.get(token = request.POST.get("access_token"),
+            expires__gt = timezone.now())
+            
+        customer = access_token.user.customer
+        
+        customer.phone = request.POST["phone"]
+        customer.address = request.POST["address"]
+        customer.save()
+
+        return JsonResponse({"status": "success"})
+        
+
+
+def customer_get_details(request):
+    access_token = AccessToken.objects.get(token = request.GET.get("access_token"),
+		expires__gt = timezone.now())
+        
+    customer = access_token.user.customer
+
+    customerInfo = CustomerSerializer(
+        customer
+        ).data
+
+    return JsonResponse({"customer": customerInfo})
 
 
 
