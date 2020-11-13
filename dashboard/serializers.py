@@ -15,7 +15,7 @@ class ShopSerializerCustomer(serializers.ModelSerializer):
 
 	class Meta:
 	    model = Shop
-	    fields = ("id", "name", "phone", "instagram", "facebook", "address", "logo")
+	    fields = ("id", "name", "phone", "instagram", "facebook", "address", "logo", "total_rating", "number_of_ratings")
 
 
 
@@ -66,7 +66,7 @@ class BookingEmployeeSerializer(serializers.ModelSerializer):
 	name = serializers.ReadOnlyField(source="user.get_full_name")
 	class Meta:
 		model = Employee
-		fields = ("id", "name", "avatar", "phone", "address")
+		fields = ("id", "name", "avatar", "phone")
 
 
 class BookingShopSerializer(serializers.ModelSerializer):
@@ -98,7 +98,7 @@ class BookingSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Booking
-        fields = ("id", "customer", "booking_type", "payment_mode", "shop", "employee", "booking_details", "total", "requested_time", "requests", "status", "address")
+        fields = ("id", "customer", "booking_type", "payment_mode", "shop", "employee", "booking_details", "total", "requested_time", "requests", "status", "address", "rating")
 
 
 

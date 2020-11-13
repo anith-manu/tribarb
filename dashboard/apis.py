@@ -296,6 +296,28 @@ def customer_get_details(request):
 
 
 
+
+@csrf_exempt
+def customer_update_ratings(request):
+    if request.method == "POST":
+        access_token = AccessToken.objects.get(token = request.POST.get("access_token"),
+            expires__gt = timezone.now())
+        
+        if access_token != "" :
+            booking = Booking.objects.get(id = request.POST["booking_id"])
+            booking.rating = request.POST["rating"]
+            booking.save()
+
+            shop = booking.shop
+            shop.total_rating = shop.total_rating + int(request.POST["rating"])
+            shop.number_of_ratings = shop.number_of_ratings + 1
+            shop.save()   
+            
+            return JsonResponse({"status": "success"})  
+  
+
+
+
 ###### EMPLOYEES ######
 def employee_get_shop(request, shop_id):
     shop = ShopSerializerEmployee(

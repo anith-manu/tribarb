@@ -33,11 +33,14 @@ urlpatterns = [
         path('api/customer/bookings/upcoming/', apis.customer_get_upcoming_bookings),
         path('api/customer/bookings/past/', apis.customer_get_past_bookings),
         path('api/customer/booking/get/<int:booking_id>/', apis.customer_get_booking),
+        path('api/customer/shop/updaterating/', apis.customer_update_ratings),
+
         path('api/customer/booking/cancel/<int:booking_id>/', apis.customer_cancel_booking),
         path('api/customer/employee/location/', apis.customer_employee_location),
 
         path('api/customer/getinfo/', apis.customer_get_details),
         path('api/customer/updateinfo/', apis.customer_update_details),
+
 
 
         ##EMPLOYEE API'S

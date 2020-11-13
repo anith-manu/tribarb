@@ -15,6 +15,8 @@ class Shop(models.Model):
 	logo = models.ImageField(upload_to='shop_logo/', blank=False)
 	shop_bookings = models.BooleanField(default=False)
 	home_bookings = models.BooleanField(default=False)
+	total_rating = models.IntegerField(default=0)
+	number_of_ratings = models.IntegerField(default=0)
 
 	def __str__(self):
 		return str(self.id) + " " + self.name
