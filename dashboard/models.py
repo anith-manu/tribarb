@@ -10,7 +10,7 @@ class Customer(models.Model):
 	email = models.CharField(max_length=500, default="")
 	stripe_id = models.CharField(max_length=500, default="")
 	phone = models.CharField(max_length=500, default="")
-	address = models.CharField(max_length=500, default="")
+	address = models.CharField(max_length=500, blank = True, default="")
 
 	def __str__(self):
 		return self.user.get_full_name()

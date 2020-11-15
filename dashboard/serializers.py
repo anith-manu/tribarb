@@ -103,6 +103,8 @@ class BookingSerializer(serializers.ModelSerializer):
 
 
 class CustomerSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Customer
-        fields = ("phone", "address")
+	name = serializers.ReadOnlyField(source="user.get_full_name")
+	
+	class Meta:
+		model = Customer
+		fields = ("name", "email", "avatar", "phone", "address")
