@@ -41,9 +41,11 @@ urlpatterns = [
         path('api/customer/getinfo/', apis.customer_get_details),
         path('api/customer/updateinfo/', apis.customer_update_details),
 
-
+        path('api/check/last-logged-in-as/', apis.check_user_last_loggin_in_as),
+        path('api/set/last-logged-in-as/', apis.set_user_last_loggin_in_as),
 
         ##EMPLOYEE API'S
+        path('api/employee/verify/', apis.employee_verify),
         path('api/employee/shop/<int:shop_id>/', apis.employee_get_shop),
         path('api/employee/bookings/placed/<int:shop_id>/', apis.employee_get_placed_bookings),
         path('api/employee/booking/accept/', apis.employee_accept_booking),

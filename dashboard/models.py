@@ -11,13 +11,14 @@ class Customer(models.Model):
 	stripe_id = models.CharField(max_length=500, default="")
 	phone = models.CharField(max_length=500, default="")
 	address = models.CharField(max_length=500, blank = True, default="")
+	last_logged_in_as = models.BooleanField(default=False)
 
 	def __str__(self):
 		return self.user.get_full_name()
 
 
 class Employee(models.Model):
-	shop = models.ForeignKey(Shop, on_delete=models.CASCADE, null=True)
+	shop = models.ForeignKey(Shop, on_delete=models.CASCADE, null=True, blank=True)
 	user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='employee')
 	email = models.CharField(max_length=500, default="")
 	phone = models.CharField(max_length=500, default="")
@@ -25,6 +26,7 @@ class Employee(models.Model):
 	last_name = models.CharField(max_length=500, blank = True, default="")
 	avatar = models.CharField(max_length=500, blank = True, default="")
 	location = models.CharField(max_length=500, blank = True, default="")
+	last_logged_in_as = models.BooleanField(default=False)
 
 	def __str__(self):
 		return self.user.get_full_name() 

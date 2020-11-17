@@ -319,6 +319,27 @@ def customer_update_ratings(request):
 
 
 ###### EMPLOYEES ######
+@csrf_exempt
+def employee_verify(request):
+    if request.method == "POST":
+        access_token = AccessToken.objects.get(token = request.POST.get("access_token"),
+            expires__gt = timezone.now())
+        
+        employee = access_token.user.employee
+
+        shop = Shop.objects.get(id = request.POST["shop_id"])
+        shop_token = shop.token
+        token = request.POST["token"]
+
+        if shop_token == token:
+            employee.shop = shop
+            employee.save()
+            return JsonResponse({"status": "success"})  
+        else:
+            return JsonResponse({"status": "failed"})  
+
+
+
 def employee_get_shop(request, shop_id):
     shop = ShopSerializerEmployee(
         Shop.objects.filter(id = shop_id),
@@ -498,3 +519,75 @@ def shop_booking_notification(request, last_request_time):
 
 
     return JsonResponse({"notification": notification})
+
+
+
+
+def check_user_last_loggin_in_as(request):
+    access_token = AccessToken.objects.get(token = request.GET.get("access_token"),
+            expires__gt = timezone.now())
+
+    user = access_token.user 
+
+    user_is_customer = Customer.objects.filter(user=user).count()
+    user_is_employee = Employee.objects.filter(user=user).count()
+
+    if user_is_customer > 0:
+        last_logged_in_as_customer =  Customer.objects.get(user=user).last_logged_in_as
+        if last_logged_in_as_customer == True:
+            return JsonResponse({"last_logged_in_as": "customer"})
+    
+    if user_is_employee > 0:
+        last_logged_in_as_employee =  Employee.objects.get(user=user).last_logged_in_as
+        
+        if last_logged_in_as_employee == True:
+            verified = False
+
+            if Employee.objects.get(user=user).shop != None:
+                verified = True
+
+            return JsonResponse({"last_logged_in_as": "employee", "verified": verified})
+        
+    
+
+
+@csrf_exempt
+def set_user_last_loggin_in_as(request):
+    if request.method == "POST":
+        access_token = AccessToken.objects.get(token = request.POST.get("access_token"),
+            expires__gt = timezone.now())
+
+        user = access_token.user 
+
+        user_is_customer = Customer.objects.filter(user=user).count()
+        user_is_employee = Employee.objects.filter(user=user).count()
+
+
+        if request.POST["user_type"] == "customer":
+            customer = user.customer
+            customer.last_logged_in_as = True
+            customer.save()
+
+            if user_is_employee > 0:
+                employee = user.employee
+                employee.last_logged_in_as = False
+                employee.save()
+            
+            return JsonResponse({"status": "success"})
+
+
+        if request.POST["user_type"] == "employee":
+            employee = user.employee
+            employee.last_logged_in_as = True
+            employee.save()
+            
+            if user_is_customer > 0:
+                customer = user.customer
+                customer.last_logged_in_as = False
+                customer.save()
+
+            return JsonResponse({"status": "success"})
+
+
+
+    
