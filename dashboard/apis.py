@@ -9,7 +9,7 @@ from oauth2_provider.models import AccessToken
 from authentication.models import Shop
 from dashboard.models import Service, ServiceImage, Customer, Employee, Booking, BookingDetail	
 
-from dashboard.serializers import ShopSerializerCustomer, ShopSerializerEmployee, ServiceSerializer, ServiceImageSerializer, BookingSerializer, CustomerSerializer
+from dashboard.serializers import ShopSerializerCustomer, ShopSerializerEmployee, ServiceSerializer, ServiceImageSerializer, BookingSerializer, CustomerSerializer, EmployeeSerializer
 
 import stripe
 from tribarbDesktop.settings import STRIPE_API_KEY
@@ -319,6 +319,36 @@ def customer_update_ratings(request):
 
 
 ###### EMPLOYEES ######
+def employee_get_details(request):
+    access_token = AccessToken.objects.get(token = request.GET.get("access_token"),
+		expires__gt = timezone.now())
+        
+    employee = access_token.user.employee
+
+    employeeInfo = EmployeeSerializer(
+        employee
+        ).data
+
+    return JsonResponse({"employee": employeeInfo})
+
+
+
+@csrf_exempt
+def employee_update_details(request):
+
+    if request.method == "POST":
+        access_token = AccessToken.objects.get(token = request.POST.get("access_token"),
+            expires__gt = timezone.now())
+            
+        employee = access_token.user.employee
+        
+        employee.phone = request.POST["phone"]
+        employee.save()
+
+        return JsonResponse({"status": "success"})
+        
+
+    
 @csrf_exempt
 def employee_verify(request):
     if request.method == "POST":
@@ -539,7 +569,7 @@ def check_user_last_loggin_in_as(request):
     
     if user_is_employee > 0:
         last_logged_in_as_employee =  Employee.objects.get(user=user).last_logged_in_as
-        
+
         if last_logged_in_as_employee == True:
             verified = False
 

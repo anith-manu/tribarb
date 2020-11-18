@@ -22,8 +22,6 @@ class Employee(models.Model):
 	user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='employee')
 	email = models.CharField(max_length=500, default="")
 	phone = models.CharField(max_length=500, default="")
-	first_name = models.CharField(max_length=500, blank = True, default="")
-	last_name = models.CharField(max_length=500, blank = True, default="")
 	avatar = models.CharField(max_length=500, blank = True, default="")
 	location = models.CharField(max_length=500, blank = True, default="")
 	last_logged_in_as = models.BooleanField(default=False)
