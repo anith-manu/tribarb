@@ -223,9 +223,10 @@ def shop_reports(request):
     ).order_by("-total_booking")
 
     employee = {
-        "labels": [employee.first_name for employee in top_employees],
+        "labels": [employee.user.get_full_name for employee in top_employees],
         "data": [employee.total_booking for employee in top_employees]
     }
+    
 
     return render(request, 'db/reports.html', {
     "revenue": revenue,
