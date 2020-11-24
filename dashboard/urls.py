@@ -20,19 +20,16 @@ urlpatterns = [
         path('employees', views.shop_employees, name='shop-employees'),
         url(r'^api/booking/notification/(?P<last_request_time>.+)/$', apis.shop_booking_notification),
 
+        path('api/booking/get/<int:booking_id>/', apis.get_booking),
+
         #CUSTOMER API'S
         path('api/customer/stripe/', apis.stripe_ephemeral_key),
         path('api/customer/stripe/secret/', apis.get_stripe_client_secret),
-        path('api/customer/shops/shop-booking/', apis.customer_get_shop_booking_shops),
-        path('api/customer/shops/home-booking/', apis.customer_get_home_booking_shops),
-        path('api/customer/shop-services/<int:shop_id>/', apis.customer_get_shop_services),
-        path('api/customer/home-services/<int:shop_id>/', apis.customer_get_home_services),
+        path('api/customer/shops/<int:filter_id>/', apis.customer_get_shops),
+        path('api/customer/services/<int:filter_id>/<int:shop_id>/', apis.customer_get_services),
         path('api/customer/service/album/<int:service_id>/', apis.customer_get_service_album),
         path('api/customer/booking/add/', apis.customer_add_booking),
-        path('api/customer/booking/latest/', apis.customer_get_latest_booking),
-        path('api/customer/bookings/upcoming/', apis.customer_get_upcoming_bookings),
-        path('api/customer/bookings/past/', apis.customer_get_past_bookings),
-        path('api/customer/booking/get/<int:booking_id>/', apis.customer_get_booking),
+        path('api/customer/bookings/<int:filter_id>/', apis.customer_get_bookings),
         path('api/customer/shop/updaterating/', apis.customer_update_ratings),
 
         path('api/customer/booking/cancel/<int:booking_id>/', apis.customer_cancel_booking),
@@ -49,8 +46,7 @@ urlpatterns = [
         path('api/employee/updateinfo/', apis.employee_update_details),
 
         path('api/employee/verify/', apis.employee_verify),
-        path('api/employee/shop/<int:shop_id>/', apis.employee_get_shop),
-        path('api/employee/bookings/placed/<int:shop_id>/', apis.employee_get_placed_bookings),
+        path('api/employee/bookings/<int:filter_id>/', apis.employee_get_bookings),
         path('api/employee/booking/accept/', apis.employee_accept_booking),
         path('api/employee/booking/decline/', apis.employee_decline_booking),
         path('api/employee/booking/enroute/', apis.employee_enroute),

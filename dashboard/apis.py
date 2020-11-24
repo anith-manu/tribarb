@@ -38,11 +38,14 @@ def stripe_ephemeral_key(request):
     return JsonResponse(data)
 
 
-
-def customer_get_shop_booking_shops(request):
-    shop_booking_shops = Shop.objects.filter(shop_bookings=True)
+def customer_get_shops(request, filter_id):
+    if filter_id == 0:
+        filter_shops = Shop.objects.filter(shop_bookings=True)
+    else:
+        filter_shops =  Shop.objects.filter(home_bookings=True)
+    
     shops = ShopSerializerCustomer(
-        shop_booking_shops.order_by("-id"),
+        filter_shops.order_by("-id"),
         many = True,
         context = {"request": request}
     ).data
@@ -50,35 +53,20 @@ def customer_get_shop_booking_shops(request):
     return JsonResponse({"shops": shops})
 
 
-def customer_get_home_booking_shops(request):
-    shop_booking_shops = Shop.objects.filter(home_bookings=True)
-    shops = ShopSerializerCustomer(
-        shop_booking_shops.order_by("-id"),
-        many = True,
-        context = {"request": request}
-    ).data
+def customer_get_services(request, filter_id, shop_id):
+    if filter_id == 0:
+        filter_services = Service.objects.filter(shop_id = shop_id, shop_service=True)
+    else:
+        filter_services = Service.objects.filter(shop_id = shop_id, home_service=True)
 
-    return JsonResponse({"shops": shops})
-
-
-def customer_get_shop_services(request, shop_id):
     services = ServiceSerializer(
-        Service.objects.filter(shop_id = shop_id, shop_service=True).order_by("-id"),
+        filter_services.order_by("-id"),
         many = True,
         context = {"request": request}
     ).data
 
     return JsonResponse({"services": services})
 
-
-def customer_get_home_services(request, shop_id):
-    services = ServiceSerializer(
-        Service.objects.filter(shop_id = shop_id, home_service=True).order_by("-id"),
-        many = True,
-        context = {"request": request}
-    ).data
-
-    return JsonResponse({"services": services})
     
 
 def customer_get_service_album(request, service_id):
@@ -191,41 +179,35 @@ def customer_get_latest_booking(request):
 
 
 
-def customer_get_upcoming_bookings(request):
-	access_token = AccessToken.objects.get(token = request.GET.get("access_token"),
-		expires__gt = timezone.now())
+def customer_get_bookings(request, filter_id):
+    access_token = AccessToken.objects.get(token = request.GET.get("access_token"),
+            expires__gt = timezone.now())
+    
+    customer = access_token.user.customer
 
-	customer = access_token.user.customer
-	booking = BookingSerializer(
-        Booking.objects.filter(customer = customer, status__in=[1, 2, 3]).order_by("-id"),
-        many = True
+    if filter_id == 0 :
+        bookings = BookingSerializer(
+            Booking.objects.filter(customer = customer, status__in=[1, 2, 3]).order_by("-requested_time"),
+            many = True
+        ).data
+    
+    else :
+        bookings = BookingSerializer(
+            Booking.objects.filter(customer = customer, status__in=[4, 5, 6]).order_by("-requested_time"),
+            many = True
         ).data
 
-	return JsonResponse({"bookings": booking})
+
+    return JsonResponse({"bookings": bookings})
 
 
-def customer_get_past_bookings(request):
+
+def get_booking(request, booking_id):
 	access_token = AccessToken.objects.get(token = request.GET.get("access_token"),
 		expires__gt = timezone.now())
 
-	customer = access_token.user.customer
 	booking = BookingSerializer(
-        Booking.objects.filter(customer = customer, status__in=[4, 5, 6]).order_by("-id"),
-        many = True
-        ).data
-
-	return JsonResponse({"bookings": booking})
-
-
-
-def customer_get_booking(request, booking_id):
-	access_token = AccessToken.objects.get(token = request.GET.get("access_token"),
-		expires__gt = timezone.now())
-
-	customer = access_token.user.customer
-
-	booking = BookingSerializer(
-        Booking.objects.get(id=booking_id, customer = customer)
+        Booking.objects.get(id=booking_id)
         ).data
 
 	return JsonResponse({"booking": booking})
@@ -346,7 +328,7 @@ def employee_update_details(request):
         employee.save()
 
         return JsonResponse({"status": "success"})
-        
+
 
     
 @csrf_exempt
@@ -370,23 +352,40 @@ def employee_verify(request):
 
 
 
-def employee_get_shop(request, shop_id):
-    shop = ShopSerializerEmployee(
-        Shop.objects.filter(id = shop_id),
-        many = True,
-        context = {"request": request}
-    ).data
+
+
+
+def employee_get_bookings(request, filter_id):
+    access_token = AccessToken.objects.get(token = request.GET.get("access_token"),
+            expires__gt = timezone.now())
+
+    employee = access_token.user.employee
+    shop = employee.shop
+
+    if filter_id == 0 :
+        bookings = BookingSerializer(
+            Booking.objects.filter(shop = shop, status = Booking.PLACED).order_by("-requested_time"),
+            many = True
+        ).data
+
+    elif filter_id == 1 :
+        bookings = BookingSerializer(
+            Booking.objects.filter(shop = shop, status__in=[2, 3]).order_by("-requested_time"),
+            many = True
+        ).data
     
-    return JsonResponse({"shop": shop})
+    else :
+        bookings = BookingSerializer(
+            Booking.objects.filter(shop = shop, status__in=[4, 5, 6]).order_by("-requested_time"),
+            many = True
+        ).data
 
-
-def employee_get_placed_bookings(request, shop_id):
-    bookings = BookingSerializer(
-        Booking.objects.filter(shop_id = shop_id, status = Booking.PLACED, employee = None).order_by("-id"),
-        many = True
-    ).data
 
     return JsonResponse({"bookings": bookings})
+
+
+
+
 
 
 
@@ -402,7 +401,6 @@ def employee_accept_booking(request):
         try:
             booking = Booking.objects.get(
                 id = request.POST["booking_id"],
-                employee = None,
                 status = Booking.PLACED
             )
             booking.employee = employee
@@ -413,7 +411,7 @@ def employee_accept_booking(request):
             return JsonResponse({"status": "success"})
 
         except Booking.DoesNotExist:
-            return JsonResponse({"status": "failed", "error": "This booking has already been accepted."})
+            return JsonResponse({"status": "failed", "error": "Someone else has already responded to this booking."})
     
 
 
@@ -427,7 +425,7 @@ def employee_decline_booking(request):
 
         try:
             booking = Booking.objects.get(
-                id = request.POST["booking_id"],
+                id = request.POST["booking_id"]
             )
             booking.employee = employee
             booking.status = Booking.DECLINED
@@ -436,7 +434,7 @@ def employee_decline_booking(request):
             return JsonResponse({"status": "success"})
 
         except Booking.DoesNotExist:
-            return JsonResponse({"status": "failed", "error": "This booking has already been declined."})
+            return JsonResponse({"status": "failed", "error": "Someone else has already responded to this booking."})
 
 
 
@@ -452,10 +450,9 @@ def employee_enroute(request):
         try:
             booking = Booking.objects.get(
                 id = request.POST["booking_id"],
-                status = Booking.ACCEPTED,
-                booking_type = 1,
+                status = Booking.ACCEPTED
             )
-
+            booking.employee = employee
             booking.status = Booking.ONTHEWAY
             booking.save()
 
@@ -474,11 +471,19 @@ def employee_complete_booking(request):
 
     employee = access_token.user.employee
 
-    booking = Booking.objects.get(id = request.POST["booking_id"], employee = employee)
+    try:
+        booking = Booking.objects.get(
+            id = request.POST["booking_id"]
+        )
+        booking.employee = employee
+        booking.status = Booking.COMPLETED
+        booking.save()
 
-    booking.status = Booking.COMPLETED 
-    booking.save()
-    return JsonResponse({"status": "success"})
+        return JsonResponse({"status": "success"})
+
+    except Booking.DoesNotExist:
+        return JsonResponse({"status": "failed", "error": "This booking has been accepted by another barber."})
+
 
     
 

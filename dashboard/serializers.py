@@ -113,8 +113,8 @@ class CustomerSerializer(serializers.ModelSerializer):
 
 class EmployeeSerializer(serializers.ModelSerializer):
 	name = serializers.ReadOnlyField(source="user.get_full_name")
-	shop = serializers.ReadOnlyField(source="shop.name")
+	shop_name = serializers.ReadOnlyField(source="shop.name")
 		
 	class Meta:
 		model = Employee
-		fields = ("name", "email", "avatar", "phone", "shop")
+		fields = ("name", "email", "avatar", "phone", "shop", "shop_name")

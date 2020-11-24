@@ -19,7 +19,6 @@
                 <tr class="db-card-headings db-card-titles">
                 <th>Name</th>
                 <th>Phone</th>
-                <th>Address</th>
                 <th>Email</th>
      
               </tr>
@@ -28,9 +27,8 @@
                 {% for employee in employees %}
 
                     <tr>
-                        <td>{{ employee.first_name }} {{ employee.last_name }}</td>
+                        <td>{{ employee.user.get_full_name }}</td>
                         <td>{{ employee.phone }}</td>
-                        <td>{{ employee.address }}</td>
                         <td>{{ employee.user.email }}</td>
                        
                     </tr>
@@ -38,9 +36,6 @@
                 {% endfor %}
             </tbody>
         </table>
-        <div class="text-center">
-            <a href="{% url 'shop-add-services' %}" class="btn btn-primary">Add Service </a>
-        </div>
     </div>
 </div>
 </div>
