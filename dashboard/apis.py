@@ -559,8 +559,10 @@ def shop_booking_notification(request, last_request_time):
 
 
 def check_user_last_loggin_in_as(request):
+    print("called")
     access_token = AccessToken.objects.get(token = request.GET.get("access_token"),
             expires__gt = timezone.now())
+
 
     user = access_token.user 
 
