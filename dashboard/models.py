@@ -92,7 +92,6 @@ class Booking(models.Model):
 	customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
 	shop = models.ForeignKey(Shop, on_delete=models.CASCADE)
 	employee = models.ForeignKey(Employee, null = True, on_delete=models.CASCADE)
-	total = models.FloatField()
 	status = models.IntegerField(choices = STATUS_CHOICES)
 	created_at = models.DateTimeField(default = timezone.now)
 	requested_time = models.DateTimeField(blank = True, null = True)
@@ -100,7 +99,9 @@ class Booking(models.Model):
 	requests = models.CharField(max_length=500, blank = True, default="")
 	accepted_at = models.DateTimeField(blank = True, null = True)
 	rating = models.IntegerField(blank=True, default=0)
-	
+	service_fee = models.FloatField(default=0)
+	subtotal = models.FloatField(default=0)
+	total = models.FloatField(default=0)
 
 	def __str__(self):
 	    return str(self.id)
@@ -109,7 +110,6 @@ class Booking(models.Model):
 class BookingDetail(models.Model):
 	booking = models.ForeignKey(Booking, related_name='booking_details', on_delete=models.CASCADE)
 	service = models.ForeignKey(Service, on_delete=models.CASCADE)
-	sub_total = models.FloatField()
 
 	def __str__(self):
 	    return str(self.id)

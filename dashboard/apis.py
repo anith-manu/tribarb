@@ -138,6 +138,8 @@ def customer_add_booking(request):
         # Get Booking Details   
         booking_details = json.loads(request.POST["booking_details"])
 
+        booking_subtotal = float(request.POST["subtotal"])
+        booking_service_fee = float(request.POST["service_fee"])
         booking_total = float(request.POST["total"])
 
         if len(booking_details) > 0:
@@ -150,6 +152,8 @@ def customer_add_booking(request):
                     requests = request.POST["requests"],
                     requested_time = request.POST["requested_time"],
                     total = booking_total,
+                    service_fee = booking_service_fee,
+                    subtotal = booking_subtotal,
                     status = Booking.PLACED,
                     address = request.POST["address"],
                 )
@@ -158,8 +162,7 @@ def customer_add_booking(request):
             for service in booking_details:
                 BookingDetail.objects.create(
                         booking = booking,
-                        service_id = service["service_id"],
-                        sub_total = Service.objects.get(id = service["service_id"]).price
+                        service_id = service["service_id"]
                     )
                     
        
@@ -187,13 +190,13 @@ def customer_get_bookings(request, filter_id):
 
     if filter_id == 0 :
         bookings = BookingSerializer(
-            Booking.objects.filter(customer = customer, status__in=[1, 2, 3]).order_by("-requested_time"),
+            Booking.objects.filter(customer = customer, status__in=[1, 2, 3]).order_by("requested_time"),
             many = True
         ).data
     
     else :
         bookings = BookingSerializer(
-            Booking.objects.filter(customer = customer, status__in=[4, 5, 6]).order_by("-requested_time"),
+            Booking.objects.filter(customer = customer, status__in=[4, 5, 6]).order_by("requested_time"),
             many = True
         ).data
 
@@ -364,19 +367,19 @@ def employee_get_bookings(request, filter_id):
 
     if filter_id == 0 :
         bookings = BookingSerializer(
-            Booking.objects.filter(shop = shop, status = Booking.PLACED).order_by("-requested_time"),
+            Booking.objects.filter(shop = shop, status = Booking.PLACED).order_by("requested_time"),
             many = True
         ).data
 
     elif filter_id == 1 :
         bookings = BookingSerializer(
-            Booking.objects.filter(shop = shop, status__in=[2, 3]).order_by("-requested_time"),
+            Booking.objects.filter(shop = shop, status__in=[2, 3]).order_by("requested_time"),
             many = True
         ).data
     
     else :
         bookings = BookingSerializer(
-            Booking.objects.filter(shop = shop, status__in=[4, 5, 6]).order_by("-requested_time"),
+            Booking.objects.filter(shop = shop, status__in=[4, 5, 6]).order_by("requested_time"),
             many = True
         ).data
 
@@ -559,7 +562,6 @@ def shop_booking_notification(request, last_request_time):
 
 
 def check_user_last_loggin_in_as(request):
-    print("called")
     access_token = AccessToken.objects.get(token = request.GET.get("access_token"),
             expires__gt = timezone.now())
 

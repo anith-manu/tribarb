@@ -18,5 +18,7 @@ class Shop(models.Model):
 	total_rating = models.IntegerField(default=0)
 	number_of_ratings = models.IntegerField(default=0)
 
+	service_fee = models.FloatField(default=2.0)
+
 	def __str__(self):
 		return str(self.id) + " " + self.name
