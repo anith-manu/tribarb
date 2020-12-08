@@ -6,7 +6,7 @@
 {% block page %}
 
 <div class="db-items">
-<div class="card">
+<div class="card mb-4">
     <div class="card-heading db-card-headings">
         <h4 class="card-title text-center db-card-titles">
             Services
@@ -14,11 +14,11 @@
         
     </div>
     <div class="card-body">
-        <table class="table table-bordered table-hover table-striped text-center">
+        <table class="table table-bordered text-center">
             <thead>
                 <tr class="db-card-headings db-card-titles">
-                <th>Service Name</th>
-                <th>Short Description</th>
+                <th>Name</th>
+                <th>Description</th>
                 <th>Price</th>
                 <th>Album</th>
               </tr>
@@ -38,7 +38,7 @@
             </tbody>
         </table>
         <div class="text-center">
-            <a href="{% url 'shop-add-services' %}" class="btn btn-primary">Add Service </a>
+            <a href="{% url 'shop-add-services' %}" class="btn btn-block btn-primary">Add Service </a>
         </div>
     </div>
 </div>

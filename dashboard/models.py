@@ -14,7 +14,7 @@ class Customer(models.Model):
 	last_logged_in_as = models.BooleanField(default=False)
 
 	def __str__(self):
-		return self.user.get_full_name()
+		return str(self.id) + " " + self.user.get_full_name()
 
 
 class Employee(models.Model):
@@ -27,7 +27,7 @@ class Employee(models.Model):
 	last_logged_in_as = models.BooleanField(default=False)
 
 	def __str__(self):
-		return self.user.get_full_name() 
+		return str(self.id) + " " + self.user.get_full_name() 
 
 
 class Service(models.Model):

@@ -7,7 +7,7 @@
 
 <div class="db-items">
 
-    <div class="card">
+    <div class="card mb-4">
         <div class="card-heading db-card-headings">
             <h4 class="card-title text-center db-card-titles">
                 {{ service.service_name }} Album
@@ -32,14 +32,11 @@
             </div>
         </div>
         <div class="text-center">
-            <a href="{% url 'shop-edit-services' service.id %}" class="btn btn-primary">Edit Album</a>
+            <a href="{% url 'shop-edit-services' service.id %}" class="btn btn-block btn-primary">Edit Album</a>
         </div>
         </div>  
       
     </div>
-
-
-    
 </div>
  
 {% endblock %}

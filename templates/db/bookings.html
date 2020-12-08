@@ -5,7 +5,7 @@
 {% block page %}
 
 <div class="db-items">
-    <div class="card">
+    <div class="card mb-4">
         <div class="card-heading db-card-headings">
             <h4 class="card-title text-center db-card-titles">
                 Current Bookings
@@ -13,56 +13,37 @@
             
         </div>
         <div class="card-body">
-            <table class="table table-bordered table-hover table-striped text-center">
+            <table class="table table-bordered text-center">
 				<thead>
 					<tr class="db-card-headings db-card-titles">
  
-                    <th>Id</th>
+                    <th>#</th>
                     <th>Customer</th>
-                    <th>Address</th>
                     <th>Booking Type</th>
-                    <th>Assigned Employee</th>
                     <th>Requested Date & Time</th>
-                    <th>Requested Services</th>
-                    <th>Additional Requests</th>
-                    <th>Total</th>
-                    <th>Payment Mode</th>
+                    <th>Employee</th>
                     <th>Status</th>
-                    <th>Action</th>
+
                   </tr>
 				</thead>
 				<tbody>
-                    {% for booking in booking %}
-                    {% if booking.status != 4 and booking.status != 5 %}
+                    {% for booking in bookings %}
+                    {% if booking.status != 4 and booking.status != 5 and booking.status != 6 %}
                         <tr>
-                            <td>{{ booking.id }}</td>
-                            <td>{{ booking.customer }}</td>
-                            <td>{{ booking.address }}</td>
+                            <td><a href="{% url 'shop-view-booking' booking.id %}">{{ booking.id }}</a></td>
+                            <td>{{ booking.customer.user.get_full_name }}</td>
                             <td>{{ booking.get_booking_type_display}}</td>
-                            <td>{{ booking.employee }}</td>
                             <td>{{ booking.requested_time }}</td>
-                            <td>
-                                {% for bd in booking.booking_details.all %}
-                                    {{ bd.service.service_name }} - 
-                                     {{ bd.sub_total }} <br/>
-  
-                                {% endfor %}
-                            </td>
-                            <td>{{ booking.requests }}</td>
-                            <td>{{ booking.total|floatformat:2 }}</td>
-                            <td>{{ booking.get_payment_mode_display }}</td>
+
+                            {% if booking.employee == None %}
+                                <td>None</td>
+                            {% endif %}
+                            {% if booking.employee != None %}
+                                <td>{{ booking.employee.user.get_full_name }}</td>
+                            {% endif %}
+                        
                             <td class="font-weight-bold">{{ booking.get_status_display }}</td>
-                            <td>
-                                {% if booking.status != 6 %}
-                                    <form method="POST">
-                                      {% csrf_token %}
-                                      <input name="id" value="{{ booking.id }}" hidden>
-                                      <button name="accept" class="btn {% if booking.status == 2 %} btn-success {% endif %} btn-outline-success text-dark">Accept</button>
-                                      <button name="decline" class="btn {% if booking.status == 5 %} btn-danger {% endif %}  btn-outline-danger text-dark mt-2 ">Decline</button>
-                                    </form>
-                                {% endif %}
-                                
-                            </td>
+                      
                             
                         </tr>
                     {% endif %}
@@ -71,7 +52,7 @@
                 </tbody>
             </table>
             <div class="text-center">
-                <a href="{% url 'shop-bookings-completed' %}" class="btn btn-primary">View Past Bookings</a>
+                <a href="{% url 'shop-bookings-completed' %}" class="btn btn-block btn-primary">View Past Bookings</a>
             </div>
         </div>
     </div>

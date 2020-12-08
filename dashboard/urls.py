@@ -7,7 +7,8 @@ from django.conf.urls import url
 urlpatterns = [
         path('', views.home, name='home'),
         path('bookings', views.shop_bookings, name='shop-bookings'),
-        path('bookings/completed/', views.shop_bookings_completed, name='shop-bookings-completed'),
+        path('bookings/previous/', views.shop_bookings_completed, name='shop-bookings-completed'),
+        path('bookings/<int:booking_id>/', views.shop_view_booking, name='shop-view-booking'),
 
         path('account', views.shop_account, name='shop-account'),
 

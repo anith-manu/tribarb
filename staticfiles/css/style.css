@@ -1,3 +1,19 @@
+#map {
+  height: 300px;
+  width: 100%;
+}
+
+.not-visible {
+  display: none;
+}
+
+.spinning {
+  position: fixed;
+  width: 2rem; 
+  height: 2rem;
+  top: calc( 50% - ( 2rem / 2) );
+}
+
 body {
 	background-color: #EDF2F5;
   overflow: auto;
@@ -40,7 +56,7 @@ body {
 }
 
 .db-card-headings{
-    background-color: #333;
+    background-color: #353A3F;
     padding-top: 10px;
 }
 

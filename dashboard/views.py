@@ -4,7 +4,6 @@ from django.contrib.auth.decorators import login_required
 from authentication.forms import ShopForm
 from dashboard.forms import EditUserForm, ServiceForm
 from dashboard.models import Service, ServiceImage, Booking, Employee
-
 from django.db.models import Sum, Count, Case, When
 
 def home(request):
@@ -26,7 +25,7 @@ def shop_bookings(request):
             booking.save()
     
     booking = Booking.objects.filter(shop = request.user.shop).order_by("-id")
-    return render(request, 'db/bookings.html', { "booking":booking })
+    return render(request, 'db/bookings.html', { "bookings":booking })
 
 
 @login_required(login_url='login')
@@ -35,17 +34,31 @@ def shop_bookings_completed(request):
     return render(request, 'db/bookings_completed.html', { "booking":booking })
 
 
+
+
+@login_required(login_url='login')
+def shop_employees(request):
+    if request.method == "POST":
+        employee = Employee.objects.get(id=request.POST["id"])
+
+        employee.shop = None
+        employee.save()
+            
+    employees = Employee.objects.filter(shop = request.user.shop).order_by("id")
+    return render(request, 'db/employees.html', {"employees":employees})
+
+
 @login_required(login_url='login')
 def shop_account(request):
     user_form = EditUserForm(instance = request.user)
-    barber_form = ShopForm(instance = request.user.shop)
+    shop_form = ShopForm(instance = request.user.shop)
     token = request.user.shop.token
     instagram = request.user.shop.instagram
     facebook = request.user.shop.facebook
   
     if request.method == "POST":
         user_form = EditUserForm(request.POST, instance=request.user)
-        barber_form = ShopForm(request.POST, request.FILES, instance=request.user.shop)
+        shop_form = ShopForm(request.POST, request.FILES, instance=request.user.shop)
         token = request.POST.get('token')
         instagram = request.POST.get('instagram')
         facebook = request.POST.get('facebook')
@@ -54,14 +67,14 @@ def shop_account(request):
         request.user.shop.instagram = instagram
         request.user.shop.facebook = facebook
         
-        if user_form.is_valid() and barber_form.is_valid():
+        if user_form.is_valid() and shop_form.is_valid():
             user_form.save()
-            barber_form.save()
+            shop_form.save()
         
     ## Bug here with barber form. Changes do not get updated immediately in template. 
     return render(request, 'db/account.html', {
 		"user_form": user_form,
-		"barber_form": barber_form,
+		"shop_form": shop_form,
         "token": token,
         "instagram": instagram,
         "facebook": facebook,
@@ -87,6 +100,9 @@ def shop_add_services(request):
         shop = False
         home = False
 
+        if title == "":
+            return render(request, 'db/add_services.html')
+
         if shopService == "shop":
             shop = True
         
@@ -110,6 +126,15 @@ def shop_add_services(request):
     
     return render(request, 'db/add_services.html')
     
+    
+
+@login_required(login_url='/barber/sign-in/')
+def shop_view_booking(request, booking_id):
+    booking = Booking.objects.get(id=booking_id)
+
+    return render(request, 'db/booking.html', {
+        "booking":booking
+        })
 
 
 
@@ -127,6 +152,13 @@ def shop_edit_services(request, service_id):
         if delete=="true":
             service.delete()
         else:
+
+            if request.POST.get('service_name') == "":
+                return render(request, 'db/edit_services.html', {
+                    "service":service
+                })
+
+
             service.service_name = request.POST.get('service_name')
             service.short_description = request.POST.get('short_description')
             service.price = request.POST.get('price')
@@ -135,6 +167,7 @@ def shop_edit_services(request, service_id):
             homeService = request.POST.get('homeService')
             shop = False
             home = False
+
 
             if shopService == "shop":
                 shop = True
@@ -205,7 +238,7 @@ def shop_reports(request):
 
     # Top 3 Meals
     top_services = Service.objects.filter(shop = request.user.shop)\
-                     .annotate(total_booking = Sum('bookingdetail__sub_total'))\
+                     .annotate(total_booking = Sum('bookingdetail__service__price'))\
                      .order_by("-total_booking")
 
     service = {
@@ -213,7 +246,8 @@ def shop_reports(request):
         "data": [service.total_booking or 0 for service in top_services]
     }
 
-    # Top 3 Drivers
+
+    # Top 3 Employees
     top_employees = Employee.objects.annotate(
         total_booking = Count(
             Case (
@@ -221,13 +255,16 @@ def shop_reports(request):
             )
         )
     ).order_by("-total_booking")
-
-    employee = {
-        "labels": [employee.user.get_full_name for employee in top_employees],
-        "data": [employee.total_booking for employee in top_employees]
-    }
     
 
+    employee = {
+        "labels": [employee.user.get_short_name() for employee in top_employees],
+        "data": [employee.total_booking for employee in top_employees]
+    }
+
+    print("Revenue")
+    print(revenue)
+        
     return render(request, 'db/reports.html', {
     "revenue": revenue,
     "bookings": bookings,
@@ -237,8 +274,4 @@ def shop_reports(request):
 
 
 
-@login_required(login_url='login')
-def shop_employees(request):
-    employees = Employee.objects.filter(shop = request.user.shop).order_by("id")
-    return render(request, 'db/employees.html', {"employees":employees})
 

@@ -3,9 +3,92 @@
 {% load widget_tweaks %}
 
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
+    <script defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCQkA1f7PI5vxuGNRC3qWH8lNxGJW6bP4c&callback=initMap"></script>
+    <script>
+
+        let marker; 
+      
+
+        function initMap() {
+            const myLatlng = { lat: 54, lng: -3 };
+
+            map = new google.maps.Map(document.getElementById("map"), {
+                zoom: 4,
+                center: myLatlng,
+            });
+
+            const geocoder = new google.maps.Geocoder();
+
+            map.addListener("click", (mapsMouseEvent) => {
+                reverseGeocode(geocoder, map, mapsMouseEvent.latLng)
+            });
+
+            
+            document.getElementById("submit").addEventListener("click", () => {
+                geocodeAddress(geocoder, map);
+            });
+
+            
+        }
+
+     
+  
+        function geocodeAddress(geocoder, resultsMap) {
+            
+            if (marker != undefined) {
+                marker.setMap(null)
+            } 
+
+            resultsMap.setZoom(15)
+            const address = document.getElementById("address").value;
+            geocoder.geocode({ address: address }, (results, status) => {
+                if (status === "OK") {
+                    resultsMap.setCenter(results[0].geometry.location);
+                    marker = new google.maps.Marker({
+                        map: resultsMap,
+                        position: results[0].geometry.location,
+                    });
+                } else {
+                    alert(
+                        "Geocode was not successful for the following reason: " + status
+                    );
+                }
+            });
+        }
+
+
+        function reverseGeocode(geocoder, map, latlng) {
+            if (marker != undefined) {
+                marker.setMap(null)
+            } 
+            
+            geocoder.geocode({ location: latlng }, (results, status) => {
+            if (status === "OK") {
+                if (results[0]) {
+                document.getElementById("address").value = results[0].formatted_address
+                marker = new google.maps.Marker({
+                    position: latlng,
+                    map,
+                });
+                map.setZoom(15)
+                map.setCenter(latlng)
+                
+                } else {
+                window.alert("No results found");
+                }
+            } else {
+                window.alert("Geocoder failed due to: " + status);
+            }
+            });
+        }
+    </script>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{% static 'css/bootstrap.css' %}">
@@ -15,6 +98,7 @@
 
 
 <body class="auth-bg vignette-register">
+
     <div class="row" style="padding-bottom: 30px;">
         <div class="col-md-3"></div>
         <div class="col-md-6">
@@ -75,15 +159,20 @@
                                 </div>
 
                                 <div class="form-group">
-                                    {% render_field shop_form.address class="form-control" placeholder="Shop Address"%}
+                                    {% render_field shop_form.address id="address" class="form-control" placeholder="Shop Address"%}   
+                                    <div style="padding-top: 5px; padding-bottom: 5px;">
+                                        <input id="submit" type="button" value="Search Address" class="font-weight-normal btn btn-sm btn-block btn-warning"/>  
+                                    </div>
+                                    <div id="map" ></div>  
+                                                               
                                 </div>
 
-                                <div class="card-title text-left text-muted">Shop Logo</div>
+                                <div class="card-title text-left text-warning">Shop Logo</div>
                                 <div class="form-group">
-                                    {% render_field shop_form.logo %}
+                                    {% render_field shop_form.logo %} 
                                 </div>
 
-                                <div class="card-title text-left text-muted">Accepted Booking Types</div>
+                                <div class="card-title text-left text-warning">Accepted Booking Types</div>
                                 <div class="form-group">
                                     {% render_field shop_form.shop_bookings %} <label style="color: whitesmoke;"> Shop Bookings</label> </br>
                                     {% render_field shop_form.home_bookings %} <label style="color: whitesmoke;"> Home Bookings</label>
@@ -101,16 +190,20 @@
                             <div class="card-footer bg-transparent text-center" style="padding-top: 15px; padding-bottom: 0px; border-color: whitesmoke;" >
                                 <p style="color: whitesmoke;">Have an account?<a href="{% url 'login' %}"> Log In</a></p>
                             </div>
+                            
                         </div>
-
+                    
                     </div>
-
+                    
                 </div>
                  <div class="col-md-2"></div>
             </div>
         </div>
         <div class="col-md-3"></div>
+        
     </div>
+
 </body>
+
 
 </html>

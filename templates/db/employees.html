@@ -6,7 +6,7 @@
 {% block page %}
 
 <div class="db-items">
-<div class="card">
+<div class="card mb-4">
     <div class="card-heading db-card-headings">
         <h4 class="card-title text-center db-card-titles">
             Employees
@@ -14,12 +14,14 @@
         
     </div>
     <div class="card-body">
-        <table class="table table-bordered table-hover table-striped text-center">
+        <table class="table table-bordered text-center">
             <thead>
                 <tr class="db-card-headings db-card-titles">
+                <th>ID</th>
                 <th>Name</th>
                 <th>Phone</th>
                 <th>Email</th>
+                <th>Remove Employee</th>
      
               </tr>
             </thead>
@@ -27,16 +29,35 @@
                 {% for employee in employees %}
 
                     <tr>
+                        <td>{{ employee.id}}</td>
                         <td>{{ employee.user.get_full_name }}</td>
                         <td>{{ employee.phone }}</td>
                         <td>{{ employee.user.email }}</td>
-                       
+                        <td>
+                            <form id="delForm" method="POST">
+                                {% csrf_token %}
+                                <input name="id" value="{{ employee.id }}" hidden>
+                                <button type="button" id="delEmpl" class="btn btn-sm btn-danger">Remove</button>
+                            </form>
+                        </td>
                     </tr>
-
                 {% endfor %}
             </tbody>
         </table>
     </div>
 </div>
 </div>
+
+
+<script>
+        var formData = new FormData();
+        $(document).on('click', '#delEmpl', function(e) {
+      
+            if (confirm('Are you sure you want to delete this employee?')) {
+
+                $("#delForm").submit();
+            }       
+        })
+ 
+</script>
 {% endblock %}
