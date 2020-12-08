@@ -17,7 +17,8 @@
         <table class="table table-bordered text-center">
             <thead>
                 <tr class="db-card-headings db-card-titles">
-                <th>Name</th>
+                <th>Service Name</th>
+                <th>Service Type</th>
                 <th>Description</th>
                 <th>Price</th>
                 <th>Album</th>
@@ -28,6 +29,14 @@
 
                     <tr>
                     <td><a href="{% url 'shop-edit-services' service.id %}">{{ service.service_name }}</a></td>
+                    {% if service.shop_service and service.home_service %} 
+                        <td> Shop & Home</td>
+                    {% elif  service.shop_service %}
+                        <td> Shop </td>
+                    {% elif  service.home_service %}
+                        <td> Home </td>
+                    {% endif %} 
+                    
                       <td>{{ service.short_description }}</td>
                       <td>{{ service.price }}</td>
                       <td><a href="{% url 'shop-service-album' service.id %}">View {{ service.service_name }} Album</a></td>

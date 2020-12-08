@@ -16,42 +16,26 @@
             
         </div>
         <div class="card-body">
-           
-            
-            <p></p>
+            <label>Service Name </label>
+            <input type="text" id="service_name" class="form-control"  value="{{ service.service_name }}">
+            <label class="mt-4">Description</label>
+            <input type="text" id="short_description" class="form-control" value="{{ service.short_description }}">
+            <label class="mt-4">Price</label>
+            <input type="number" id="price" class="form-control"  value="{{ service.price }}">
+
+            <p class="mt-4">What kind of service is this? (Tick one or both)</p>
+            <input type="checkbox" id="shopService" value="shop" {% if service.shop_service %} checked {% endif %}>
+                <label>Shop Service</label><br>
+
+            <input type="checkbox" id="homeService" value="home" {% if service.home_service %} checked {% endif %} >
+                <label>Home Service</label>
+
+
+            <p class="mt-4">Images</p>
             <input type="checkbox" id="createRadio" name="gender" value="create">
             <label for="female">Tick this box if you wish to create a new album, else you will be adding to the existing album.</label><br>
 
             <input type="file" multiple>
-            
-            <label>Service Name </label>
-            <input type="text" id="service_name" class="form-control"  value="{{ service.service_name }}">
-            <label>Description</label>
-            <input type="text" id="short_description" class="form-control" value="{{ service.short_description }}">
-            <label>Price</label>
-            <input type="number" id="price" class="form-control"  value="{{ service.price }}">
-        </br>
-            <p>What kind of service is this? (Tick one or both)</p>
-
-            {% if service.shop_service %}
-            <input type="checkbox" id="shopService" value="shop" checked>
-                <label>Shop Service</label><br>
-            {% endif %}
-
-            {% if not service.shop_service %}
-            <input type="checkbox" id="shopService" value="shop">
-                <label>Shop Service</label><br>
-            {% endif %}
-
-            {% if service.home_service %}
-            <input type="checkbox" id="homeService" value="home" checked>
-                <label>Home Service</label><br>
-            {% endif %} 
-            
-            {% if not service.home_service %}
-            <input type="checkbox" id="homeService" value="home">
-                <label>Home Service</label><br>
-            {% endif %} 
 
             <div class="text-center">
                 <button type="button" id="saveBtn" class="btn btn-block btn-primary mt-4">Update Service</button>
