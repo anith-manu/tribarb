@@ -12,6 +12,7 @@ from django.conf import settings
 from django.contrib.auth import authenticate, login, logout
 
 from authentication.forms import ShopForm
+from django.core.mail import EmailMultiAlternatives
 
 
 from django.contrib.sites.shortcuts import get_current_site
@@ -112,23 +113,43 @@ class RegistrationView(View):
 
         current_site = get_current_site(request)
         email_subject = 'Activate Your Tribarb Account'
-        message = render_to_string('auth/activate.html', 
-        {
+        # message = render_to_string('auth/activate.html', 
+        # {
+        #     'user':user,
+        #     'domain':current_site.domain,
+        #     'uid':urlsafe_base64_encode(force_bytes(user.pk)),
+        #     'token': generate_token.make_token(user)       
+        # }
+        # )
+
+        context = ({
             'user':user,
             'domain':current_site.domain,
             'uid':urlsafe_base64_encode(force_bytes(user.pk)),
             'token': generate_token.make_token(user)       
-        }
-        )
+        })
 
-        email_message = EmailMessage(
-            email_subject,
-            message,
-            settings.EMAIL_HOST_USER,
-            [email], 
-        )
 
-        EmailThread(email_message).start()
+        text_content = render_to_string('auth/activate.txt', context)
+        html_content = render_to_string('auth/activate.html', context)
+
+        try:
+            emailMessage = EmailMultiAlternatives(subject=email_subject, body=text_content, from_email=settings.EMAIL_HOST_USER, to=[email])
+            emailMessage.attach_alternative(html_content, "text/html")
+            emailMessage.send(fail_silently=False)
+        except SMTPException as e:
+            print('There was an error sending an email: ', e) 
+            error = {'message': ",".join(e.args) if len(e.args) > 0 else 'Unknown Error'}
+            raise serializers.ValidationError(error)
+
+        # email_message = EmailMessage(
+        #     email_subject,
+        #     message,
+        #     settings.EMAIL_HOST_USER,
+        #     [email], 
+        # )
+
+        # EmailThread(e_message).start()
         messages.add_message(request, messages.SUCCESS, 'Account created successfully! Please check your email for a verification link.')
 
         return redirect('login')
