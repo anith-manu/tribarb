@@ -6,56 +6,59 @@
 
 <div class="db-items">
     <div class="card mb-4">
+
         <div class="card-heading db-card-headings">
             <h4 class="card-title text-center db-card-titles">
                 Current Bookings
             </h4>
-            
         </div>
+
         <div class="card-body">
-            <table class="table table-bordered text-center">
-				<thead>
-					<tr class="db-card-headings db-card-titles">
- 
-                    <th>#</th>
-                    <th>Customer</th>
-                    <th>Booking Type</th>
-                    <th>Requested Date & Time</th>
-                    <th>Employee</th>
-                    <th>Status</th>
+            <div class="table-responsive">
+                <table class="table table-bordered text-center">
 
-                  </tr>
-				</thead>
-				<tbody>
-                    {% for booking in bookings %}
-                    {% if booking.status != 4 and booking.status != 5 and booking.status != 6 %}
-                        <tr>
-                            <td><a href="{% url 'shop-view-booking' booking.id %}">{{ booking.id }}</a></td>
-                            <td>{{ booking.customer.user.get_full_name }}</td>
-                            <td>{{ booking.get_booking_type_display}}</td>
-                            <td>{{ booking.requested_time }}</td>
-
-                            {% if booking.employee == None %}
-                                <td>None</td>
-                            {% endif %}
-                            {% if booking.employee != None %}
-                                <td>{{ booking.employee.user.get_full_name }}</td>
-                            {% endif %}
-                        
-                            <td class="font-weight-bold">{{ booking.get_status_display }}</td>
-                      
-                            
+                    <thead>
+                        <tr class="db-card-headings db-card-titles">
+                            <th>#</th>
+                            <th>Customer</th>
+                            <th>Booking Type</th>
+                            <th>Requested Date & Time</th>
+                            <th>Employee</th>
+                            <th>Status</th>
                         </tr>
-                    {% endif %}
-                    {% endfor %}
+                    </thead>
 
-                </tbody>
-            </table>
+                    <tbody>
+                        {% for booking in bookings %}
+                        {% if booking.status != 4 and booking.status != 5 and booking.status != 6 %}
+                            <tr>
+                                <td><a href="{% url 'shop-view-booking' booking.id %}">{{ booking.id }}</a></td>
+                                <td>{{ booking.customer.user.get_full_name }}</td>
+                                <td>{{ booking.get_booking_type_display}}</td>
+                                <td>{{ booking.requested_time }}</td>
+
+                                {% if booking.employee == None %}
+                                    <td>None</td>
+                                {% endif %}
+                                {% if booking.employee != None %}
+                                    <td>{{ booking.employee.user.get_full_name }}</td>
+                                {% endif %}
+                            
+                                <td class="font-weight-bold">{{ booking.get_status_display }}</td>
+                            </tr>
+                        {% endif %}
+                        {% endfor %}
+                    </tbody>
+
+                </table>
+            </div>
+
             <div class="text-center">
                 <a href="{% url 'shop-bookings-completed' %}" class="btn btn-block btn-primary">View Past Bookings</a>
             </div>
+
         </div>
     </div>
-    </div>
+</div>
 
 {% endblock %}

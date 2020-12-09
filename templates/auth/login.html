@@ -11,7 +11,7 @@
     <form action="{% url 'login' %}" method="POST">
 
         {% csrf_token %}
-
+        
         <div class="form-group">
             <input class="form-control" type="text" name="username" value="{{data.username}}" placeholder="Username">
         </div>
@@ -19,9 +19,9 @@
         <div class="form-group">
             <input class="form-control" type="text" name="password" placeholder="Password">
         </div>
-            
-        
+
         <input type="submit" value="Log In" style="color: #333;" class="font-weight-bold btn btn-lg btn-block btn-warning"/>
+
     </form>
 
     <div class="text-center" style="padding-top: 10px; padding-bottom: 10px;">
