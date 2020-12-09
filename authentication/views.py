@@ -36,7 +36,8 @@ class RegistrationView(View):
     def get(self, request):
         shop_form = ShopForm()
         return render(request, 'auth/register.html', {
-		"shop_form": shop_form 
+		"shop_form" : shop_form,
+        "mapsKey" : settings.GOOGLE_MAPS_API_KEY
 		})
 
     def post(self, request):

@@ -5,6 +5,7 @@ from authentication.forms import ShopForm
 from dashboard.forms import EditUserForm, ServiceForm
 from dashboard.models import Service, ServiceImage, Booking, Employee
 from django.db.models import Sum, Count, Case, When
+from django.conf import settings
 
 def home(request):
     return redirect(shop_bookings)
@@ -55,6 +56,8 @@ def shop_account(request):
     token = request.user.shop.token
     instagram = request.user.shop.instagram
     facebook = request.user.shop.facebook
+
+    print(settings.AWS_ACCESS_KEY_ID)
   
     if request.method == "POST":
         user_form = EditUserForm(request.POST, instance=request.user)
@@ -78,6 +81,7 @@ def shop_account(request):
         "token": token,
         "instagram": instagram,
         "facebook": facebook,
+        "mapsKey" : settings.GOOGLE_MAPS_API_KEY
 		})
 
 
