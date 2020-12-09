@@ -1,4 +1,4 @@
-Hi, {{user.username}}.
-Please click the link below to verify your account.
+Hi, {{ user.get_full_name }}.
+Welcome to tribarb! Confirm your email address by clicking the link below and you'll be able to login to your tribarb shop manager account.
 
 http://{{domain}}{% url 'activate' uidb64=uid token=token %}
