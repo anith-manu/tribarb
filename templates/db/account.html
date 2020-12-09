@@ -7,123 +7,107 @@
 {% block page %}
 
 <div class="db-items">
-<div class="card mb-4">
-    <div class="card-heading db-card-headings">
-        <h4 class="card-title text-center db-card-titles">
-            Account
-        </h4>
-        
-    </div>
-    <div class="card-body">
-        <h5 class="card-title text-left">Shop Info</h5>
+    <div class="card mb-4">
 
-        <form method="POST" enctype="multipart/form-data"> 
-            {% csrf_token %}
+        <div class="card-heading db-card-headings">
+            <h4 class="card-title text-center db-card-titles">
+                Account
+            </h4>
+        </div>
 
-            <div class="card" style="border: none;">
+        <div class="card-body">
+
+            <h5 class="card-title text-left">Shop Info</h5>
+
+            <form method="POST" enctype="multipart/form-data"> 
+                {% csrf_token %}
+
                 <div class="card">
-                <div class="card-body">
-                    <p>* All {{ request.user.shop.name }} employees must know the <b>Shop ID and Token</b> to login to the Tribarb mobile app.</p>
-                    <h6>Shop ID : {{ request.user.shop.id }}</h6>
-                    <h6>Token</h6> 
-                    <div class="input-group">
-                    <input type="text" name="token" id="showToken" class="form-control" value="{{ token }}">
-                    <span class="input-group-btn">
-                        <button type="button" id="generateToken" class="btn btn-warning">
-                            <i class="fa fa-search">Generate Token</i>
-                        </button>
-                    </span>
-                    </div>
-                </div>
-                </div>
-    
-                <div class="row">
-                    <div class="col-sm-6">
-                      <div class="card" style="border: none;">
-                        <div class="card-body">
-                          <h6>Instagram ID</h6>
-                          <input type="text" name="instagram" class="form-control" value="{{ instagram }}" placeholder="Instagram ID">
-                        </div>
-                      </div>
-                    </div>
-                    <div class="col-sm-6">
-                      <div class="card" style="border: none;">
-                        <div class="card-body">
-                          <h6>Facebook @</h6>
-                          <input type="text" name="facebook" class="form-control" value="{{ facebook }}" placeholder="Facebook @">
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-              
-            
-
-            <h6 class="mt-3">Name</h6>
-            <div class="form-group">
-                {% render_field shop_form.name class="form-control" %}
-            </div>
-
-            <h6>Phone Number</h6>
-            <div class="form-group">
-                {% render_field shop_form.phone class="form-control" %}
-            </div>
-
-            <h6>Address</h6>
-            <div class="form-group">
-                {% render_field shop_form.address id="address" class="form-control" placeholder="Shop Address"%}   
-                <div style="padding-top: 5px; padding-bottom: 5px;">
-                    <input id="submit" type="button" value="Search Address" class="font-weight-normal btn btn-sm btn-block btn-warning"/>  
-                </div>
-                <div id="map" ></div>                           
-            </div>
-
-            <h6>Logo</h6>
-            <div class="form-group">
-                {% render_field shop_form.logo %} 
-            </div>
-
-            <h6>Accepted Booking Types</h6>
-            <div class="form-group">
-                {% render_field shop_form.shop_bookings %} <label> Shop Bookings</label> </br>
-                {% render_field shop_form.home_bookings %} <label> Home Bookings</label>
-            </div>
-
-            <h5 style="padding-top: 25px;" class="card-title text-left">User Info</h5>
-
-            <div class="row">
-                <div class="col-sm-4">
-                  <div class="card" style="border: none;">
                     <div class="card-body">
+                        <p>* All {{ request.user.shop.name }} employees must know the <b>Shop ID and Token</b> to login to the Tribarb mobile app.</p>
+                        <h6>Shop ID : {{ request.user.shop.id }}</h6>
+                        <h6>Token</h6> 
+                        <div class="input-group">
+                            <input type="text" name="token" id="showToken" class="form-control" value="{{ token }}">
+                            <span class="input-group-btn">
+                                <button type="button" id="generateToken" class="btn btn-warning">
+                                    <i class="fa fa-search">Generate Token</i>
+                                </button>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+        
+                <div class="row mt-3">
+                    <div class="col-sm-6">
+                        <h6>Instagram ID</h6>
+                        <input type="text" name="instagram" class="form-control" value="{{ instagram }}" placeholder="Instagram ID">
+                    </div>
+
+                    <div class="col-sm-6">
+                        <h6>Facebook @</h6>
+                        <input type="text" name="facebook" class="form-control" value="{{ facebook }}" placeholder="Facebook @">   
+                    </div>
+                </div>
+                
+                <h6 class="mt-3">Name</h6>
+                <div class="form-group">
+                    {% render_field shop_form.name class="form-control" %}
+                </div>
+
+                <h6>Phone Number</h6>
+                <div class="form-group">
+                    {% render_field shop_form.phone class="form-control" %}
+                </div>
+
+                <h6>Address</h6>
+                <div class="form-group">
+                    {% render_field shop_form.address id="address" class="form-control" placeholder="Shop Address"%}   
+                    <div style="padding-top: 5px; padding-bottom: 5px;">
+                        <input id="submit" type="button" value="Search Address" class="font-weight-normal btn btn-sm btn-block btn-warning"/>  
+                    </div>
+                    <div id="map" ></div>                           
+                </div>
+
+                <h6>Logo</h6>
+                <div class="form-group">
+                    {% render_field shop_form.logo %} 
+                </div>
+
+                <h6>Accepted Booking Types</h6>
+                <div class="form-group">
+                    {% render_field shop_form.shop_bookings %} <label> Shop Bookings</label> </br>
+                    {% render_field shop_form.home_bookings %} <label> Home Bookings</label>
+                </div>
+
+
+
+                <h5 class="card-title text-left mt-5">User Info</h5>
+
+                <div class="row">
+                    <div class="col-sm-4">
                         <h6>First Name</h6>
                         {% render_field user_form.first_name class="form-control" %} 
                     </div>
-                  </div>
-                </div>
-                <div class="col-sm-4">
-                  <div class="card" style="border: none;">
-                    <div class="card-body">
+
+                    <div class="col-sm-4">
                         <h6>Last Name</h6>
                         {% render_field user_form.last_name class="form-control" %} 
                     </div>
-                  </div>
-                </div>
-                <div class="col-sm-4">
-                    <div class="card" style="border: none;">
-                      <div class="card-body">
+
+                    <div class="col-sm-4">
                         <h6>Email</h6>
                         {% render_field user_form.email class="form-control" %} 
-                      </div>
                     </div>
-                  </div>
-              </div>
+                </div>
 
-            <div class="text-center" style="padding-top: 20px;">
-                <button type="submit" class="btn btn-md btn-block btn-primary" >Update</button>
-             </div>
-        </form>
+                <div class="text-center" style="padding-top: 20px;">
+                    <button type="submit" class="btn btn-md btn-block btn-primary" >Update</button>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
-
 
 
 <script>
@@ -152,14 +136,11 @@
     });
 </script>
 
-
 <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
 
-<script defer
-src="https://maps.googleapis.com/maps/api/js?key={{ mapsKey }}&callback=initMap"></script>
+<script defer src="https://maps.googleapis.com/maps/api/js?key={{ mapsKey }}&callback=initMap"></script>
 
 <script>
-
     let marker; 
   
     function initMap() {
@@ -234,8 +215,5 @@ src="https://maps.googleapis.com/maps/api/js?key={{ mapsKey }}&callback=initMap"
         });
     }
 </script>
-
-
-</div>
 
 {% endblock %}
