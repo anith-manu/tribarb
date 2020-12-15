@@ -6,19 +6,19 @@ from django.conf.urls import url
 
 urlpatterns = [
         path('', views.home, name='home'),
-        path('bookings', views.shop_bookings, name='shop-bookings'),
-        path('bookings/previous/', views.shop_bookings_completed, name='shop-bookings-completed'),
-        path('bookings/<int:booking_id>/', views.shop_view_booking, name='shop-view-booking'),
+        path('shop/bookings', views.shop_bookings, name='shop-bookings'),
+        path('shop/bookings/previous/', views.shop_bookings_completed, name='shop-bookings-completed'),
+        path('shop/bookings/<int:booking_id>/', views.shop_view_booking, name='shop-view-booking'),
 
-        path('account', views.shop_account, name='shop-account'),
+        path('shop/account', views.shop_account, name='shop-account'),
 
-        path('services', views.shop_services, name='shop-services'),
-        path('services/add/', views.shop_add_services, name='shop-add-services'),
-        path('services/edit/<int:service_id>/', views.shop_edit_services, name='shop-edit-services'),
-        path('services/album/<int:service_id>/', views.shop_service_album, name='shop-service-album'),
+        path('shop/services', views.shop_services, name='shop-services'),
+        path('shop/services/add/', views.shop_add_services, name='shop-add-services'),
+        path('shop/services/edit/<int:service_id>/', views.shop_edit_services, name='shop-edit-services'),
+        path('shop/services/album/<int:service_id>/', views.shop_service_album, name='shop-service-album'),
 
-        path('reports', views.shop_reports, name='shop-reports'),
-        path('employees', views.shop_employees, name='shop-employees'),
+        path('shop/reports', views.shop_reports, name='shop-reports'),
+        path('shop/employees', views.shop_employees, name='shop-employees'),
         url(r'^api/booking/notification/(?P<last_request_time>.+)/$', apis.shop_booking_notification),
 
         path('api/booking/get/<int:booking_id>/', apis.get_booking),

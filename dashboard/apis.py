@@ -40,9 +40,9 @@ def stripe_ephemeral_key(request):
 
 def customer_get_shops(request, filter_id):
     if filter_id == 0:
-        filter_shops = Shop.objects.filter(shop_bookings=True)
+        filter_shops = Shop.objects.filter(shop_bookings=True, visible_on_app=True)
     else:
-        filter_shops =  Shop.objects.filter(home_bookings=True)
+        filter_shops =  Shop.objects.filter(home_bookings=True, visible_on_app=True)
     
     shops = ShopSerializerCustomer(
         filter_shops.order_by("-id"),

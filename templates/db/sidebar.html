@@ -33,8 +33,9 @@
 
     <a style="font-family:American Typewriter;" class="navbar-brand" href="{% url 'shop-bookings' %}">
         <img src="https://image.flaticon.com/icons/png/512/773/773379.png" width="30" height="30" class="d-inline-block align-top" alt="">
-        tribarb
+        tribarb <h6 style="font-family:American Typewriter;">shop manager</h6>
     </a>
+   
 
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
@@ -52,7 +53,7 @@
         </li>
 
         <li class="nav-item {% if request.path == barber_employees_url %} current {% endif %}">
-          <a class="rounded nav-link" href="{% url 'shop-employees' %}">Employees</a>
+          <a class="rounded nav-link" href="{% url 'shop-employees' %}">Barbers</a>
         </li>
 
         <li class="nav-item {% if request.path == barber_report_url %} current {% endif %}">

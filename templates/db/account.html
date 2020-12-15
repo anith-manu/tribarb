@@ -6,6 +6,7 @@
 
 {% block page %}
 
+
 <div class="db-items">
     <div class="card mb-4">
 
@@ -19,16 +20,20 @@
 
             <h5 class="card-title text-left">Shop Info</h5>
 
+            
+
             <form method="POST" enctype="multipart/form-data"> 
                 {% csrf_token %}
-
                 <div class="card">
-                    <div class="card-body">
+                    <div class="card-body"> 
+                        <div class="text-left mb-3">
+                            <input name="visibility" type="checkbox" {% if request.user.shop.visible_on_app %} checked {% endif %} data-toggle="toggle" data-on="Listed in app" data-width="150" data-height="20" data-off="Unlisted in app" data-onstyle="success" data-offstyle="danger">
+                        </div>
                         <p>* All {{ request.user.shop.name }} employees must know the <b>Shop ID and Token</b> to login to the Tribarb mobile app.</p>
                         <h6>Shop ID : {{ request.user.shop.id }}</h6>
                         <h6>Token</h6> 
                         <div class="input-group">
-                            <input type="text" name="token" id="showToken" class="form-control" value="{{ token }}">
+                            <input type="text" name="token" id="showToken" class="form-control" value="{{ request.user.shop.token }}">
                             <span class="input-group-btn">
                                 <button type="button" id="generateToken" class="btn btn-warning">
                                     <i class="fa fa-search">Generate Token</i>
@@ -41,12 +46,12 @@
                 <div class="row mt-3">
                     <div class="col-sm-6">
                         <h6>Instagram ID</h6>
-                        <input type="text" name="instagram" class="form-control" value="{{ instagram }}" placeholder="Instagram ID">
+                        <input type="text" name="instagram" class="form-control" value="{{ request.user.shop.instagram }}" placeholder="Instagram ID">
                     </div>
 
                     <div class="col-sm-6">
                         <h6>Facebook @</h6>
-                        <input type="text" name="facebook" class="form-control" value="{{ facebook }}" placeholder="Facebook @">   
+                        <input type="text" name="facebook" class="form-control" value="{{ request.user.shop.facebook }}" placeholder="Facebook @">   
                     </div>
                 </div>
                 
@@ -66,20 +71,30 @@
                     <div style="padding-top: 5px; padding-bottom: 5px;">
                         <input id="submit" type="button" value="Search Address" class="font-weight-normal btn btn-sm btn-block btn-warning"/>  
                     </div>
-                    <div id="map" ></div>                           
+                    <div style="border-radius: 5px;" id="map" ></div>                           
                 </div>
 
                 <h6>Logo</h6>
-                <div class="form-group">
-                    {% render_field shop_form.logo %} 
+                {% render_field shop_form.logo %} 
+          
+                <div class="row">
+                    <div class="col-sm-6">
+                      <div class="card text-center" style="border: none;">
+                        <div class="card-body">
+                          <h6 class="card-title">Shop Bookings</h6>
+                          {% render_field shop_form.shop_bookings data-toggle="toggle" data-on="Accepted" data-off="Unaccepted"  data-offstyle="danger" %}
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-sm-6">
+                      <div class="card text-center" style="border: none;">
+                        <div class="card-body">
+                          <h6 class="card-title">Home Bookings</h6>
+                          {% render_field shop_form.home_bookings data-toggle="toggle" data-on="Accepted" data-off="Unaccepted"  data-offstyle="danger" %}
+                        </div>
+                      </div>
+                    </div>
                 </div>
-
-                <h6>Accepted Booking Types</h6>
-                <div class="form-group">
-                    {% render_field shop_form.shop_bookings %} <label> Shop Bookings</label> </br>
-                    {% render_field shop_form.home_bookings %} <label> Home Bookings</label>
-                </div>
-
 
 
                 <h5 class="card-title text-left mt-5">User Info</h5>

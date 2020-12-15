@@ -51,6 +51,9 @@
             </div>
 
             <div class="text-center">
+                {% if services.count == 0 %}
+                    <p class="mb-3" style="color: gray;">Your service list will appear here.</p>
+                {% endif %}
                 <a href="{% url 'shop-add-services' %}" class="btn btn-block btn-primary">Add Service </a>
             </div>
             

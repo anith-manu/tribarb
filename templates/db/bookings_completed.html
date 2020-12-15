@@ -51,6 +51,12 @@
                     </tbody>
                 </table>
             </div>
+
+            <div class="text-center">
+                {% if booking.count == 0 %}
+                    <p style="color: gray;">Your previous bookings will appear here.</p>
+                {% endif %}
+            </div>
         </div>
     </div>
 </div>

@@ -81,7 +81,7 @@
             var formData = new FormData();
             $(document).on('click', '#saveBtn', function(e) {
                 button.disabled = true
-                button.innerHTML = 'Updating...';
+                button.innerHTML = 'Updating service. Please wait...';
                 
                 if(document.getElementById('createRadio').checked) {
                     formData.append('albumUpdate', $('#createRadio').val())

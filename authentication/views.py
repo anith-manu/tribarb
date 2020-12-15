@@ -68,6 +68,7 @@ class RegistrationView(View):
             messages.add_message(request, messages.ERROR, 'Passwords don\'t match.')
             context['has_error']=True
         
+        
         try:
             if User.objects.get(email=email):
                 messages.add_message(request, messages.ERROR, 'Email is already taken.')
@@ -112,7 +113,7 @@ class RegistrationView(View):
         #####
 
         current_site = get_current_site(request)
-        email_subject = 'Activate Your Tribarb Account'
+        email_subject = 'Activate Your Tribarb Shop Manager Account'
         # message = render_to_string('auth/activate.html', 
         # {
         #     'user':user,
@@ -230,25 +231,50 @@ class RequestResetEmailView(View):
 
         if user.exists():
             current_site = get_current_site(request)
-            email_subject = '[Reset your Password]'
-            message = render_to_string('auth/reset-user-password.html',
-                                       {
-                                           'domain': current_site.domain,
-                                           'uid': urlsafe_base64_encode(force_bytes(user[0].pk)),
-                                           'token': PasswordResetTokenGenerator().make_token(user[0])
-                                       }
-                                       )
+            email_subject = 'Tribarb Shop Manager Password Reset'
+            context = ({
+                'domain': current_site.domain,
+                'uid': urlsafe_base64_encode(force_bytes(user[0].pk)),
+                'token': PasswordResetTokenGenerator().make_token(user[0]),
+                'email' : email      
+            })
 
-            email_message = EmailMessage(
-                email_subject,
-                message,
-                settings.EMAIL_HOST_USER,
-                [email]
-            )
 
-            EmailThread(email_message).start()
+            text_content = render_to_string('auth/reset-user-password.txt', context)
+            html_content = render_to_string('auth/reset-user-password.html', context)
 
-        messages.success(request, 'Thanks! Please check your email for a link to reset your password.')
+            try:
+                emailMessage = EmailMultiAlternatives(subject=email_subject, body=text_content, from_email=settings.EMAIL_HOST_USER, to=[email])
+                emailMessage.attach_alternative(html_content, "text/html")
+                emailMessage.send(fail_silently=False)
+            except SMTPException as e:
+                print('There was an error sending an email: ', e) 
+                error = {'message': ",".join(e.args) if len(e.args) > 0 else 'Unknown Error'}
+                raise serializers.ValidationError(error)
+        
+        else:
+            messages.error(request, 'An account associated with this email does not exist.')
+            return render(request, 'auth/request-reset-email.html')
+
+
+            # message = render_to_string('auth/reset-user-password.html',
+            #                            {
+            #                                'domain': current_site.domain,
+            #                                'uid': urlsafe_base64_encode(force_bytes(user[0].pk)),
+            #                                'token': PasswordResetTokenGenerator().make_token(user[0])
+            #                            }
+            #                            )
+
+            # email_message = EmailMessage(
+            #     email_subject,
+            #     message,
+            #     settings.EMAIL_HOST_USER,
+            #     [email]
+            # )
+
+            # EmailThread(email_message).start()
+
+        messages.success(request, 'Please check your email for a link to reset your password.')
         return render(request, 'auth/request-reset-email.html') 
 
 

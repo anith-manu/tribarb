@@ -29,6 +29,7 @@
                     </thead>
 
                     <tbody>
+
                         {% for booking in bookings %}
                         {% if booking.status != 4 and booking.status != 5 and booking.status != 6 %}
                             <tr>
@@ -48,12 +49,18 @@
                             </tr>
                         {% endif %}
                         {% endfor %}
+
                     </tbody>
 
                 </table>
             </div>
 
+            
+
             <div class="text-center">
+                {% if bookings.count == 0 %}
+                    <p class="mb-3" style="color: gray;">Your ongoing bookings will appear here.</p>
+                {% endif %}
                 <a href="{% url 'shop-bookings-completed' %}" class="btn btn-block btn-primary">View Past Bookings</a>
             </div>
 

@@ -53,18 +53,18 @@ def shop_employees(request):
 def shop_account(request):
     user_form = EditUserForm(instance = request.user)
     shop_form = ShopForm(instance = request.user.shop)
-    token = request.user.shop.token
-    instagram = request.user.shop.instagram
-    facebook = request.user.shop.facebook
 
-    print(settings.AWS_ACCESS_KEY_ID)
-  
     if request.method == "POST":
         user_form = EditUserForm(request.POST, instance=request.user)
         shop_form = ShopForm(request.POST, request.FILES, instance=request.user.shop)
         token = request.POST.get('token')
         instagram = request.POST.get('instagram')
         facebook = request.POST.get('facebook')
+
+        if 'visibility' in request.POST:
+            request.user.shop.visible_on_app = True
+        else:
+            request.user.shop.visible_on_app = False
 
         request.user.shop.token = token
         request.user.shop.instagram = instagram
@@ -78,10 +78,7 @@ def shop_account(request):
     return render(request, 'db/account.html', {
 		"user_form": user_form,
 		"shop_form": shop_form,
-        "token": token,
-        "instagram": instagram,
-        "facebook": facebook,
-        "mapsKey" : settings.GOOGLE_MAPS_API_KEY
+        "mapsKey" : settings.GOOGLE_MAPS_API_KEY,
 		})
 
 
