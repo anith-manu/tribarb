@@ -430,8 +430,8 @@ def employee_accept_booking(request):
                     'apns': {
                         'aps': {
                             'alert': {
-                                'title': 'Booking Update!',
-                                'body': 'Your booking has been accepted!'
+                                'title': 'Booking Update',
+                                'body': 'Your booking from {booking.shop} has been accepted!'
                             }
                         }
                     }
