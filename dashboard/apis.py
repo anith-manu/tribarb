@@ -431,7 +431,7 @@ def employee_accept_booking(request):
                         'aps': {
                             'alert': {
                                 'title': 'Booking Update',
-                                'body': 'Your booking from {booking.shop} has been accepted!'
+                                'body': "alert('Hello! I am an alert box!!  %s ');"% (booking.shop)
                             }
                         }
                     }
