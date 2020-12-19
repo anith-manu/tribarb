@@ -173,6 +173,10 @@ def customer_add_booking(request):
                         booking = booking,
                         service_id = service["service_id"]
                     )
+            
+            title = "New Booking"
+            body = "{} has received a new booking.".format(booking.shop.name)
+            send_notification(title, body)
                     
        
             return JsonResponse({"status": "success"})
@@ -420,10 +424,9 @@ def employee_accept_booking(request):
             booking.accepted_at = timezone.now()
             booking.save()
 
-
+            print(booking.employee.get_short_name())
             title = "Booking Update"
-            body = "Your booking from {} has been accepted. Your barber is {}.".format(booking.shop.name, booking.employee.get_short_name())
-
+            body = "Your booking from {} has been accepted. Your barber is {}.".format(booking.shop.name, employee.user.get_short_name())
             send_notification(title, body)
 
 
