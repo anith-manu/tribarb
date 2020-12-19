@@ -421,29 +421,34 @@ def employee_accept_booking(request):
             booking.save()
 
 
-          
+            title = "Booking Update"
+            body = "Your booking from {} has been accepted. Your barber is {}.".format(booking.shop.name, booking.employee)
 
+            send_notification(title, body)
 
-            response = beams_client.publish_to_interests(
-                interests=['hello'],
-                publish_body={
-                    'apns': {
-                        'aps': {
-                            'alert': {
-                                'title': "Booking Update",
-                                'body': "Your booking from %s has been accepted. Your barber is %s."% (booking.shop.name) % (booking.employee)
-                            }
-                        }
-                    }
-                }
-            )
-
-            print(response['publishId'])
 
             return JsonResponse({"status": "success"})
 
         except Booking.DoesNotExist:
             return JsonResponse({"status": "failed", "error": "Someone else has already responded to this booking."})
+
+
+
+def send_notification(title, body):
+    beams_client.publish_to_interests(
+        interests=['hello'],
+        publish_body={
+            'apns': {
+                'aps': {
+                    'alert': {
+                        'title': title,
+                        'body': body
+                    }
+                }
+            }
+        }
+    )
+
     
 
 
