@@ -430,8 +430,8 @@ def employee_accept_booking(request):
                     'apns': {
                         'aps': {
                             'alert': {
-                                'title': 'Booking Update',
-                                'body': "alert('Hello! I am an alert box!!  %s ');"% (booking.shop)
+                                'title': 'Your booking from %s has been accepted'% (booking.shop.name),
+                                'body': "Your barber is %s"% (booking.employee.get_full_name())
                             }
                         }
                     }
