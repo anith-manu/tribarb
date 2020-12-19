@@ -156,8 +156,8 @@ def customer_add_booking(request):
             booking = Booking.objects.create(
                     customer = customer,
                     shop_id = request.POST["shop_id"],
-                    booking_type = request.POST["booking_type"],
-                    payment_mode = request.POST["payment_mode"],
+                    booking_type = int(request.POST["booking_type"]),
+                    payment_mode = int(request.POST["payment_mode"]),
                     requests = request.POST["requests"],
                     requested_time = request.POST["requested_time"],
                     total = booking_total,
@@ -172,10 +172,15 @@ def customer_add_booking(request):
                 BookingDetail.objects.create(
                         booking = booking,
                         service_id = service["service_id"]
-                    )
+                )
+
+            if booking.booking_type == 1:
+                title = "New {} Booking \U0001F3E0 \U0001F5D3".format(booking.get_booking_type_display())
+            else :
+                title = "New {} Booking \U0001F5D3".format(booking.get_booking_type_display())
             
-            title = "New Booking"
-            body = "{} has received a new booking.".format(booking.shop.name)
+            
+            body = "{} has received a new {} booking. Respond ASAP!".format(booking.shop.name, booking.get_booking_type_display().lower())
             send_notification(title, body)
                     
        
@@ -257,7 +262,14 @@ def customer_cancel_booking(request, booking_id):
         if booking.status == booking.PLACED:
             booking.status = booking.CANCELLED
             booking.save()
+
+            title = "Booking Cancelled \U0000274C"
+            body = "Booking #{} has been cancelled by the client.".format(booking.id)
+            send_notification(title, body)
+
+
             return JsonResponse({"status": "success"})
+
         else :
             return JsonResponse({"status": "failed. The booking has already been accepted."})
 
@@ -424,9 +436,9 @@ def employee_accept_booking(request):
             booking.accepted_at = timezone.now()
             booking.save()
 
-            print(booking.employee.get_short_name())
-            title = "Booking Update"
-            body = "Your booking from {} has been accepted. Your barber is.".format(booking.shop.name)
+            title = "Booking Accepted \U00002705"
+            body = "Your booking from {} has been accepted. Your barber is {}.".format(booking.shop.name, employee.user
+            .get_full_name())
             send_notification(title, body)
 
 
@@ -471,6 +483,11 @@ def employee_decline_booking(request):
             booking.status = Booking.DECLINED
             booking.save()
 
+
+            title = "Booking Declined \U0000274C"
+            body = "Your booking from {} has been declined. Please try to place another booking.".format(booking.shop.name)
+            send_notification(title, body)
+
             return JsonResponse({"status": "success"})
 
         except Booking.DoesNotExist:
@@ -496,6 +513,10 @@ def employee_enroute(request):
             booking.status = Booking.ONTHEWAY
             booking.save()
 
+            title = "Barber En Route \U0001F697\U0001F4A8"
+            body = "Your barber from {} is on the way. Track your barbers location from the app.".format(booking.shop.name)
+            send_notification(title, body)
+
             return JsonResponse({"status": "success"})
 
         except Booking.DoesNotExist:
@@ -518,6 +539,10 @@ def employee_complete_booking(request):
         booking.employee = employee
         booking.status = Booking.COMPLETED
         booking.save()
+
+        title = "Rate The Cut \U00002B50"
+        body = "Lookin' fresh? Rate your experience with {} on the app.".format(booking.shop.name)
+        send_notification(title, body)
 
         return JsonResponse({"status": "success"})
 
