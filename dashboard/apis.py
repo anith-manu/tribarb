@@ -421,18 +421,18 @@ def employee_accept_booking(request):
             booking.save()
 
 
+          
+
+
             response = beams_client.publish_to_interests(
                 interests=['hello'],
                 publish_body={
                     'apns': {
                         'aps': {
-                            'alert': 'Hello!'
-                        }
-                    },
-                    'fcm': {
-                        'notification': {
-                            'title': 'Booking Update',
-                            'body': 'Your booking has been accepted!'
+                            'alert': {
+                                'title': 'Booking Update!',
+                                'body': 'Your booking has been accepted!'
+                            }
                         }
                     }
                 }
