@@ -422,7 +422,7 @@ def employee_accept_booking(request):
 
 
             title = "Booking Update"
-            body = "Your booking from {} has been accepted. Your barber is {}.".format(booking.shop.name, booking.employee)
+            body = "Your booking from {} has been accepted. Your barber is {}.".format(booking.shop.name, booking.employee.get_short_name())
 
             send_notification(title, body)
 
