@@ -14,6 +14,15 @@ from dashboard.serializers import ShopSerializerCustomer, ShopSerializerEmployee
 import stripe
 from tribarbDesktop.settings import STRIPE_API_KEY
 
+from pusher_push_notifications import PushNotifications
+
+
+
+beams_client = PushNotifications(
+    instance_id='e4ca64ad-a6d3-41af-b291-f7b39f7f9ba2',
+    secret_key='52E27A28876BD39A437CA40C15F49C443827BE6EEA1967305D5F515FED57B127',
+)
+
 stripe.api_key = STRIPE_API_KEY
 
 STRIPE_CUSTOMER = ""
@@ -410,6 +419,26 @@ def employee_accept_booking(request):
             booking.status = Booking.ACCEPTED
             booking.accepted_at = timezone.now()
             booking.save()
+
+
+            response = beams_client.publish_to_interests(
+                interests=['hello'],
+                publish_body={
+                    'apns': {
+                        'aps': {
+                            'alert': 'Hello!'
+                        }
+                    },
+                    'fcm': {
+                        'notification': {
+                            'title': 'Booking Update',
+                            'body': 'Your booking has been accepted!'
+                        }
+                    }
+                }
+            )
+
+            print(response['publishId'])
 
             return JsonResponse({"status": "success"})
 
