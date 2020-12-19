@@ -426,7 +426,7 @@ def employee_accept_booking(request):
 
             print(booking.employee.get_short_name())
             title = "Booking Update"
-            body = "Your booking from {} has been accepted. Your barber is {}.".format(booking.shop.name, employee.user.get_short_name())
+            body = "Your booking from {} has been accepted. Your barber is.".format(booking.shop.name)
             send_notification(title, body)
 
 
