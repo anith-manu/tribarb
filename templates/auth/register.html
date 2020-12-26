@@ -12,36 +12,28 @@
 
     {% include 'partials/_flash_messsages.html' %}
     <h5 class="card-title text-left text-warning">User Info</h5>
-    <form action="{% url 'register' %}" method="post" enctype="multipart/form-data">
+    <form id="regsiterForm" action="{% url 'register' %}" method="post" enctype="multipart/form-data">
 
 
         {% csrf_token %}
+        
+        <div class="form-group">
+            <div class="input-group">
+                <input class="form-control" type="text" name="first_name" value="{{data.first_name}}" placeholder="First Name">
+                <span class="input-group-addon"> &nbsp &nbsp </span>
+                <input class="form-control" type="text" name="last_name" value="{{data.last_name}}" placeholder="Last Name">
+            </div>
+        </div>
+            
+        
         <div class="form-group">
             <input class="form-control" type="email" name="email" value="{{data.email}}" placeholder="Email">
         </div>
 
         <div class="form-group">
-            <input class="form-control" type="text" name="first_name" value="{{data.first_name}}" placeholder="First Name">
-        </div>
-
-        <div class="form-group">
-            <input class="form-control" type="text" name="last_name" value="{{data.last_name}}" placeholder="Last Name">
-        </div>
-
-        <div class="form-group">
-            <input class="form-control" type="text" name="username" value="{{data.username}}" placeholder="Username">
-        </div>
-
-        <div class="form-group">
             <input class="form-control" id="myInput1" type="password" name="password" value="" placeholder="Password">
-        </div>
-
-        <div class="form-group">
-            <input class="form-control" id="myInput2" type="password" name="password2" value="" placeholder="Confirm Password">
             <div style="color: whitesmoke;">  <input type="checkbox" onclick="myFunction()"> Show Password</div> 
         </div>
-
-        
      
         <h5 class="card-title text-left text-warning" style="padding-top: 25px; ">Shop Info</h5>
 
@@ -58,7 +50,7 @@
         <div class="form-group">
             {% render_field shop_form.address id="address" class="form-control" placeholder="Shop Address"%}   
             <div style="padding-top: 5px; padding-bottom: 5px;">
-                <input id="submit" type="button" value="Search Address" class="font-weight-normal btn btn-sm btn-block btn-warning"/>  
+                <input id="searchAddress" type="button" value="Search Address" class="font-weight-normal btn btn-sm btn-block btn-warning"/>  
             </div>
             <div style="border-radius: 5px;" id="map" ></div>                           
         </div>
@@ -87,7 +79,7 @@
             </div>
         </div>
   
-        <input type="submit" value="Register" style="color: #333;" class="font-weight-bold btn btn-lg btn-block btn-warning"/>
+        <input onclick="this.disabled=true;this.form.submit();this.value='Please wait...';" value="Register" style="color: #333;" class="font-weight-bold btn btn-lg btn-block btn-warning"/>
     </form>
 
     <div style="padding-top: 15px; padding-bottom: 15px;">
@@ -105,17 +97,15 @@
 
 <script>
     function myFunction() {
-    var x = document.getElementById("myInput1");
-    var y = document.getElementById("myInput2");
-    if (x.type === "password" && y.type === "password") {
+    var x = document.getElementById("myInput");
+    if (x.type === "password") {
         x.type = "text";
-        y.type = "text";
     } else {
         x.type = "password";
-        y.type = "password";
     }
     }
 </script>
+
 
 <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
 <script defer
@@ -140,7 +130,7 @@ src="https://maps.googleapis.com/maps/api/js?key={{ mapsKey }}&callback=initMap"
         });
 
         
-        document.getElementById("submit").addEventListener("click", () => {
+        document.getElementById("searchAddress").addEventListener("click", () => {
             geocodeAddress(geocoder, map);
         }); 
     }

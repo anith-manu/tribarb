@@ -16,16 +16,22 @@
     
     <div class="card-body">
 
-        <label>Service Name</label>
+        <div id="alertsView" class="alert alert-danger" style="display: none;">
+            <p class="danger" id="fieldsAlert"></p>
+            <p class="danger" id="checkAlert"></p>
+        </div>
+        <p>* indicates required field</p>
+        
+        <label>Service Name *</label>
         <input type="text" id="service_name" class="form-control">
 
-        <label class="mt-4">Description <em>(350 characters maximum)</em></label>
+        <label class="mt-4">Description * <em>(350 characters maximum)</em></label>
         <textarea id="short_description" class="form-control" maxlength="350"></textarea>
 
-        <label class="mt-4">Price</label>
+        <label class="mt-4">Price *</label>
         <input type="number" id="price" class="form-control">
 
-        <p class="mt-4">What kind of service is this? (Tick one or both)</p>
+        <p class="mt-4">Service Type * (Tick one or both)</p>
         <input type="checkbox" id="shopService" value="shop" {% if request.user.shop.shop_bookings and not request.user.shop.home_bookings %} checked {% endif %}>
             <label>Shop Service</label><br>
         <input type="checkbox" id="homeService" value="home" {% if not request.user.shop.shop_bookings and request.user.shop.home_bookings %} checked {% endif %}>
@@ -75,49 +81,68 @@
 
         var formData = new FormData();
         $(document).on('click', '#saveBtn', function(e) {
-            button.disabled = true
-            button.innerHTML = 'Uploading service. Please wait...';
-          
-         
-            if(document.getElementById('shopService').checked) {
-                formData.append('shopService', $('#shopService').val())
-            } else {
-                formData.append('shopService', null)
-            }
+            var has_error = false
+            var title = $('#service_name').val()
+            var desc =  $('#short_description').val()
+            var price = $('#price').val()
 
-            if(document.getElementById('homeService').checked) {
-                formData.append('homeService', $('#homeService').val())
-            } else {
-                formData.append('homeService', null)
+            if (title.length == 0 || desc.length == 0 || price.length == 0) {
+                $("#alertsView").show()
+                document.getElementById("fieldsAlert").innerHTML = 'Please fill in all required fields.';
+                has_error = true
             }
-
-            formData.append('length', files.length)
-            formData.append('service_name', $('#service_name').val())
-            formData.append('short_description', $('#short_description').val())
-            formData.append('price', $('#price').val())
-            for (var i = 0; i < files.length; i++) {
-                formData.append('images' + i, files[i])
-            }
-            formData.append('csrfmiddlewaretoken', '{{ csrf_token }}')
-
-            $.ajax({
-                type: 'POST',
-                url: '{% url "shop-add-services" %}',
-                data: formData,
-                cache: false,
-                processData: false,
-                contentType: false,
-                enctype: 'multipart/form-data',
-                success: function (){
-                    window.location.href = "{% url 'shop-services' %}";
-                },
-                error: function(xhr, errmsg, err) {
-                    button.disabled = false
-                    button.innerHTML = "Add"
-                    console.log(xhr.status + ":" + xhr.responseText)
-                }
-            })
             
+            if(!document.getElementById('shopService').checked && !document.getElementById('homeService').checked) {
+                $("#alertsView").show()
+                document.getElementById("checkAlert").innerHTML = 'Please select the service type(s).';
+                has_error = true
+            }
+
+            if (has_error == false) {
+                button.disabled = true
+                button.innerHTML = 'Uploading service. Please wait...';
+            
+            
+                if(document.getElementById('shopService').checked) {
+                    formData.append('shopService', $('#shopService').val())
+                } else {
+                    formData.append('shopService', null)
+                }
+
+                if(document.getElementById('homeService').checked) {
+                    formData.append('homeService', $('#homeService').val())
+                } else {
+                    formData.append('homeService', null)
+                }
+
+                formData.append('length', files.length)
+                formData.append('service_name', $('#service_name').val())
+                formData.append('short_description', $('#short_description').val())
+                formData.append('price', $('#price').val())
+                for (var i = 0; i < files.length; i++) {
+                    formData.append('images' + i, files[i])
+                }
+                formData.append('csrfmiddlewaretoken', '{{ csrf_token }}')
+
+                $.ajax({
+                    type: 'POST',
+                    url: '{% url "shop-add-services" %}',
+                    data: formData,
+                    cache: false,
+                    processData: false,
+                    contentType: false,
+                    enctype: 'multipart/form-data',
+                    success: function (){
+                        window.location.href = "{% url 'shop-services' %}";
+                    },
+                    error: function(data) {
+                        console.log(data)
+                        button.disabled = false
+                        button.innerHTML = "Add"
+                    
+                    }
+                })
+            }      
         })
     })
 </script>

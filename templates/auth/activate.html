@@ -148,33 +148,28 @@
     </table>
     <!-- pre-header end -->
     <!-- header -->
-    <table border="0" width="100%" cellpadding="0" cellspacing="0" bgcolor="ffffff">
-
+    <table border="0" width="100%" cellpadding="0" cellspacing="0" bgcolor="#FFC15D">
         <tr>
             <td align="center">
                 <table border="0" align="center" width="590" cellpadding="0" cellspacing="0" class="container590">
-
-                    <tr>
-                        <td height="25" style="font-size: 25px; line-height: 25px;">&nbsp;</td>
-                    </tr>
-
                     <tr>
                         <td align="center">
-                            <table border="0" align="center" width="590" cellpadding="0" cellspacing="0" class="container590">
+                            <table border="0" align="center" width="690" cellpadding="0" cellspacing="0" class="container590">
 
                                 <tr>
-                                    <td align="center" height="70" style="height:70px;">
-                                        <a href="" style="display: block; border-style: none !important; border: 0 !important;"><img width="100" border="0" style="display: block; width: 100px;" src="https://image.flaticon.com/icons/png/512/773/773379.png" alt="" /></a>
-                                        <p style="font-size: 40px; font-weight: 600; font-family: American Typewriter;"> tribarb </p>
+                                    <td align="center" >
+                                        <a href="http://www.tribarb.co.uk/" style="display: block; border-style: none !important; border: 0 !important; padding-top: 25px;"><img width="300" border="0"  src="https://tribarb-media-bucket.s3-ap-southeast-1.amazonaws.com/website-logo/website-logo.png" alt="" /></a>
                                     </td>
                                 </tr>
-                                
+
+                                <tr>
+                                    <td align="center"  style="height:75px;">
+                                        <p style="color:white; font-size: 27px; font-weight: 600; font-family: American Typewriter;"> Welcome to tribarb, {{ user.get_full_name }}</p>
+                                    </td>
+                                </tr>
                             </table>
                         </td>
                     </tr>
-
-                
-
                 </table>
             </td>
         </tr>
@@ -194,16 +189,17 @@
                     
                     <tr>
                         <td align="center">
-                            <table border="0" width="400" align="center" cellpadding="0" cellspacing="0" class="container590">
+                            <table border="0" width="500" align="center" cellpadding="0" cellspacing="0" class="container590">
                                 <tr>
-                                    <td align="center" style="color: #888888; font-size: 16px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; line-height: 24px;">
-
-                                        <div style="line-height: 24px">
-
-                                            Hi, {{ user.get_full_name }}. <br>
-                                            Welcome to tribarb! Confirm your email address by clicking the button below and you'll be able to login to your tribarb shop manager account. 
+                                    <td align="center" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; line-height: 27px;">
+                                        <div style="color: #888888; font-size: 16px;">
+                                            Your generated username is <b>{{ user.username }}</b>. Now, please confirm your email address by clicking the button below and you'll be able to login to your tribarb shop manager account with your username and the password you set during registration. 
                                         </div>
                                     </td>
+                                </tr>
+
+                                <tr>
+                                    
                                 </tr>
                             </table>
                         </td>
@@ -238,9 +234,21 @@
                         </td>
                     </tr>
 
-
+                    <tr>
+                        <td align="center">
+                            <table border="0" width="500" align="center" cellpadding="0" cellspacing="0" class="container590">
+                                <tr>
+                                    <td align="center" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; line-height: 20px; padding-top: 30px;">
+                                        <div style="color: #888888; font-size: 13px;">
+                                            If the button dosen't work, visit this link to activate your account: <br> http://{{domain}}{% url 'activate' uidb64=uid token=token %}
+                                            
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
                 </table>
-
             </td>
         </tr>
 
@@ -251,31 +259,20 @@
     <div style="padding-top: 35px;"></div>
 
     <table border="0" width="100%" cellpadding="0" cellspacing="25" bgcolor="f4f4f4">
-
-        <tr>
-            
-        </tr>
-
-
-
+        
         <tr>
             <td align="center">
                 <table border="0" align="center" width="590" cellpadding="0" cellspacing="0" class="container590">
                     <tr>
-                      
-                                <tr>
-                                    <td align="left" style="color: #888888; font-size: 14px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; line-height: 23px;" class="text_color">
-                                        <div style="color: #333333; font-size: 14px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-weight: 600; mso-line-height-rule: exactly; line-height: 23px;">
+                        <tr>
+                            <td align="left" style="color: #888888; font-size: 14px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; line-height: 23px;" class="text_color">
+                                <div style="color: #333333; font-size: 14px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-weight: 600; mso-line-height-rule: exactly; line-height: 23px;">
 
-                                            Need assistance? Email us: <br/> <a href="mailto:" style="color: #888888; font-size: 14px; font-family: 'Hind Siliguri', Calibri, Sans-serif; font-weight: 400;">tribarbapp@gmail.com</a>
+                                    Need assistance? Email us: <br/> <a href="mailto:tribarbapp@gmail.com" style="color: #888888; font-size: 14px; font-family: 'Hind Siliguri', Calibri, Sans-serif; font-weight: 400;">tribarbapp@gmail.com</a>
 
-                                        </div>
-                                    </td>
-                                </tr>
-
-                                
-                            
-                     
+                                </div>
+                            </td>
+                        </tr>
                     </tr>
                 </table>
             </td>
@@ -286,36 +283,19 @@
             <td align="center">
                 <table border="0" align="center" width="590" cellpadding="0" cellspacing="0" class="container590">
                     <tr>
-                      
                         <tr>
                             <td align="left" style="color: #aaaaaa; font-size: 14px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; ">
                                 <div style="line-height: 24px;">
-                                    <span style="color: #333333;">You received this email, because it was requested by a tribarb user. If you’ve received this by mistake, please don’t click on the link, simply delete this email.</span>
+                                    <span style="color: #333333;">You received this email, because it was requested by a tribarb user. If you’ve received this by mistake, please don’t click the button, simply delete this email.</span>
                                 </div>
                             </td>
                         </tr>
-
-                                
-                            
-                     
                     </tr>
                 </table>
             </td>
         </tr>
 
-        <tr>
-            
-        </tr>
-
-
     </table>
-
-
- 
-
-
-
-  
 
 </body>
 

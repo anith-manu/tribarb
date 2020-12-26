@@ -101,9 +101,6 @@ def shop_add_services(request):
         shop = False
         home = False
 
-        if title == "":
-            return render(request, 'db/add_services.html')
-
         if shopService == "shop":
             shop = True
         
