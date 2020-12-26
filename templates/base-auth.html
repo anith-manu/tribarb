@@ -24,7 +24,10 @@
                     <div class="col-md-2"></div>
                     <div class="col-md-8">
                         <div class="card mt-5 auth-card " style="border: none;">
-                            <img src="https://tribarb-media-bucket.s3-ap-southeast-1.amazonaws.com/website-logo/website-logo.png" class="img-fluid" alt="Responsive image">
+                            <a class="navbar-brand" href="{% url 'home' %}">
+                                <img src="https://tribarb-media-bucket.s3-ap-southeast-1.amazonaws.com/website-logo/website-logo.png" class="img-fluid" alt="Responsive image">
+                            </a>
+                            
                         
                             {% block content %}{% endblock %}
 
