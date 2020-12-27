@@ -97,17 +97,14 @@ class RegistrationView(View):
         except Exception:
             pass
 
-
         if not shop_form.is_valid():
-            messages.add_message(request, messages.ERROR, 'Please provide all the shop info.')
+            messages.add_message(request, messages.ERROR, 'Please provide valid shop info.')
             context['has_error']=True
         
         if request.POST.get("shop_bookings") == None and request.POST.get("home_bookings") == None:
             messages.add_message(request, messages.ERROR, 'Please select the accepted booking type(s).')
             context['has_error']=True
         
-
-       
      
         if context['has_error']:
             return render(request, 'auth/register.html', context, status=400)
