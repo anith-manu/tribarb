@@ -98,7 +98,7 @@ class RegistrationView(View):
             pass
 
         if not shop_form.is_valid():
-            messages.add_message(request, messages.ERROR, 'Please provide valid shop info.')
+            messages.add_message(request, messages.ERROR, 'Please provide complete and valid shop info.')
             context['has_error']=True
         
         if request.POST.get("shop_bookings") == None and request.POST.get("home_bookings") == None:
