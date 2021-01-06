@@ -14,7 +14,6 @@ from dashboard.serializers import ShopSerializerCustomer, ShopSerializerEmployee
 import stripe
 from tribarbDesktop.settings import STRIPE_API_KEY
 
-from flask import Flask, jsonify, request
 from pusher_push_notifications import PushNotifications
 
 
@@ -36,7 +35,7 @@ def get_beam_token(request):
     access_token = AccessToken.objects.get(token = request.GET.get("access_token"),
 		expires__gt = timezone.now())
 
-    user_id = "Mary"
+    user_id = access_token.user.email
 
     beams_token = beams_client.generate_token(user_id)
     return JsonResponse(beams_token)
