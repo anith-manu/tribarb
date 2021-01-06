@@ -24,6 +24,7 @@ boto3 = "*"
 dj-database-url = "*"
 stripe = "*"
 pusher-push-notifications = "*"
+flask = "*"
 
 [requires]
 python_version = "3.7"

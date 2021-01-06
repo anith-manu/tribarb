@@ -14,6 +14,7 @@ from dashboard.serializers import ShopSerializerCustomer, ShopSerializerEmployee
 import stripe
 from tribarbDesktop.settings import STRIPE_API_KEY
 
+from flask import Flask, jsonify, request
 from pusher_push_notifications import PushNotifications
 
 
@@ -23,11 +24,24 @@ beams_client = PushNotifications(
     secret_key='52E27A28876BD39A437CA40C15F49C443827BE6EEA1967305D5F515FED57B127',
 )
 
+  
 stripe.api_key = STRIPE_API_KEY
 
 STRIPE_CUSTOMER = ""
 
 ###### CUSTOMERS ######
+
+
+def get_beam_token(request):
+    access_token = AccessToken.objects.get(token = request.GET.get("access_token"),
+		expires__gt = timezone.now())
+
+    user_id = str(access_token.user.id)
+
+    beams_token = beams_client.generate_token(user_id)
+    return JsonResponse(beams_token)
+
+
 @csrf_exempt
 def stripe_ephemeral_key(request):
     """Returns ephemeral key

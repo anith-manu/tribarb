@@ -120,8 +120,6 @@ class RegistrationView(View):
             new_shop.user = user
             new_shop.save()
 
-    
-
         ##### Send Activation Email #####
 
         current_site = get_current_site(request)
