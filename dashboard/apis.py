@@ -194,7 +194,7 @@ def customer_add_booking(request):
             
             
             body = "{} has received a new {} booking. Respond ASAP!".format(booking.shop.name, booking.get_booking_type_display().lower())
-            send_notification(title, body)
+            send_notification(request.POST["shop_id"],title, body)
                     
        
             return JsonResponse({"status": "success"})
@@ -452,7 +452,7 @@ def employee_accept_booking(request):
             title = "Booking Accepted \U00002705"
             body = "Your booking from {} has been accepted. Your barber is {}.".format(booking.shop.name, employee.user
             .get_full_name())
-            send_notification(title, body)
+            
 
 
             return JsonResponse({"status": "success"})
@@ -462,9 +462,9 @@ def employee_accept_booking(request):
 
 
 
-def send_notification(title, body):
+def send_notification(interest, title, body):
     beams_client.publish_to_interests(
-        interests=['hello'],
+        interests=[interest],
         publish_body={
             'apns': {
                 'aps': {
@@ -499,7 +499,8 @@ def employee_decline_booking(request):
 
             title = "Booking Declined \U0000274C"
             body = "Your booking from {} has been declined. Please try to place another booking.".format(booking.shop.name)
-            send_notification(title, body)
+    
+    
 
             return JsonResponse({"status": "success"})
 
@@ -528,7 +529,7 @@ def employee_enroute(request):
 
             title = "Barber En Route \U0001F697\U0001F4A8"
             body = "Your barber from {} is on the way. Track your barbers location from the app.".format(booking.shop.name)
-            send_notification(title, body)
+     
 
             return JsonResponse({"status": "success"})
 
@@ -555,7 +556,7 @@ def employee_complete_booking(request):
 
         title = "Rate The Cut \U00002B50"
         body = "Lookin' fresh? Rate your experience with {} on the app.".format(booking.shop.name)
-        send_notification(title, body)
+        
 
         return JsonResponse({"status": "success"})
 
