@@ -36,7 +36,7 @@ def get_beam_token(request):
     access_token = AccessToken.objects.get(token = request.GET.get("access_token"),
 		expires__gt = timezone.now())
 
-    user_id = str(access_token.user.id)
+    user_id = "Mary"
 
     beams_token = beams_client.generate_token(user_id)
     return JsonResponse(beams_token)
