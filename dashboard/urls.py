@@ -43,7 +43,7 @@ urlpatterns = [
         path('api/set/last-logged-in-as/', apis.set_user_last_loggin_in_as),
 
         
-        path('api/beamstoken', apis.get_beam_token),
+        path('api/beamstoken/', apis.get_beam_token),
 
         ##EMPLOYEE API'S
         path('api/employee/getinfo/', apis.employee_get_details),
