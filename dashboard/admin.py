@@ -7,8 +7,6 @@ admin.site.register(Customer)
 admin.site.register(Employee)
 admin.site.register(Booking)
 admin.site.register(BookingDetail)
-#admin.site.register(Service)
-#admin.site.register(ServiceImage)
 
 class ServiceImageAdmin(admin.StackedInline):
     model = ServiceImage

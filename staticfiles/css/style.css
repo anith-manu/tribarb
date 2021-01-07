@@ -1,3 +1,20 @@
+#map {
+  height: 300px;
+  width: 100%;
+}
+
+.current a {
+    color: #F6C344 !important;
+    font-weight: bold;
+}
+
+.spinning {
+  position: fixed;
+  width: 2rem; 
+  height: 2rem;
+  top: calc( 50% - ( 2rem / 2) );
+}
+
 body {
 	background-color: #EDF2F5;
   overflow: auto;
@@ -20,27 +37,25 @@ body {
   box-shadow: 0 0 75px #000000 inset;
 }
 
-
 .auth-bg {
-	background-color: #333;
+	background-color: #353A3F;
   overflow: auto;
   padding-top: 50px;
   padding-bottom: 50px;
-
 }
 
 .auth-card {
 	padding-top: 50px;
-	background-color: #333;
-    overflow: auto;
+	background-color: #353A3F;
+  overflow: auto;
 }
 
 .db-items{
-    padding-top: 10px;
+    padding-top: 25px;
 }
 
 .db-card-headings{
-    background-color: #333;
+    background-color: #353A3F;
     padding-top: 10px;
 }
 
@@ -48,75 +63,77 @@ body {
     color: #ffc36e;
 }
 
-/* SIDE BAR */
-.sidebar {
-	height: 100vh;
-	position: fixed;
-	top: 0;
-	left: 0;
-	padding: 0;
-	background-color: #333;
-	overflow: auto;
-}
-
-
-/* SIDE BAR - HEADER */
-.sidebar > div:first-child {
-	padding: 30px 10px;
-	font-weight: bold;
-	font-size: 15px;
-	background-color: #333;
-
-}
-
-
-.sidebar .list-group {
-    padding: 0;
-    background-color: #333;
-  }
-  
-  .sidebar .list-group > span {
-    color: #b6b4c1;
-    display: block;
-    margin-top: 20px;
-    padding: 20px 30px;
-    font-size: 16px;
-    font-weight: 300;
-  }
-  
-  .sidebar .list-group .list-group-item,
-  .sidebar .list-group .list-group-item:focus {
-    background-color: #333;
-    color: whitesmoke;
-    border: 0; 
-  }
-  
-  .sidebar .list-group .list-group-item.active,
-  .sidebar .list-group .list-group-item:hover {
-    background-color:grey;
-    color: white;
-    text-decoration:none;
-  }
-  
-  .sidebar .list-group .list-group-item:first-child {
-    border-top-left-radius: 0;
-    border-top-right-radius: 0;
-  }
-  
-  .sidebar .list-group .list-group-item .badge,
-  .sidebar .list-group .list-group-item.active .badge {
+.badge {
     background-color: #EE5462;
     color: #e0deeb;
-  }
+}
 
 
-/* SIDE BAR - LOGOUT */
-.sidebar > div:last-child {
-    padding: 30px;
-  }
-  
-  .sidebar > div:last-child .btn {
-    width: 100%;
-  }
-  
+/* Customize the label (the container) */
+.container {
+  display: block;
+  position: relative;
+  padding-left: 35px;
+  margin-bottom: 12px;
+  cursor: pointer;
+  font-size: 22px;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* Hide the browser's default checkbox */
+.container input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+/* Create a custom checkbox */
+.checkmark {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 25px;
+  width: 25px;
+  background-color: #eee;
+}
+
+/* On mouse-over, add a grey background color */
+.container:hover input ~ .checkmark {
+  background-color: #ccc;
+}
+
+/* When the checkbox is checked, add a blue background */
+.container input:checked ~ .checkmark {
+  background-color: #2196F3;
+}
+
+/* Create the checkmark/indicator (hidden when not checked) */
+.checkmark:after {
+  content: "";
+  position: absolute;
+  display: none;
+}
+
+/* Show the checkmark when checked */
+.container input:checked ~ .checkmark:after {
+  display: block;
+}
+
+/* Style the checkmark/indicator */
+.container .checkmark:after {
+  left: 9px;
+  top: 5px;
+  width: 5px;
+  height: 10px;
+  border: solid white;
+  border-width: 0 3px 3px 0;
+  -webkit-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  transform: rotate(45deg);
+}
 

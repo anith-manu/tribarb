@@ -5,60 +5,60 @@
 {% block page %}
 
 <div class="db-items">
-    <div class="card">
+    <div class="card mb-4">
+
         <div class="card-heading db-card-headings">
             <h4 class="card-title text-center db-card-titles">
-                Completed Bookings
+                Previous Bookings
             </h4>
-            
         </div>
-        <div class="card-body">
-            <table class="table table-bordered table-hover table-striped text-center">
-				<thead>
-					<tr class="db-card-headings db-card-titles">
- 
-                    <th>Id</th>
-                    <th>Customer</th>
-                    <th>Address</th>
-                    <th>Booking Type</th>
-                    <th>Assigned Employee</th>
-                    <th>Requested Date & Time</th>
-                    <th>Requested Services</th>
-                    <th>Additional Requests</th>
-                    <th>Total</th>
-                    <th>Payment Mode</th>
-                    <th>Status</th>
-                  </tr>
-				</thead>
-				<tbody>
-                    {% for booking in booking %}
-                    {% if booking.status == 4 or booking.status == 5 or booking.status == 6 %}
-                        <tr>
-                            <td>{{ booking.id }}</td>
-                            <td>{{ booking.customer }}</td>
-                            <td>{{ booking.address }}</td>
-                            <td>{{ booking.get_booking_type_display}}</td>
-                            <td>{{ booking.employee }}</td>
-                            <td>{{ booking.requested_time }}</td>
-                            <td>
-                                {% for bd in booking.booking_details.all %}
-                                    {{ bd.service.service_name }} - 
-                                     {{ bd.sub_total }} <br/>
-  
-                                {% endfor %}
-                            </td>
-                            <td>{{ booking.requests }}</td>
-                            <td>{{ booking.total|floatformat:2 }}</td>
-                            <td>{{ booking.get_payment_mode_display }}</td>
-                            <td class="font-weight-bold">{{ booking.get_status_display }}</td>  
-                        </tr>
-                    {% endif %}
-                    {% endfor %}
 
-                </tbody>
-            </table>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered text-center">
+
+                    <thead>
+                        <tr class="db-card-headings db-card-titles">
+                            <th>#</th>
+                            <th>Customer</th>
+                            <th>Booking Type</th>
+                            <th>Requested Date & Time</th>
+                            <th>Assigned Employee</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for booking in booking %}
+                        {% if booking.status == 4 or booking.status == 5 or booking.status == 6 %}
+                            <tr>
+                                <td><a href="{% url 'shop-view-booking' booking.id %}">{{ booking.id }}</a></td>
+                                <td>{{ booking.customer.user.get_full_name }}</td>
+                                <td>{{ booking.get_booking_type_display}}</td>
+                                <td>{{ booking.requested_time }}</td>
+                        
+                                {% if booking.employee == None %}
+                                    <td>None</td>
+                                {% endif %}
+                                {% if booking.employee != None %}
+                                    <td>{{ booking.employee.user.get_full_name }}</td>
+                                {% endif %}
+
+                                <td class="font-weight-bold">{{ booking.get_status_display }}</td>  
+                            </tr>
+                        {% endif %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="text-center">
+                {% if booking.count == 0 %}
+                    <p style="color: gray;">Your previous bookings will appear here.</p>
+                {% endif %}
+            </div>
         </div>
     </div>
-    </div>
+</div>
 
 {% endblock %}

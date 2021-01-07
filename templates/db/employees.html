@@ -1,47 +1,73 @@
 {% extends 'db/sidebar.html' %}
-{% load bootstrap3 %}
 
 {% block title %}Tribarb | Services{% endblock %}
 
 {% block page %}
 
 <div class="db-items">
-<div class="card">
-    <div class="card-heading db-card-headings">
-        <h4 class="card-title text-center db-card-titles">
-            Employees
-        </h4>
-        
-    </div>
-    <div class="card-body">
-        <table class="table table-bordered table-hover table-striped text-center">
-            <thead>
-                <tr class="db-card-headings db-card-titles">
-                <th>Name</th>
-                <th>Phone</th>
-                <th>Address</th>
-                <th>Email</th>
-     
-              </tr>
-            </thead>
-            <tbody>
-                {% for employee in employees %}
+    <div class="card mb-4">
 
-                    <tr>
-                        <td>{{ employee.first_name }} {{ employee.last_name }}</td>
-                        <td>{{ employee.phone }}</td>
-                        <td>{{ employee.address }}</td>
-                        <td>{{ employee.user.email }}</td>
-                       
-                    </tr>
+        <div class="card-heading db-card-headings">
+            <h4 class="card-title text-center db-card-titles">
+                Barbers
+            </h4>
+        </div>
 
-                {% endfor %}
-            </tbody>
-        </table>
-        <div class="text-center">
-            <a href="{% url 'shop-add-services' %}" class="btn btn-primary">Add Service </a>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered text-center">
+
+                    <thead>
+                        <tr class="db-card-headings db-card-titles">
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Phone</th>
+                            <th>Email</th>
+                            <th>Remove Employee</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for employee in employees %}
+
+                            <tr>
+                                <td>{{ employee.id}}</td>
+                                <td>{{ employee.user.get_full_name }}</td>
+                                <td>{{ employee.phone }}</td>
+                                <td>{{ employee.user.email }}</td>
+                                <td>
+                                    <form id="delForm" method="POST">
+                                        {% csrf_token %}
+                                        <input name="id" value="{{ employee.id }}" hidden>
+                                        <button type="button" id="delEmpl" class="btn btn-sm btn-danger">Remove</button>
+                                    </form>
+                                </td>
+                            </tr>
+                            
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="text-center">
+                {% if employees.count == 0 %}
+                    <p style="color: gray;">Your barbers will appear here when they login to the tribarb app.</p>
+                {% endif %}
+            </div>
         </div>
     </div>
 </div>
-</div>
+
+
+<script>
+    var formData = new FormData();
+    $(document).on('click', '#delEmpl', function(e) {
+    
+        if (confirm('Are you sure you want to delete this employee?')) {
+
+            $("#delForm").submit();
+        }       
+    })
+</script>
+
 {% endblock %}

@@ -1,1 +1,17 @@
-<h3>Something went wrong. Please re-request activation link.</h3>
+{% extends 'base-auth.html'%}
+{% load static %}
+
+{% block title %}Tribarb | Reset Link{% endblock %}
+
+{% block content%}
+    
+<div class="card-body">
+    <h2 class="text-center card-title" style="color: red;">Error</h2>
+    <p style="color: whitesmoke;">Something went wrong. Please try to re-register. If you keep running into the same issue, email <a href="mailto:tribarbapp@gmail.com?subject=Activation Link">tribarbapp@gmail.com</a> for assistance with the subject line 'Activation Link'.</p>
+
+    <div class="card-footer bg-transparent" style="padding-top: 25px; border-color: whitesmoke;">
+        <a href="{% url 'register' %}" style="color:#f9f9f9"><button class="font-weight-bold btn btn-md btn-block btn-light">Re-register</button></a>
+    </div>  
+</div>
+       
+{% endblock %}

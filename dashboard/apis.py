@@ -9,19 +9,65 @@ from oauth2_provider.models import AccessToken
 from authentication.models import Shop
 from dashboard.models import Service, ServiceImage, Customer, Employee, Booking, BookingDetail	
 
-from dashboard.serializers import ShopSerializerCustomer, ShopSerializerEmployee, ServiceSerializer, ServiceImageSerializer, BookingSerializer
+from dashboard.serializers import ShopSerializerCustomer, ShopSerializerEmployee, ServiceSerializer, ServiceImageSerializer, BookingSerializer, CustomerSerializer, EmployeeSerializer
 
 import stripe
 from tribarbDesktop.settings import STRIPE_API_KEY
 
+from pusher_push_notifications import PushNotifications
+
+
+
+beams_client = PushNotifications(
+    instance_id='e4ca64ad-a6d3-41af-b291-f7b39f7f9ba2',
+    secret_key='52E27A28876BD39A437CA40C15F49C443827BE6EEA1967305D5F515FED57B127',
+)
+
+  
 stripe.api_key = STRIPE_API_KEY
 
-
+STRIPE_CUSTOMER = ""
 
 ###### CUSTOMERS ######
-def customer_get_shops(request):
+
+
+def get_beam_token(request):
+    access_token = AccessToken.objects.get(token = request.GET.get("access_token"),
+		expires__gt = timezone.now())
+
+    user_id = access_token.user.email
+
+    beams_token = beams_client.generate_token(user_id)
+    return JsonResponse(beams_token)
+
+
+@csrf_exempt
+def stripe_ephemeral_key(request):
+    """Returns ephemeral key
+    """
+    # Get token
+    access_token = AccessToken.objects.get(token = request.GET.get("access_token"),
+		expires__gt = timezone.now())
+
+    # Get profile
+    customer = access_token.user.customer
+
+    customer_stripe_id = customer.stripe_id
+    api_version = request.GET.get("api_version")
+
+    data = stripe.EphemeralKey.create(customer=customer_stripe_id, stripe_version=api_version)
+
+    return JsonResponse(data)
+
+
+def customer_get_shops(request, filter_id):
+    if filter_id == 0:
+        filter_shops = Shop.objects.filter(shop_bookings=True, visible_on_app=True)
+    else:
+        filter_shops =  Shop.objects.filter(home_bookings=True, visible_on_app=True)
+    
     shops = ShopSerializerCustomer(
-        Shop.objects.all().order_by("-id"),
+        filter_shops.order_by("-id"),
         many = True,
         context = {"request": request}
     ).data
@@ -29,14 +75,20 @@ def customer_get_shops(request):
     return JsonResponse({"shops": shops})
 
 
-def customer_get_services(request, shop_id):
+def customer_get_services(request, filter_id, shop_id):
+    if filter_id == 0:
+        filter_services = Service.objects.filter(shop_id = shop_id, shop_service=True)
+    else:
+        filter_services = Service.objects.filter(shop_id = shop_id, home_service=True)
+
     services = ServiceSerializer(
-        Service.objects.filter(shop_id = shop_id).order_by("-id"),
+        filter_services.order_by("-id"),
         many = True,
         context = {"request": request}
     ).data
 
     return JsonResponse({"services": services})
+
     
 
 def customer_get_service_album(request, service_id):
@@ -48,6 +100,28 @@ def customer_get_service_album(request, service_id):
     ).data
 
     return JsonResponse({"album": album})
+
+
+
+def get_stripe_client_secret(request):
+    access_token = AccessToken.objects.get(token = request.GET.get("access_token"),
+            expires__gt = timezone.now())
+
+    booking_total = request.GET["total"]
+   
+    customer = access_token.user.customer
+
+    intent = stripe.PaymentIntent.create(
+        amount = int(float(booking_total)*100),
+        currency='gbp',
+        customer = customer.stripe_id,
+        description = "Tribarb Booking",
+        )
+
+    client_secret = intent.client_secret 
+
+    return JsonResponse({"clientSecret": client_secret})
+
 
 
 
@@ -68,6 +142,7 @@ def customer_add_booking(request):
         return:
             {"status": "success"}
     """
+  
     if request.method == "POST":
         # Get token
         access_token = AccessToken.objects.get(token = request.POST.get("access_token"),
@@ -75,14 +150,6 @@ def customer_add_booking(request):
 
         # Get profile
         customer = access_token.user.customer
-
-        # Get Stripe token
-        global stripe_token
-        stripe_token = request.POST.get("stripe_token")
-
-        # Check whether customer has any booking that is not completed
-        if Booking.objects.filter(customer = customer).exclude(status__in = [Booking.COMPLETED, Booking.DECLINED]):
-            return JsonResponse({"status": "failed", "error": "Your last booking must be completed."})
 
         # Check Address	
         if request.POST["booking_type"] == "1":
@@ -93,38 +160,47 @@ def customer_add_booking(request):
         # Get Booking Details   
         booking_details = json.loads(request.POST["booking_details"])
 
-        booking_total = 0
-        for service in booking_details:
-            booking_total += Service.objects.get(id = service["service_id"]).price
-
+        booking_subtotal = float(request.POST["subtotal"])
+        booking_service_fee = float(request.POST["service_fee"])
+        booking_total = float(request.POST["total"])
 
         if len(booking_details) > 0:
-
+    
             booking = Booking.objects.create(
                     customer = customer,
                     shop_id = request.POST["shop_id"],
-                    booking_type = request.POST["booking_type"],
-                    payment_mode = request.POST["payment_mode"],
+                    booking_type = int(request.POST["booking_type"]),
+                    payment_mode = int(request.POST["payment_mode"]),
                     requests = request.POST["requests"],
                     requested_time = request.POST["requested_time"],
                     total = booking_total,
+                    service_fee = booking_service_fee,
+                    subtotal = booking_subtotal,
                     status = Booking.PLACED,
                     address = request.POST["address"],
                 )
-
-
-            # Step 3 - Create Order details 
+            
+            
             for service in booking_details:
                 BookingDetail.objects.create(
                         booking = booking,
-                        service_id = service["service_id"],
-                        sub_total = Service.objects.get(id = service["service_id"]).price
-                    )
+                        service_id = service["service_id"]
+                )
+
+            if booking.booking_type == 1:
+                title = "New {} Booking \U0001F3E0 \U0001F5D3".format(booking.get_booking_type_display())
+            else :
+                title = "New {} Booking \U0001F5D3".format(booking.get_booking_type_display())
+            
+            
+            body = "{} has received a new {} booking. Respond ASAP!".format(booking.shop.name, booking.get_booking_type_display().lower())
+
+            employee_email_list = Employee.objects.filter(shop=booking.shop).values_list('email', flat=True)
+            send_notification_to_employees(list(employee_email_list), title, body)
 
             return JsonResponse({"status": "success"})
+      
 
-        else:
-            return JsonResponse({"status": "failed", "error": "Failed to connect to Stripe."})
 
 
 def customer_get_latest_booking(request):
@@ -136,6 +212,40 @@ def customer_get_latest_booking(request):
 
 	return JsonResponse({"booking": booking})
 
+
+
+def customer_get_bookings(request, filter_id):
+    access_token = AccessToken.objects.get(token = request.GET.get("access_token"),
+            expires__gt = timezone.now())
+    
+    customer = access_token.user.customer
+
+    if filter_id == 0 :
+        bookings = BookingSerializer(
+            Booking.objects.filter(customer = customer, status__in=[1, 2, 3]).order_by("requested_time"),
+            many = True
+        ).data
+    
+    else :
+        bookings = BookingSerializer(
+            Booking.objects.filter(customer = customer, status__in=[4, 5, 6]).order_by("requested_time"),
+            many = True
+        ).data
+
+
+    return JsonResponse({"bookings": bookings})
+
+
+
+def get_booking(request, booking_id):
+	access_token = AccessToken.objects.get(token = request.GET.get("access_token"),
+		expires__gt = timezone.now())
+
+	booking = BookingSerializer(
+        Booking.objects.get(id=booking_id)
+        ).data
+
+	return JsonResponse({"booking": booking})
 
 
 def customer_employee_location(request):
@@ -152,27 +262,172 @@ def customer_employee_location(request):
     return JsonResponse({"location": location})
 
 
+@csrf_exempt
+def customer_cancel_booking(request, booking_id):
+
+    if request.method == "POST":
+        access_token = AccessToken.objects.get(token = request.POST.get("access_token"),
+            expires__gt = timezone.now())
+            
+        customer = access_token.user.customer
+        
+        booking = Booking.objects.get(id=booking_id, customer = customer)
+
+        if booking.status == booking.PLACED:
+            booking.status = booking.CANCELLED
+            booking.save()
+
+            title = "Booking Cancelled \U0000274C"
+            body = "Booking #{} has been cancelled by the client.".format(booking.id)
+
+
+
+            return JsonResponse({"status": "success"})
+
+        else :
+            return JsonResponse({"status": "failed. The booking has already been accepted."})
+
+    
+
+@csrf_exempt
+def customer_update_details(request):
+
+    if request.method == "POST":
+        access_token = AccessToken.objects.get(token = request.POST.get("access_token"),
+            expires__gt = timezone.now())
+            
+        customer = access_token.user.customer
+        
+        customer.phone = request.POST["phone"]
+        customer.address = request.POST["address"]
+        customer.save()
+
+        return JsonResponse({"status": "success"})
+        
+
+
+def customer_get_details(request):
+    access_token = AccessToken.objects.get(token = request.GET.get("access_token"),
+		expires__gt = timezone.now())
+        
+    customer = access_token.user.customer
+
+    customerInfo = CustomerSerializer(
+        customer
+        ).data
+
+    return JsonResponse({"customer": customerInfo})
+
+
+
+
+@csrf_exempt
+def customer_update_ratings(request):
+    if request.method == "POST":
+        access_token = AccessToken.objects.get(token = request.POST.get("access_token"),
+            expires__gt = timezone.now())
+        
+        if access_token != "" :
+            booking = Booking.objects.get(id = request.POST["booking_id"])
+            booking.rating = request.POST["rating"]
+            booking.save()
+
+            shop = booking.shop
+            shop.total_rating = shop.total_rating + int(request.POST["rating"])
+            shop.number_of_ratings = shop.number_of_ratings + 1
+            shop.save()   
+            
+            return JsonResponse({"status": "success"})  
+  
 
 
 
 ###### EMPLOYEES ######
-def employee_get_shop(request, shop_id):
-    shop = ShopSerializerEmployee(
-        Shop.objects.filter(id = shop_id),
-        many = True,
-        context = {"request": request}
-    ).data
+def employee_get_details(request):
+    access_token = AccessToken.objects.get(token = request.GET.get("access_token"),
+		expires__gt = timezone.now())
+        
+    employee = access_token.user.employee
+
+    employeeInfo = EmployeeSerializer(
+        employee
+        ).data
+
+    return JsonResponse({"employee": employeeInfo})
+
+
+
+@csrf_exempt
+def employee_update_details(request):
+
+    if request.method == "POST":
+        access_token = AccessToken.objects.get(token = request.POST.get("access_token"),
+            expires__gt = timezone.now())
+            
+        employee = access_token.user.employee
+        
+        employee.phone = request.POST["phone"]
+        employee.save()
+
+        return JsonResponse({"status": "success"})
+
+
     
-    return JsonResponse({"shop": shop})
+@csrf_exempt
+def employee_verify(request):
+    if request.method == "POST":
+        access_token = AccessToken.objects.get(token = request.POST.get("access_token"),
+            expires__gt = timezone.now())
+        
+        employee = access_token.user.employee
+
+        shop = Shop.objects.get(id = request.POST["shop_id"])
+        shop_token = shop.token
+        token = request.POST["token"]
+
+        if shop_token == token:
+            employee.shop = shop
+            employee.save()
+            return JsonResponse({"status": "success"})  
+        else:
+            return JsonResponse({"status": "failed"})  
 
 
-def employee_get_placed_bookings(request, shop_id):
-    bookings = BookingSerializer(
-        Booking.objects.filter(shop_id = shop_id, status = Booking.PLACED, employee = None).order_by("-id"),
-        many = True
-    ).data
+
+
+
+
+def employee_get_bookings(request, filter_id):
+    access_token = AccessToken.objects.get(token = request.GET.get("access_token"),
+            expires__gt = timezone.now())
+
+    employee = access_token.user.employee
+    shop = employee.shop
+
+    if filter_id == 0 :
+        bookings = BookingSerializer(
+            Booking.objects.filter(shop = shop, status = Booking.PLACED).order_by("requested_time"),
+            many = True
+        ).data
+
+    elif filter_id == 1 :
+        bookings = BookingSerializer(
+            Booking.objects.filter(shop = shop, status__in=[2, 3]).order_by("requested_time"),
+            many = True
+        ).data
+    
+    else :
+        bookings = BookingSerializer(
+            Booking.objects.filter(shop = shop, status__in=[4, 5, 6]).order_by("requested_time"),
+            many = True
+        ).data
+
 
     return JsonResponse({"bookings": bookings})
+
+
+
+
 
 
 
@@ -188,7 +443,6 @@ def employee_accept_booking(request):
         try:
             booking = Booking.objects.get(
                 id = request.POST["booking_id"],
-                employee = None,
                 status = Booking.PLACED
             )
             booking.employee = employee
@@ -196,11 +450,58 @@ def employee_accept_booking(request):
             booking.accepted_at = timezone.now()
             booking.save()
 
+            title = "Booking Accepted \U00002705"
+            body = "Your booking from {} has been accepted. Your barber is {}.".format(booking.shop.name, employee.user
+            .get_full_name())
+        
+            send_notification_to_user(booking.customer.email, title, body)
+            
             return JsonResponse({"status": "success"})
 
         except Booking.DoesNotExist:
-            return JsonResponse({"status": "failed", "error": "This booking has already been accepted."})
+            return JsonResponse({"status": "failed", "error": "Someone else has already responded to this booking."})
+
+
+
+
+
+
+
+def send_notification_to_user(email, title, body):
+    response = beams_client.publish_to_users(
+    user_ids=[email],
+    publish_body={
+        'apns': {
+        'aps': {
+            'alert': {
+            'title': title,
+            'body': body
+            },
+        },
+        },
+    },
+    )
+
+    print(response)
     
+
+
+def send_notification_to_employees(emails, title, body):
+    response = beams_client.publish_to_users(
+    user_ids=emails,
+    publish_body={
+        'apns': {
+        'aps': {
+            'alert': {
+            'title': title,
+            'body': body
+            },
+        },
+        },
+    },
+    )
+
+    print(response)
 
 
 @csrf_exempt
@@ -213,16 +514,22 @@ def employee_decline_booking(request):
 
         try:
             booking = Booking.objects.get(
-                id = request.POST["booking_id"],
+                id = request.POST["booking_id"]
             )
             booking.employee = employee
             booking.status = Booking.DECLINED
             booking.save()
 
+
+            title = "Booking Declined \U0000274C"
+            body = "Your booking from {} has been declined. Please try to place another booking.".format(booking.shop.name)
+
+            send_notification_to_user(booking.customer.email, title, body)
+
             return JsonResponse({"status": "success"})
 
         except Booking.DoesNotExist:
-            return JsonResponse({"status": "failed", "error": "This booking has already been declined."})
+            return JsonResponse({"status": "failed", "error": "Someone else has already responded to this booking."})
 
 
 
@@ -238,12 +545,16 @@ def employee_enroute(request):
         try:
             booking = Booking.objects.get(
                 id = request.POST["booking_id"],
-                status = Booking.ACCEPTED,
-                booking_type = 1,
+                status = Booking.ACCEPTED
             )
-
+            booking.employee = employee
             booking.status = Booking.ONTHEWAY
             booking.save()
+
+            title = "Barber En Route \U0001F697\U0001F4A8"
+            body = "Your barber from {} is on the way. Track their location from the app.".format(booking.shop.name)
+
+            send_notification_to_user(booking.customer.email, title, body)
 
             return JsonResponse({"status": "success"})
 
@@ -260,29 +571,24 @@ def employee_complete_booking(request):
 
     employee = access_token.user.employee
 
-    booking = Booking.objects.get(id = request.POST["booking_id"], employee = employee)
-    booking_total = booking.total
-    print("TOTAL")
-    print(booking_total)
-
-    if booking.payment_mode == 1:
-        charge = stripe.Charge.create(
-                amount = int(booking_total * 100),
-                currency = "gbp",
-                source = stripe_token,
-                description = "Tribarb Booking"
-            )
-
-        if charge.status != "failed":
-            booking.status = Booking.COMPLETED 
-            booking.save()
-            return JsonResponse({"status": "success"})
-        else:
-            return JsonResponse({"status": "failed", "error": "Failed to connect to Stripe."})
-    else:
-        booking.status = Booking.COMPLETED 
+    try:
+        booking = Booking.objects.get(
+            id = request.POST["booking_id"]
+        )
+        booking.employee = employee
+        booking.status = Booking.COMPLETED
         booking.save()
+
+        title = "Rate The Cut \U00002B50"
+        body = "I like ya cut g \U0001F44C. Rate your experience with {}.".format(booking.shop.name)
+        
+        send_notification_to_user(booking.customer.email, title, body)
+
         return JsonResponse({"status": "success"})
+
+    except Booking.DoesNotExist:
+        return JsonResponse({"status": "failed", "error": "This booking has been accepted by another barber."})
+
 
     
 
@@ -353,3 +659,76 @@ def shop_booking_notification(request, last_request_time):
 
 
     return JsonResponse({"notification": notification})
+
+
+
+
+def check_user_last_loggin_in_as(request):
+    access_token = AccessToken.objects.get(token = request.GET.get("access_token"),
+            expires__gt = timezone.now())
+
+
+    user = access_token.user 
+
+    user_is_customer = Customer.objects.filter(user=user).count()
+    user_is_employee = Employee.objects.filter(user=user).count()
+
+    if user_is_customer > 0:
+        last_logged_in_as_customer =  Customer.objects.get(user=user).last_logged_in_as
+        if last_logged_in_as_customer == True:
+            return JsonResponse({"last_logged_in_as": "customer"})
+    
+    if user_is_employee > 0:
+        last_logged_in_as_employee =  Employee.objects.get(user=user).last_logged_in_as
+
+        if last_logged_in_as_employee == True:
+            verified = False
+
+            if Employee.objects.get(user=user).shop != None:
+                verified = True
+
+            return JsonResponse({"last_logged_in_as": "employee", "verified": verified})
+        
+    
+
+
+@csrf_exempt
+def set_user_last_loggin_in_as(request):
+    if request.method == "POST":
+        access_token = AccessToken.objects.get(token = request.POST.get("access_token"),
+            expires__gt = timezone.now())
+
+        user = access_token.user 
+
+        user_is_customer = Customer.objects.filter(user=user).count()
+        user_is_employee = Employee.objects.filter(user=user).count()
+
+
+        if request.POST["user_type"] == "customer":
+            customer = user.customer
+            customer.last_logged_in_as = True
+            customer.save()
+
+            if user_is_employee > 0:
+                employee = user.employee
+                employee.last_logged_in_as = False
+                employee.save()
+            
+            return JsonResponse({"status": "success"})
+
+
+        if request.POST["user_type"] == "employee":
+            employee = user.employee
+            employee.last_logged_in_as = True
+            employee.save()
+            
+            if user_is_customer > 0:
+                customer = user.customer
+                customer.last_logged_in_as = False
+                customer.save()
+
+            return JsonResponse({"status": "success"})
+
+
+
+    

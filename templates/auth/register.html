@@ -1,88 +1,190 @@
+{% extends 'base-auth.html' %}
 {% load static %}
-{% load bootstrap3 %}
+{% load widget_tweaks %}
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{% static 'css/bootstrap.css' %}">
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
-    <title>Tribarb | Register</title>
-</head>
+{% block title %}Tribarb | Register{% endblock %}
+
+{% block content %}
+
+<div class="card-body">
+    
+    <h2 class="text-center card-title" style="color: whitesmoke;">Registration</h2>
+
+    {% include 'partials/_flash_messsages.html' %}
+    <h5 class="card-title text-left text-warning">User Info</h5>
+    <form id="regsiterForm" action="{% url 'register' %}" method="post" enctype="multipart/form-data">
 
 
-<body class="auth-bg vignette-register">
-    <div class="row" style="padding-bottom: 30px;">
-        <div class="col-md-3"></div>
-        <div class="col-md-6">
-            <div class="row">
-                <div class="col-md-2"></div>
-                <div class="col-md-8">
-
-                    <div class="card mt-5 auth-card" style="border: none;">
-                        
-                        <h1 class="card-title text-center " style="font-family:American Typewriter; font-size:500%; color:whitesmoke; ">tribarb</h1>
-                        
-
-                        <div class="card-body">
-                            <h2 class="text-center card-title" style="color: whitesmoke;">Registration</h2>
-                        
-                            {% include 'partials/_flash_messsages.html' %}
-                            <h5 class="card-title text-left text-muted">User Info</h5>
-                            <form action="{% url 'register' %}" method="post" enctype="multipart/form-data">
-                        
-                                {% csrf_token %}
-                                <div class="form-group">
-                                    <input class="form-control" type="email" name="email" value="{{data.email}}" placeholder="Email">
-                                </div>
-                        
-                                <div class="form-group">
-                                    <input class="form-control" type="text" name="first_name" value="{{data.first_name}}" placeholder="First Name">
-                                </div>
-                        
-                                <div class="form-group">
-                                    <input class="form-control" type="text" name="last_name" value="{{data.last_name}}" placeholder="Last Name">
-                                </div>
-                        
-                                <div class="form-group">
-                                    <input class="form-control" type="text" name="username" value="{{data.username}}" placeholder="Username">
-                                </div>
-                        
-                                <div class="form-group">
-                                    <input class="form-control" type="password" name="password" value="" placeholder="Password">
-                                </div>
-                        
-                                <div class="form-group">
-                                    <input class="form-control" type="password" name="password2" value="" placeholder="Confirm Password">
-                                </div>
-                        
-                                <h5 class="card-title text-left text-muted" style="padding-top: 25px; ">Shop Info</h5>
-                                <div class="card-title text-left" style="color: whitesmoke;">Logo</div>
-                                {% bootstrap_form shop_form layout='inline' %}
-                                
-                                <input type="submit" value="Register" style="color: #333;" class="font-weight-bold btn btn-lg btn-block btn-warning"/>
-                            </form>
-                        
-                            <div style="padding-top: 15px; padding-bottom: 15px;">
-                                <small class="py-3" style="color: whitesmoke;">
-                                    By signing up, you agree to our <b>Terms</b>, <b>Data Policy</b> and <b>Cookies Policy</b>.
-                                </small>
-                            </div>
-                        
-                            <div class="card-footer bg-transparent text-center" style="padding-top: 15px; padding-bottom: 0px; border-color: whitesmoke;" >
-                                <p style="color: whitesmoke;">Have an account?<a href="{% url 'login' %}"> Log In</a></p>
-                            </div>
-                        </div>
-
-                    </div>
-
-                </div>
-                 <div class="col-md-2"></div>
+        {% csrf_token %}
+        
+        <div class="form-group">
+            <div class="input-group">
+                <input class="form-control" type="text" name="first_name" value="{{data.first_name}}" placeholder="First Name">
+                <span class="input-group-addon"> &nbsp &nbsp </span>
+                <input class="form-control" type="text" name="last_name" value="{{data.last_name}}" placeholder="Last Name">
             </div>
         </div>
-        <div class="col-md-3"></div>
-    </div>
-</body>
+            
+        
+        <div class="form-group">
+            <input class="form-control" type="email" name="email" value="{{data.email}}" placeholder="Email">
+        </div>
 
-</html>
+        <div class="form-group">
+            <input class="form-control" id="myInput1" type="password" name="password" value="" placeholder="Password">
+            <div style="color: whitesmoke;">  <input type="checkbox" onclick="myFunction()"> Show Password</div> 
+        </div>
+     
+        <h5 class="card-title text-left text-warning" style="padding-top: 25px; ">Shop Info</h5>
+
+
+        
+        <div class="form-group">
+            {% render_field shop_form.name class="form-control" placeholder="Shop Name"%}
+        </div>
+
+        <div class="form-group">
+            {% render_field shop_form.phone class="form-control" type="number" placeholder="Phone No."%}
+        </div>
+
+        <div class="form-group">
+            {% render_field shop_form.address id="address" class="form-control" placeholder="Shop Address"%}   
+            <div style="padding-top: 5px; padding-bottom: 5px;">
+                <input id="searchAddress" type="button" value="Search Address" class="font-weight-normal btn btn-sm btn-block btn-warning"/>  
+            </div>
+            <div style="border-radius: 5px;" id="map" ></div>                           
+        </div>
+
+
+        <h6 class="card-title text-left text-warning mt-4">Shop Logo</h6>
+        {% render_field shop_form.logo %} 
+        
+        
+        <div class="row mb-3">
+            <div class="col-sm-6">
+              <div class="card text-center" style="background-color: #353A3F; border: none;">
+                <div class="card-body">
+                  <h6 class="card-title text-warning">Shop Bookings</h6>
+                  {% render_field shop_form.shop_bookings data-toggle="toggle" data-on="Accepted" data-off="Unaccepted"  data-offstyle="danger" %}
+                </div>
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="card text-center" style="background-color: #353A3F; border: none;">
+                <div class="card-body">
+                  <h6 class="card-title text-warning">Home Bookings</h6>
+                  {% render_field shop_form.home_bookings data-toggle="toggle" data-on="Accepted" data-off="Unaccepted"  data-offstyle="danger" %}
+                </div>
+              </div>
+            </div>
+        </div>
+  
+        <input onclick="this.disabled=true;this.form.submit();this.value='Please wait...';" value="Register" style="color: #333;" class="font-weight-bold btn btn-lg btn-block btn-warning"/>
+    </form>
+
+    <div style="padding-top: 15px; padding-bottom: 15px;">
+        <small class="py-3" style="color: whitesmoke;">
+            By signing up, you agree to our <b>Terms</b>, <b>Data Policy</b> and <b>Cookies Policy</b>.
+        </small>
+    </div>
+
+    <div class="card-footer bg-transparent text-center" style="padding-top: 15px; padding-bottom: 0px; border-color: whitesmoke;" >
+        <p style="color: whitesmoke;">Have an account?<a href="{% url 'login' %}"> Log In</a></p>
+    </div>
+    
+</div>
+
+
+<script>
+    function myFunction() {
+    var x = document.getElementById("myInput");
+    if (x.type === "password") {
+        x.type = "text";
+    } else {
+        x.type = "password";
+    }
+    }
+</script>
+
+
+<script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
+<script defer
+src="https://maps.googleapis.com/maps/api/js?key={{ mapsKey }}&callback=initMap"></script>
+
+
+<script>
+    let marker; 
+
+    function initMap() {
+        const myLatlng = { lat: 54, lng: -3 };
+
+        map = new google.maps.Map(document.getElementById("map"), {
+            zoom: 4,
+            center: myLatlng,
+        });
+
+        const geocoder = new google.maps.Geocoder();
+
+        map.addListener("click", (mapsMouseEvent) => {
+            reverseGeocode(geocoder, map, mapsMouseEvent.latLng)
+        });
+
+        
+        document.getElementById("searchAddress").addEventListener("click", () => {
+            geocodeAddress(geocoder, map);
+        }); 
+    }
+
+
+    function geocodeAddress(geocoder, resultsMap) {
+        if (marker != undefined) {
+            marker.setMap(null)
+        } 
+
+        resultsMap.setZoom(15)
+        const address = document.getElementById("address").value;
+        geocoder.geocode({ address: address }, (results, status) => {
+            if (status === "OK") {
+                resultsMap.setCenter(results[0].geometry.location);
+                marker = new google.maps.Marker({
+                    map: resultsMap,
+                    position: results[0].geometry.location,
+                });
+            } else {
+                alert(
+                    "Geocode was not successful for the following reason: " + status
+                );
+            }
+        });
+    }
+
+
+    function reverseGeocode(geocoder, map, latlng) {
+        if (marker != undefined) {
+            marker.setMap(null)
+        } 
+        
+        geocoder.geocode({ location: latlng }, (results, status) => {
+        if (status === "OK") {
+            if (results[0]) {
+            document.getElementById("address").value = results[0].formatted_address
+            marker = new google.maps.Marker({
+                position: latlng,
+                map,
+            });
+            map.setZoom(15)
+            map.setCenter(latlng)
+            
+            } else {
+            window.alert("No results found");
+            }
+        } else {
+            window.alert("Geocoder failed due to: " + status);
+        }
+        });
+    }
+</script>
+
+{% endblock %}
+
+

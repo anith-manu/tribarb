@@ -1,0 +1,96 @@
+{% extends 'db/sidebar.html' %}
+
+{% block title %}Tribarb | Booking #{{ booking.id }}{% endblock %}
+
+{% block page %}
+
+<div class="db-items">
+    <div class="card mb-4">
+
+        <div class="card-heading db-card-headings">
+            <h4 class="card-title text-center db-card-titles">
+                Booking #{{ booking.id }} 
+            </h4>
+            <h5 class="card-title text-center" style="color: whitesmoke;">
+                Status : {{ booking.get_status_display  }} 
+            </h5>
+        </div>
+
+        <div class="card-body text-center">
+            <div class="mb-4 ">
+                <div class="table-responsive">
+                    <table class="table table-sm text-center table-bordered">
+
+                        <thead class="db-card-headings db-card-titles">
+                            <tr>
+                                <th scope="col">Requested Services</th>
+                                <th scope="col">Price</th>
+                            </tr>
+                        </thead>
+                        
+                        <tbody>
+                            {% for bd in booking.booking_details.all %}
+                                <tr>
+                                    <td>{{ bd.service.service_name }}</td>
+                                    <td>£{{  bd.service.price|floatformat:2  }}</td>
+                                </tr>
+                            {% endfor %}
+
+                            <tr>
+                                <td><b>Service Fee</b></td>
+                                <td>£{{  booking.service_fee|floatformat:2  }}</td>
+                            </tr>
+
+                            <tr>
+                                <td><b>Total</b></td>
+                                <td>£{{  booking.total|floatformat:2  }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+
+            <div class="mb-4">
+                <h6>Customer Name </h6>
+                <p>{{ booking.customer }}</p>
+            </div>
+
+            <div class="mb-4">
+                <h6>Booking Type </h6>
+                <p>{{ booking.get_booking_type_display }}</p>
+            </div>
+
+            <div class="mb-4">
+                <h6>Booking Date & Time</h6>
+                <p>{{ booking.requested_time }}</p>
+            </div>
+
+            {% if booking.booking_type == 1 %}
+                <div class="mb-4">
+                    <h6>Customer Address</h6>
+                    <p>{{ booking.address }}</p>
+                </div>
+            {% endif %}
+
+            <div class="mb-4">
+                <h6>Assigned Employee</h6>
+                <p>{{ booking.employee }}</p>
+            </div>
+
+            <div class="mb-4">
+                <h6>Payment Mode</h6>
+                <p>{{ booking.get_payment_mode_display }}</p>
+            </div>
+
+            {% if booking.requests != "" %}
+                <div class="mb-4">
+                    <h6>Additional Requests</h6>
+                    <p>{{ booking.requests }}</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% endblock %}

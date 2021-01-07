@@ -3,8 +3,6 @@
 {% block script %}
 
 <script>
-
-
     $(document).ready(function() {
         var now = new Date();
         setInterval(function() {
@@ -12,22 +10,8 @@
                 url: '/api/booking/notification/' + now.toISOString() + '/',
                 success: function(data) {
                     if (data['notification'] != 0) {
-                        var myAudio = new Audio('https://tribarb.s3.us-east-2.amazonaws.com/knock.mp3');
-                        //myAudio.play();
-                        $('.badge').text('NEW BOOKING');
-                        
-                        
-                     } /*else {
-                        
-                        $('.badge').text('NEW BOOKING');
-
-                        setTimeout(function() {
-                            location.reload();
-                        }, 9000);
-
-                        
-    
-                    } */
+                        $('.badge').text(data['notification']);
+                     }
                 }
             })
         }, 3000)
@@ -45,50 +29,50 @@
 {% url 'shop-employees' as barber_employees_url %}
 {% url 'shop-account' as barber_account_url %}
 
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
 
-
-<div class="text-center">
-    <h1 class="card-title text-center" style="font-family:American Typewriter; color: white;">tribarb</h1>
-    
-</div>
-
-<div class="text-center">
-    <img class="rounded-circle" src="{{ MEDIA_URL}}{{ request.user.shop.logo }}" width="70" height="70"/>
-    <br/>
-    <br/>
-    <h5 style="color:grey"> {{ request.user.shop.name }}</h5>
-    <h4 class="Hello" style="color:#ffc36e "> Hi, {{ request.user.get_full_name }}</h4>   
-</div>
-    
-<div class="list-group">
-    <span class="text-uppercase " style="color:whitesmoke">Dashboard</span>
-    
-    <a href="{% url 'shop-bookings' %}" class="rounded-pill list-group-item {% if request.path == barber_booking_url %} active {% endif %}">
-        <img src="https://tribarb.s3.us-east-2.amazonaws.com/bookings.png" width="25" height="25"/> Bookings
-        <span class="badge"></span>	
+    <a class="navbar-brand" href="{% url 'shop-bookings' %}">
+        <img src="https://tribarb-media-bucket.s3-ap-southeast-1.amazonaws.com/website-logo/website-logo.png" width="155" height="46" class="d-inline-block align-top" alt="">
     </a>
+   
 
-    <a href="{% url 'shop-services' %}" class="rounded-pill list-group-item {% if request.path == barber_service_url %} active {% endif %}">
-        <img src="https://tribarb.s3.us-east-2.amazonaws.com/services.png" width="25" height="25"/> Services</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
 
-    <a href="{% url 'shop-employees' %}" class="rounded-pill list-group-item {% if request.path == barber_employees_url %} active {% endif %}">
-        <img src="https://tribarb.s3.us-east-2.amazonaws.com/barber.png" width="25" height="25"/> Employees</a>
+    <div class="collapse navbar-collapse" id="navbarText">
+      <ul class="navbar-nav mr-auto">
 
-    <a href="{% url 'shop-reports' %}" class="rounded-pill list-group-item {% if request.path == barber_report_url %} active {% endif %}">
-        <img src="https://tribarb.s3.us-east-2.amazonaws.com/report.png" width="25" height="25"/> Reports</a>
+        <li class="nav-item {% if request.path == barber_booking_url %} current {% endif %}">
+          <a class="rounded nav-link" href="{% url 'shop-bookings' %}">Bookings <span class="badge"></span>	</a>
+        </li>
 
-    <a href="{% url 'shop-account' %}" class="rounded-pill list-group-item {% if request.path == barber_account_url %} active {% endif %}">
-        <img src="https://tribarb.s3.us-east-2.amazonaws.com/account.png" width="25" height="25"/> Account</a>
-</div>
+        <li class="nav-item {% if request.path == barber_service_url %} current {% endif %}">
+          <a class="rounded nav-link" href="{% url 'shop-services' %}">Services</a>
+        </li>
 
+        <li class="nav-item {% if request.path == barber_employees_url %} current {% endif %}">
+          <a class="rounded nav-link" href="{% url 'shop-employees' %}">Barbers</a>
+        </li>
 
-<div class="text-center">
-    <form action="{% url 'logout' %}" method="POST">
-        {% csrf_token %}
-        <input type="submit" value="Logout" class="btn btn-warning font-weight-bold">
-    </form>
-</div>
+        <li class="nav-item {% if request.path == barber_report_url %} current {% endif %}">
+            <a class="rounded nav-link" href="{% url 'shop-reports' %}">Reports</a>
+        </li>
 
+        <li class="nav-item {% if request.path == barber_account_url %} current {% endif %}">
+            <a class="rounded nav-link" href="{% url 'shop-account' %}">Account</a>
+        </li>
+
+      </ul>
+
+      <span class="navbar-text">
+        <form action="{% url 'logout' %}" method="POST">
+            {% csrf_token %}
+            <input type="submit" value="Logout" class="btn btn-sm btn-warning font-weight-bold">
+        </form>
+      </span>
+
+    </div>
+</nav>
     
-
 {% endblock %}
