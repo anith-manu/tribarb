@@ -278,7 +278,7 @@ def customer_cancel_booking(request, booking_id):
 
             title = "Booking Cancelled \U0000274C"
             body = "Booking #{} has been cancelled by the client.".format(booking.id)
-            send_notification(title, body)
+
 
 
             return JsonResponse({"status": "success"})
@@ -453,7 +453,10 @@ def employee_accept_booking(request):
             body = "Your booking from {} has been accepted. Your barber is {}.".format(booking.shop.name, employee.user
             .get_full_name())
             
-
+      
+            email = str(booking.customer.email)
+            send_notification_to_user(email, title, body)
+            
 
             return JsonResponse({"status": "success"})
 
@@ -463,6 +466,7 @@ def employee_accept_booking(request):
 
 
 def send_notification(interest, title, body):
+
     beams_client.publish_to_interests(
         interests=[interest],
         publish_body={
@@ -477,6 +481,22 @@ def send_notification(interest, title, body):
         }
     )
 
+
+
+def send_notification_to_user(user, title, body):
+    beams_client.publish_to_interests(
+        user_ids=[user],
+        publish_body={
+            'apns': {
+                'aps': {
+                    'alert': {
+                        'title': title,
+                        'body': body
+                    }
+                }
+            }
+        }
+    )
     
 
 
