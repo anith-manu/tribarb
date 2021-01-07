@@ -194,9 +194,10 @@ def customer_add_booking(request):
             
             
             body = "{} has received a new {} booking. Respond ASAP!".format(booking.shop.name, booking.get_booking_type_display().lower())
-            send_notification(request.POST["shop_id"],title, body)
-                    
-       
+
+            employee_email_list = Employee.objects.filter(shop=booking.shop).values_list('email', flat=True)
+            send_notification_to_employees(list(employee_email_list), title, body)
+
             return JsonResponse({"status": "success"})
       
 
@@ -452,12 +453,9 @@ def employee_accept_booking(request):
             title = "Booking Accepted \U00002705"
             body = "Your booking from {} has been accepted. Your barber is {}.".format(booking.shop.name, employee.user
             .get_full_name())
+        
+            send_notification_to_user(booking.customer.email, title, body)
             
-      
-            email = str(booking.customer.email)
-            send_notification_to_user(email, title, body)
-            
-
             return JsonResponse({"status": "success"})
 
         except Booking.DoesNotExist:
@@ -465,39 +463,45 @@ def employee_accept_booking(request):
 
 
 
-def send_notification(interest, title, body):
 
-    beams_client.publish_to_interests(
-        interests=[interest],
-        publish_body={
-            'apns': {
-                'aps': {
-                    'alert': {
-                        'title': title,
-                        'body': body
-                    }
-                }
-            }
-        }
+
+
+
+def send_notification_to_user(email, title, body):
+    response = beams_client.publish_to_users(
+    user_ids=[email],
+    publish_body={
+        'apns': {
+        'aps': {
+            'alert': {
+            'title': title,
+            'body': body
+            },
+        },
+        },
+    },
     )
 
-
-
-def send_notification_to_user(user, title, body):
-    beams_client.publish_to_interests(
-        user_ids=[user],
-        publish_body={
-            'apns': {
-                'aps': {
-                    'alert': {
-                        'title': title,
-                        'body': body
-                    }
-                }
-            }
-        }
-    )
+    print(response)
     
+
+
+def send_notification_to_employees(emails, title, body):
+    response = beams_client.publish_to_users(
+    user_ids=emails,
+    publish_body={
+        'apns': {
+        'aps': {
+            'alert': {
+            'title': title,
+            'body': body
+            },
+        },
+        },
+    },
+    )
+
+    print(response)
 
 
 @csrf_exempt
@@ -519,8 +523,8 @@ def employee_decline_booking(request):
 
             title = "Booking Declined \U0000274C"
             body = "Your booking from {} has been declined. Please try to place another booking.".format(booking.shop.name)
-    
-    
+
+            send_notification_to_user(booking.customer.email, title, body)
 
             return JsonResponse({"status": "success"})
 
@@ -548,8 +552,9 @@ def employee_enroute(request):
             booking.save()
 
             title = "Barber En Route \U0001F697\U0001F4A8"
-            body = "Your barber from {} is on the way. Track your barbers location from the app.".format(booking.shop.name)
-     
+            body = "Your barber from {} is on the way. Track their location from the app.".format(booking.shop.name)
+
+            send_notification_to_user(booking.customer.email, title, body)
 
             return JsonResponse({"status": "success"})
 
@@ -575,8 +580,9 @@ def employee_complete_booking(request):
         booking.save()
 
         title = "Rate The Cut \U00002B50"
-        body = "Lookin' fresh? Rate your experience with {} on the app.".format(booking.shop.name)
+        body = "I like ya cut g \U0001F44C. Rate your experience with {}.".format(booking.shop.name)
         
+        send_notification_to_user(booking.customer.email, title, body)
 
         return JsonResponse({"status": "success"})
 
