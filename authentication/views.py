@@ -10,15 +10,13 @@ from .utils import generate_token
 from django.core.mail import EmailMessage
 from django.conf import settings
 from django.contrib.auth import authenticate, login, logout
-
 from authentication.forms import ShopForm
-
-
+from django.core.mail import EmailMultiAlternatives
 from django.contrib.sites.shortcuts import get_current_site
 from django.template.loader import render_to_string
+from authentication.models import Shop
 
-# Create your views here.
-
+import random 
 import threading
 
 class EmailThread(threading.Thread):
@@ -30,27 +28,36 @@ class EmailThread(threading.Thread):
         self.email_message.send()
 
 
-class RegistrationView(View):
-    shop_form = ShopForm()
+class RegistrationView(View):    
+
+    def generateUsername(self, firstName, lastName):
+        first_letter = firstName[0].lower()
+        three_letters_surname = lastName[:3].lower()
+        number = '{:03d}'.format(random.randrange(1, 999))
+        username = (first_letter + three_letters_surname + number)
+        return username
 
     def get(self, request):
         shop_form = ShopForm()
         return render(request, 'auth/register.html', {
-		"shop_form": shop_form 
+		"shop_form" : shop_form,
+        "mapsKey" : settings.GOOGLE_MAPS_API_KEY
 		})
 
     def post(self, request):
+        shop_form = ShopForm(request.POST, request.FILES)
         context={
             'data':request.POST,
-            'has_error':False
+            'has_error':False,
+            'shop_form':shop_form,
+            "mapsKey" : settings.GOOGLE_MAPS_API_KEY
         }
 
-        email=request.POST.get('email')
-        username=request.POST.get('username')
         fName=request.POST.get('first_name')
         lName=request.POST.get('last_name')
+        email=request.POST.get('email')
         password=request.POST.get('password')
-        password2=request.POST.get('password2')
+
 
         if not validate_email(email):
             messages.add_message(request, messages.ERROR, 'Please provide a valid email.')
@@ -59,15 +66,27 @@ class RegistrationView(View):
         if len(password)<6:
             messages.add_message(request, messages.ERROR, 'Password should be at least 6 characters long.')
             context['has_error']=True
-
-        if password!=password2:
-            messages.add_message(request, messages.ERROR, 'Passwords don\'t match.')
+        
+        if len(fName)==0:
+            messages.add_message(request, messages.ERROR, 'Please provide your first name.')
             context['has_error']=True
+        
+        if len(lName)==0:
+            messages.add_message(request, messages.ERROR, 'Please provide your last name.')
+            context['has_error']=True
+    
+        
         
         try:
             if User.objects.get(email=email):
-                messages.add_message(request, messages.ERROR, 'Email is already taken.')
-                context['has_error']=True
+                
+                user = User.objects.get(email=email)
+                if user.is_active == False:
+                    user.delete()
+                    
+                else :
+                    messages.add_message(request, messages.ERROR, 'Email is already taken.')
+                    context['has_error']=True
         except Exception:
             pass
       
@@ -77,52 +96,57 @@ class RegistrationView(View):
                 context['has_error']=True
         except Exception:
             pass
+
+        if not shop_form.is_valid():
+            messages.add_message(request, messages.ERROR, 'Please provide complete and valid shop info.')
+            context['has_error']=True
+        
+        if request.POST.get("shop_bookings") == None and request.POST.get("home_bookings") == None:
+            messages.add_message(request, messages.ERROR, 'Please select the accepted booking type(s).')
+            context['has_error']=True
         
      
         if context['has_error']:
             return render(request, 'auth/register.html', context, status=400)
+        else:
+            # Create User
+            username = self.generateUsername(fName, lName)
+            user = User.objects.create(username=username,email=email, first_name=fName, last_name=lName, is_active=False)
+            user.set_password(password)
+            user.save()
 
-        user = User.objects.create(username=username,email=email)
-        user.set_password(password)
-        user.first_name=fName
-        user.last_name=lName
-        user.is_active=False
-
-        user.save()
-
-        #####
-        shop_form = ShopForm(request.POST, request.FILES)
-
-        if shop_form.is_valid():
+            # Create Shop
             new_shop = shop_form.save(commit=False)
             new_shop.user = user
             new_shop.save()
-        else:
-            return render(request, 'auth/register.html', context, status=400)
-        #####
+
+        ##### Send Activation Email #####
 
         current_site = get_current_site(request)
-        email_subject = 'Activate Your Tribarb Account'
-        message = render_to_string('auth/activate.html', 
-        {
+        email_subject = 'Activate Your Tribarb Shop Manager Account'
+
+        context = ({
             'user':user,
             'domain':current_site.domain,
             'uid':urlsafe_base64_encode(force_bytes(user.pk)),
             'token': generate_token.make_token(user)       
-        }
-        )
+        })
 
-        email_message = EmailMessage(
-            email_subject,
-            message,
-            settings.EMAIL_HOST_USER,
-            [email], 
-        )
 
-        EmailThread(email_message).start()
-        messages.add_message(request, messages.SUCCESS, 'Account created successfully! Please check your email for a verification link.')
+        text_content = render_to_string('auth/activate.txt', context)
+        html_content = render_to_string('auth/activate.html', context)
 
-        return redirect('login')
+        try:
+            emailMessage = EmailMultiAlternatives(subject=email_subject, body=text_content, from_email=settings.EMAIL_HOST_USER, to=[email])
+            emailMessage.attach_alternative(html_content, "text/html")
+            emailMessage.send(fail_silently=False)
+        except:
+            messages.add_message(request, messages.ERROR, 'There was an error while sending the activation email. Please try to re-register.')
+            return render(request, 'auth/register.html', context, status=400)
+
+        return render(request, 'auth/email-sent.html')
+
+
 
 
 
@@ -170,7 +194,7 @@ class ActivateAccountView(View):
         if user is not None and generate_token.check_token(user, token):
             user.is_active=True
             user.save()
-            messages.add_message(request, messages.SUCCESS, 'Account activated successfully!')
+            messages.add_message(request, messages.SUCCESS, 'Account activated! You can now login.')
             return redirect('login')
         
         return render(request, 'auth/activate_failed.html', status=401)
@@ -200,25 +224,31 @@ class RequestResetEmailView(View):
 
         if user.exists():
             current_site = get_current_site(request)
-            email_subject = '[Reset your Password]'
-            message = render_to_string('auth/reset-user-password.html',
-                                       {
-                                           'domain': current_site.domain,
-                                           'uid': urlsafe_base64_encode(force_bytes(user[0].pk)),
-                                           'token': PasswordResetTokenGenerator().make_token(user[0])
-                                       }
-                                       )
+            email_subject = 'Tribarb Shop Manager Password Reset'
+            context = ({
+                'domain': current_site.domain,
+                'uid': urlsafe_base64_encode(force_bytes(user[0].pk)),
+                'token': PasswordResetTokenGenerator().make_token(user[0]),
+                'email' : email      
+            })
 
-            email_message = EmailMessage(
-                email_subject,
-                message,
-                settings.EMAIL_HOST_USER,
-                [email]
-            )
 
-            EmailThread(email_message).start()
+            text_content = render_to_string('auth/reset-user-password.txt', context)
+            html_content = render_to_string('auth/reset-user-password.html', context)
 
-        messages.success(request, 'Thanks! Please check your email for a link to reset your password.')
+            try:
+                emailMessage = EmailMultiAlternatives(subject=email_subject, body=text_content, from_email=settings.EMAIL_HOST_USER, to=[email])
+                emailMessage.attach_alternative(html_content, "text/html")
+                emailMessage.send(fail_silently=False)
+                messages.success(request, 'Please check your email for a link to reset your password.')
+            except:
+                messages.add_message(request, messages.ERROR, 'There was an error while sending the password reset email. Please try again.')
+        
+        else:
+            messages.error(request, 'An account associated with this email does not exist.')
+            return render(request, 'auth/request-reset-email.html')
+
+
         return render(request, 'auth/request-reset-email.html') 
 
 
@@ -279,3 +309,4 @@ class SetNewPasswordView(View):
             return render(request, 'auth/set-new-password.html', context)
 
         return render(request, 'auth/set-new-password.html', context)
+    

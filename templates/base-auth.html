@@ -2,41 +2,42 @@
 
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{% static 'css/bootstrap.css' %}">
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
-    <title>{% block title %} {% endblock %}</title>
-</head>
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="{% static 'css/bootstrap.css' %}">
+        <link rel="stylesheet" href="{% static 'css/style.css' %}">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <link href="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.6.1/css/bootstrap4-toggle.min.css" rel="stylesheet">  
+        <script src="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.6.1/js/bootstrap4-toggle.min.js"></script>
+
+        <title>{% block title %} {% endblock %}</title>
+    </head>
 
 
-<body class="auth-bg vignette">
-    <div class="row" style="padding-bottom: 30px;">
-        <div class="col-md-3"></div>
-        <div class="col-md-6">
-            <div class="row">
-                <div class="col-md-2"></div>
-                <div class="col-md-8">
-
-                    <div class="card mt-5 auth-card " style="border: none;">
+    <body class="auth-bg">
+        <div class="row" style="padding-bottom: 30px;">
+            <div class="col-md-3"></div>
+            <div class="col-md-6">
+                <div class="row">
+                    <div class="col-md-2"></div>
+                    <div class="col-md-8">
+                        <div class="card mt-5 auth-card " style="border: none;">
+                            <a class="navbar-brand" href="{% url 'home' %}">
+                                <img src="https://tribarb-media-bucket.s3-ap-southeast-1.amazonaws.com/website-logo/website-logo.png" class="img-fluid" alt="Responsive image">
+                            </a>
+                            
                         
-                        <h1 class="card-title text-center " style="font-family:American Typewriter; font-size:500%; color:whitesmoke; ">tribarb</h1>
-                        
+                            {% block content %}{% endblock %}
 
-                        {% block content %}
-
-
-                         {% endblock %}
-
+                        </div>
                     </div>
-
+                    <div class="col-md-2"></div>
                 </div>
-                 <div class="col-md-2"></div>
             </div>
+            <div class="col-md-3"></div>
         </div>
-        <div class="col-md-3"></div>
-    </div>
-</body>
-
+    </body>
+    
 </html>

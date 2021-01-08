@@ -1,145 +1,153 @@
 {% extends 'db/sidebar.html' %}
-{% load bootstrap3 %}
 
 {% block title %}Tribarb | Reports{% endblock %}
 
 {% block page %}
-<div class="row">
-    <div class="col-lg-8">
 
-        <!-- Revenue by Week -->
-        <div class="card">
-            <div class="card-heading db-card-headings">
-              <h4 class="card-title text-center db-card-titles">
-                  Revenue by Week
-              </h4>
+<div class="db-items">
+    <div class="row">
+        <div class="col-lg-8">
+
+            <!-- Revenue by Week -->
+            <div class="card mb-4">
+                <div class="card-heading db-card-headings">
+                    <h4 class="card-title text-center db-card-titles">
+                        Revenue by Week
+                    </h4>
+                </div>
+
+                <div class="card-body">
+                    <canvas id="revenueChart" height="110"></canvas>
+
+                    <script>
+                        var ctx = document.getElementById("revenueChart").getContext("2d");
+                        var data = {
+                            labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+                            datasets: [
+                                {
+                                    label: "Revenue by Week",
+                                    backgroundColor: "rgba(54,162,235,0.9)",
+                                    hoverBackgroundColor: "rgba(54,162,235,1)",
+                                    data: {{ revenue }}
+                                }
+                            ]
+                        };
+
+                        new Chart(ctx, {
+                        type: 'bar',
+                        data: data
+                        });
+                    </script>
+
+                </div>
             </div>
-            <div class="card-body">
-                <canvas id="revenueChart" height="110"></canvas>
-                <script>
-                    var ctx = document.getElementById("revenueChart").getContext("2d");
-                    var data = {
-                        labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
-                        datasets: [
-                            {
-                                label: "Revenue by Week",
-                                backgroundColor: "rgba(54,162,235,0.9)",
-                                hoverBackgroundColor: "rgba(54,162,235,1)",
-                                data: {{ revenue }}
-                            }
-                        ]
-                    };
 
-                    new Chart(ctx, {
-                      type: 'bar',
-                      data: data
-                    });
+            <!-- Orders by Week -->
+            <div class="card mt-3">
+                <div class="card-heading db-card-headings">
+                    <h4 class="card-title text-center db-card-titles">
+                        Bookings by Week
+                    </h4>
+                </div>
 
-                </script>
+                <div class="card-body">
+                    <canvas id="bookingChart" height="110"></canvas>
+
+                    <script>
+                        var ctx = document.getElementById("bookingChart").getContext("2d");
+                        var data = {
+                            labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+                            datasets: [
+                                {
+                                    label: "Bookings by Week",
+                                    backgroundColor: "rgba(255,99,133,0.9)",
+                                    hoverBackgroundColor: "rgba(255,99,133,1)",
+                                    data: {{ bookings }}
+                                }
+                            ]
+                        };
+
+                        new Chart(ctx, {
+                        type: 'bar',
+                        data: data
+                        });
+                    </script>
+
+                </div>
             </div>
         </div>
 
-        <!-- Orders by Week -->
-        <div class="card mt-3">
-            <div class="card-heading db-card-headings">
-              <h4 class="card-title text-center db-card-titles">
-                  Bookings by Week
-              </h4>
+
+        <div class="col-lg-4">
+
+            <!-- TOP 3 Meals -->
+            <div class="card">
+                <div class="card-heading db-card-headings">
+                    <h4 class="card-title text-center db-card-titles">
+                        Top Services by Income
+                    </h4>
+                </div>
+
+                <div class="card-body">
+                    <canvas id="serviceChart" height="242"></canvas>
+                    <script>
+                        var ctx = document.getElementById("serviceChart").getContext("2d");
+                        var data = {
+                            labels: {{ service.labels|safe }},
+                            datasets: [
+                                {
+                                    backgroundColor: [
+                                        "#36A2EB", "#FFCE56", "#FF6384"
+                                    ],
+                                    data: {{ service.data }}
+                                }
+                            ]
+                        };
+
+                        new Chart(ctx, {
+                            type: 'pie',
+                            data: data
+                        });
+                    </script>
+
+                </div>
             </div>
-            <div class="card-body">
-                <canvas id="bookingChart" height="110"></canvas>
-                <script>
-                    var ctx = document.getElementById("bookingChart").getContext("2d");
-                    var data = {
-                        labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
-                        datasets: [
-                            {
-                                label: "Bookings by Week",
-                                backgroundColor: "rgba(255,99,133,0.9)",
-                                hoverBackgroundColor: "rgba(255,99,133,1)",
-                                data: {{ bookings }}
-                            }
-                        ]
-                    };
 
-                    new Chart(ctx, {
-                      type: 'bar',
-                      data: data
-                    });
+            <!-- TOP 3 Driver ALL TIME -->
+            <div class="card mt-3 mb-4">
+                <div class="card-heading db-card-headings">
+                    <h4 class="card-title text-center db-card-titles">
+                        Top Employees by Bookings
+                    </h4>
+                </div>
 
-                </script>
+                <div class="card-body">
+                    <canvas id="employeeChart" height="242"></canvas>
+                    <script>
+                        var ctx = document.getElementById("employeeChart").getContext("2d");
+                        var data = {
+                            labels: {{ employee.labels|safe }},
+                            datasets: [
+                                {
+                                    backgroundColor: [
+                                        "#36A2EB", "#FFCE56", "#FF6384"
+                                    ],
+                                    data: {{ employee.data }}
+                                }
+                            ]
+                        };
+
+                        new Chart(ctx, {
+                            type: 'pie',
+                            data: data
+                        });
+                    </script>
+                    
+                </div>
             </div>
         </div>
 
     </div>
-
-    <div class="col-lg-4">
-
-      <!-- TOP 3 Meals -->
-      <div class="card">
-          <div class="card-heading db-card-headings">
-            <h4 class="card-title text-center db-card-titles">
-                Top Services by Income
-            </h4>
-          </div>
-          <div class="card-body">
-              <canvas id="serviceChart" height="242"></canvas>
-              <script>
-                  var ctx = document.getElementById("serviceChart").getContext("2d");
-                  var data = {
-                      labels: {{ service.labels|safe }},
-                      datasets: [
-                          {
-                              backgroundColor: [
-                                "#36A2EB", "#FFCE56", "#FF6384"
-                              ],
-                              data: {{ service.data }}
-                          }
-                      ]
-                  };
-
-                  new Chart(ctx, {
-                    type: 'pie',
-                    data: data
-                  });
-
-              </script>
-          </div>
-      </div>
-
-      <!-- TOP 3 Driver ALL TIME -->
-      <div class="card mt-3">
-          <div class="card-heading db-card-headings">
-            <h4 class="card-title text-center db-card-titles">
-                Top Employees by Bookings
-            </h4>
-          </div>
-          <div class="card-body">
-              <canvas id="employeeChart" height="242"></canvas>
-              <script>
-                  var ctx = document.getElementById("employeeChart").getContext("2d");
-                  var data = {
-                      labels: {{ employee.labels|safe }},
-                      datasets: [
-                          {
-                              backgroundColor: [
-                                "#36A2EB", "#FFCE56", "#FF6384"
-                              ],
-                              data: {{ employee.data }}
-                          }
-                      ]
-                  };
-
-                  new Chart(ctx, {
-                    type: 'pie',
-                    data: data
-                  });
-
-              </script>
-          </div>
-      </div>
-    </div>
-
 </div>
 
 {% endblock %}

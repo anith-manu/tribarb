@@ -1,14 +1,13 @@
 {% extends 'db/sidebar.html' %}
-{% load bootstrap3 %}
 
 {% block title %}Tribarb | Edit Service{% endblock %}
 
 {% block page %}
 
+
+
 <div class="db-items">
-
-
-    <div class="card">
+    <div class="card mb-4">
         <div class="card-heading db-card-headings">
             <h4 class="card-title text-center db-card-titles">
                 Edit Service
@@ -16,122 +15,177 @@
             
         </div>
         <div class="card-body">
-           
-            
-            <p></p>
+
+            <div id="alertsView" class="alert alert-danger" style="display: none;">
+                <p class="danger" id="fieldsAlert"></p>
+                <p class="danger" id="checkAlert"></p>
+            </div>
+            <p>* indicates required field</p>
+
+            <label>Service Name *</label>
+            <input type="text" id="service_name" class="form-control"  value="{{ service.service_name }}">
+
+            <label class="mt-4">Description * <em>(350 characters maximum)</em></label>
+            <textarea id="short_description" class="form-control" maxlength="350" >{{ service.short_description }}</textarea>
+
+            <label class="mt-4">Price *</label>
+            <input type="number" id="price" class="form-control"  value="{{ service.price }}">
+
+            <p class="mt-4">Service Type * (Tick one or both)</p>
+            <input type="checkbox" id="shopService" value="shop" {% if service.shop_service %} checked {% endif %}>
+                <label>Shop Service</label><br>
+
+            <input type="checkbox" id="homeService" value="home" {% if service.home_service %} checked {% endif %} >
+                <label>Home Service</label>
+
+
+            <p class="mt-4">Images</p>
             <input type="checkbox" id="createRadio" name="gender" value="create">
             <label for="female">Tick this box if you wish to create a new album, else you will be adding to the existing album.</label><br>
 
             <input type="file" multiple>
-            
-            <label>Service Name </label>
-            <input type="text" id="service_name" class="form-control"  value="{{ service.service_name }}">
-            <label>Description</label>
-            <input type="text" id="short_description" class="form-control" value="{{ service.short_description }}">
-            <label>Price</label>
-            <input type="number" id="price" class="form-control"  value="{{ service.price }}">
-            <div class="text-center">
-                <button type="button" id="saveBtn" class="btn btn-primary mt-4">Update Service</button>
-            </div>
-            <div class="text-center">
-                <button type="button" id="delBtn" class="btn btn-sm btn-danger mt-4">Delete Service</button>
-            </div>
-    
-            <script>
-                document.addEventListener('DOMContentLoaded', function() {
-                    var files = []
-                    FilePond.registerPlugin(FilePondPluginFileValidateSize);
-                    FilePond.registerPlugin(FilePondPluginFileValidateType);
-                    FilePond.setOptions({
-                        allowMultiple:true,
-                        maxFiles:30,
-                        maxFileSize: '30MB'
-                    })
-                    const inputElement = document.querySelector('input[type="file"]');
-                    const pond = FilePond.create( inputElement, {
-                        acceptedFileTypes:['image/png', 'image/jpeg'],
-                        onaddfile: (err, fileItem) => {
-                            if (!err) {
-                            files.push(fileItem.file)
-                            }
-                            console.log(files)
-                        },
-                        onremovefile: (err, fileItem) => {
-                            const index = files.indexOf(fileItem.file)
-                            if (index > -1) {
-                                files.splice(index, 1)
-                            }
-                            console.log(files)
-                        }
-                    } );
-    
-                    var formData = new FormData();
-                    $(document).on('click', '#saveBtn', function(e) {
-                        
-                        if(document.getElementById('createRadio').checked) {
-                            formData.append('albumUpdate', $('#createRadio').val())
-                        } else {
-                            formData.append('albumUpdate', null)
-                        }
-                        formData.append('delete', false)
-                        formData.append('length', files.length)
-                        formData.append('service_name', $('#service_name').val())
-                        formData.append('short_description', $('#short_description').val())
-                        formData.append('price', $('#price').val())
-                        for (var i = 0; i < files.length; i++) {
-                            formData.append('images' + i, files[i])
-                        }
-                        formData.append('csrfmiddlewaretoken', '{{ csrf_token }}')
-    
-                        $.ajax({
-                            type: 'POST',
-                            data: formData,
-                            cache: false,
-                            processData: false,
-                            contentType: false,
-                            enctype: 'multipart/form-data',
-                            success: function (){
-    
-                                window.location.href = "{% url 'shop-services' %}";
-                            },
-                            error: function(xhr, errmsg, err) {
-                                console.log(xhr.status + ":" + xhr.responseText)
-                            }
-                        })
-                    })
 
-                    $(document).on('click', '#delBtn', function(e) {
-                        if (confirm('Are you sure you want to delete this service?')) {
-                            formData.append('delete', true)
-                       
-                            formData.append('csrfmiddlewaretoken', '{{ csrf_token }}')
-        
-                            $.ajax({
-                                type: 'POST',
-                                data: formData,
-                                cache: false,
-                                processData: false,
-                                contentType: false,
-                                enctype: 'multipart/form-data',
-                                success: function (){
-        
-                                    window.location.href = "{% url 'shop-services' %}";
-                                },
-                                error: function(xhr, errmsg, err) {
-                                    console.log(xhr.status + ":" + xhr.responseText)
-                                }
-                            })
-                        }       
-                    })
-                })
-            </script>
-    
-    
-    
-    
-    
+            <div class="text-center">
+                <button type="button" id="saveBtn" class="btn btn-block btn-primary mt-4">Update Service</button>
+            </div>
+            
+            <div class="text-center">
+                <button type="button" id="delBtn" class="btn btn-block btn-sm btn-danger mt-4">Delete Service</button>
+            </div>
         </div>
     </div>
-    </div>
+</div>
+
+
+    <script>
+        const updateBtn = document.getElementById('saveBtn')
+        const deleteBtn = document.getElementById('delBtn')
+
+        document.addEventListener('DOMContentLoaded', function() {
+            var files = []
+            FilePond.registerPlugin(FilePondPluginFileValidateSize);
+            FilePond.registerPlugin(FilePondPluginFileValidateType);
+            FilePond.setOptions({
+                allowMultiple:true,
+                maxFiles:30,
+                maxFileSize: '30MB'
+            })
+            const inputElement = document.querySelector('input[type="file"]');
+            const pond = FilePond.create( inputElement, {
+                acceptedFileTypes:['image/png', 'image/jpeg'],
+                onaddfile: (err, fileItem) => {
+                    if (!err) {
+                    files.push(fileItem.file)
+                    }
+                    console.log(files)
+                },
+                onremovefile: (err, fileItem) => {
+                    const index = files.indexOf(fileItem.file)
+                    if (index > -1) {
+                        files.splice(index, 1)
+                    }
+                    console.log(files)
+                }
+            } );
+
+            var formData = new FormData();
+            $(document).on('click', '#saveBtn', function(e) {
+                var has_error = false
+                var title = $('#service_name').val()
+                var desc =  $('#short_description').val()
+                var price = $('#price').val()
+
+                if (title.length == 0 || desc.length == 0 || price.length == 0) {
+                    $("#alertsView").show()
+                    document.getElementById("fieldsAlert").innerHTML = 'Please fill in all required fields.';
+                    has_error = true
+                }
+                
+                if(!document.getElementById('shopService').checked && !document.getElementById('homeService').checked) {
+                    $("#alertsView").show()
+                    document.getElementById("checkAlert").innerHTML = 'Please select the service type(s).';
+                    has_error = true
+                }
+
+                if (has_error == false) {
+                    updateBtn.disabled = true
+                    deleteBtn.disabled = true
+                    updateBtn.innerHTML = 'Updating service. Please wait...';
+                    
+                    if(document.getElementById('createRadio').checked) {
+                        formData.append('albumUpdate', $('#createRadio').val())
+                    } else {
+                        formData.append('albumUpdate', null)
+                    }
+
+                    if(document.getElementById('shopService').checked) {
+                        formData.append('shopService', $('#shopService').val())
+                    } else {
+                        formData.append('shopService', null)
+                    }
+
+                    if(document.getElementById('homeService').checked) {
+                        formData.append('homeService', $('#homeService').val())
+                    } else {
+                        formData.append('homeService', null)
+                    }
+                    
+                    formData.append('delete', false)
+                    formData.append('length', files.length)
+                    formData.append('service_name', $('#service_name').val())
+                    formData.append('short_description', $('#short_description').val())
+                    formData.append('price', $('#price').val())
+                    for (var i = 0; i < files.length; i++) {
+                        formData.append('images' + i, files[i])
+                    }
+                    formData.append('csrfmiddlewaretoken', '{{ csrf_token }}')
+
+                    $.ajax({
+                        type: 'POST',
+                        data: formData,
+                        cache: false,
+                        processData: false,
+                        contentType: false,
+                        enctype: 'multipart/form-data',
+                        success: function (){
+                            window.location.href = "{% url 'shop-services' %}";
+                        },
+                        error: function(xhr, errmsg, err) {
+                            button.disabled = false
+                            button.innerHTML = "Update Service"
+                            console.log(xhr.status + ":" + xhr.responseText)
+                        }
+                    })
+                }
+            })
+
+            $(document).on('click', '#delBtn', function(e) {
+                if (confirm('Are you sure you want to delete this service?')) {
+                    updateBtn.disabled = true
+                    deleteBtn.disabled = true
+                    deleteBtn.innerHTML = 'Deleting service. Please wait...';
+
+                    formData.append('delete', true)
+               
+                    formData.append('csrfmiddlewaretoken', '{{ csrf_token }}')
+
+                    $.ajax({
+                        type: 'POST',
+                        data: formData,
+                        cache: false,
+                        processData: false,
+                        contentType: false,
+                        enctype: 'multipart/form-data',
+                        success: function (){
+                            window.location.href = "{% url 'shop-services' %}";
+                        },
+                        error: function(xhr, errmsg, err) {
+                            console.log(xhr.status + ":" + xhr.responseText)
+                        }
+                    })
+                }       
+            })
+        })
+    </script>
 
 {% endblock %}

@@ -1,0 +1,4 @@
+Welcome to tribarb, {{ user.get_full_name }}.
+Your generated username is {{ user.username }}. Now, please confirm your email address by clicking the link below and you'll be able to login to your tribarb shop manager account with your username and the password you set during registration. 
+
+http://{{domain}}{% url 'activate' uidb64=uid token=token %}

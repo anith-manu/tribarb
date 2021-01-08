@@ -1,45 +1,39 @@
 {% extends 'db/sidebar.html' %}
-{% load bootstrap3 %}
 
-{% block title %}Tribarb | Edit Service{% endblock %}
+{% block title %}Tribarb | Service Album{% endblock %}
 
 {% block page %}
 
 <div class="db-items">
+    <div class="card mb-4">
 
-    <div class="card">
         <div class="card-heading db-card-headings">
             <h4 class="card-title text-center db-card-titles">
                 {{ service.service_name }} Album
             </h4>
-            
         </div>
         
         <div class="card-body">
-        <div class="album py-5">
-            <div class="container">
-    
-            <div class="row">
-            {% for p in photos %}
-                <div class="col-md-4">
-                <div class="card mb-4 box-shadow">
-                    <img class="card-img-top" src="{{p.image.url}}" alt="Card image cap">
+            <div class="album py-5">
+                <div class="container">
+                    <div class="row">
+                    {% for p in photos %}
+                        <div class="col-md-4">
+                            <div class="card mb-4 box-shadow">
+                                <img class="card-img-top" src="{{p.image.url}}" alt="Card image cap">
+                            </div>
+                        </div>
+                    {% endfor %}
+                    </div>
                 </div>
-                </div>
-            {% endfor %}
+            </div>
 
+            <div class="text-center">
+                <a href="{% url 'shop-edit-services' service.id %}" class="btn btn-block btn-primary">Edit Album</a>
             </div>
-            </div>
-        </div>
-        <div class="text-center">
-            <a href="{% url 'shop-edit-services' service.id %}" class="btn btn-primary">Edit Album</a>
-        </div>
+
         </div>  
-      
     </div>
-
-
-    
 </div>
  
 {% endblock %}

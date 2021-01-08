@@ -15,7 +15,7 @@ class ShopSerializerCustomer(serializers.ModelSerializer):
 
 	class Meta:
 	    model = Shop
-	    fields = ("id", "name", "phone", "address", "logo")
+	    fields = ("id", "name", "phone", "instagram", "facebook", "address", "logo", "total_rating", "number_of_ratings", "service_fee")
 
 
 
@@ -66,13 +66,13 @@ class BookingEmployeeSerializer(serializers.ModelSerializer):
 	name = serializers.ReadOnlyField(source="user.get_full_name")
 	class Meta:
 		model = Employee
-		fields = ("id", "name", "avatar", "phone", "address")
+		fields = ("id", "name", "avatar", "phone")
 
 
 class BookingShopSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Shop
-		fields = ("id", "name", "phone", "address")
+		fields = ("id", "name", "phone", "address", "service_fee")
 
 
 class BookingServiceSerializer(serializers.ModelSerializer):
@@ -86,7 +86,7 @@ class BookingDetailsSerializer(serializers.ModelSerializer):
 
 	class Meta:
 		model = BookingDetail
-		fields = ("id", "service", "sub_total")
+		fields = ("id", "service")
 
 
 class BookingSerializer(serializers.ModelSerializer):
@@ -98,4 +98,24 @@ class BookingSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Booking
-        fields = ("id", "customer", "booking_type", "payment_mode", "shop", "employee", "booking_details", "total", "requested_time", "requests", "status", "address")
+        fields = ("id", "customer", "booking_type", "payment_mode", "shop", "employee", "booking_details", "total", "requested_time", "requests", "status", "address", "rating", "service_fee", "subtotal")
+
+
+
+class CustomerSerializer(serializers.ModelSerializer):
+	name = serializers.ReadOnlyField(source="user.get_full_name")
+	id = serializers.ReadOnlyField(source="user.id")
+	class Meta:
+		model = Customer
+		fields = ("id", "name", "email", "avatar", "phone", "address")
+
+
+
+class EmployeeSerializer(serializers.ModelSerializer):
+	name = serializers.ReadOnlyField(source="user.get_full_name")
+	shop_name = serializers.ReadOnlyField(source="shop.name")
+	id = serializers.ReadOnlyField(source="user.id")
+		
+	class Meta:
+		model = Employee
+		fields = ("id", "name", "email", "avatar", "phone", "shop", "shop_name")
